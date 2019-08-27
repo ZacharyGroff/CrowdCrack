@@ -1,0 +1,4 @@
+{
+	"wordlistPath": "~/wordlist.txt",
+	"hashFunction": "sha256"
+}
