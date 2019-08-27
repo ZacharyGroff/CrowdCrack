@@ -1,0 +1,4 @@
+{
+	"wordlistPath": "path/to/wordlist.txt",
+	"hashFunction": "testHash"
+}
