@@ -8,6 +8,7 @@ package main
 import (
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/server"
 )
 
 // Injectors from wire.go:
@@ -16,4 +17,10 @@ func InitializeClient() client.Client {
 	clientConfig := config.NewClientConfig()
 	clientClient := client.NewClient(clientConfig)
 	return clientClient
+}
+
+func InitializeServer() server.Server {
+	serverConfig := config.NewServerConfig()
+	serverServer := server.NewServer(serverConfig)
+	return serverServer
 }
