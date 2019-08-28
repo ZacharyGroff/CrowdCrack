@@ -6,6 +6,7 @@
 package main
 
 import (
+	"github.com/ZacharyGroff/CrowdCrack/api"
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/server"
@@ -21,6 +22,7 @@ func InitializeClient() client.Client {
 
 func InitializeServer() server.Server {
 	serverConfig := config.NewServerConfig()
-	serverServer := server.NewServer(serverConfig)
+	apiApi := api.NewApi(serverConfig)
+	serverServer := server.NewServer(serverConfig, apiApi)
 	return serverServer
 }
