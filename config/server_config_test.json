@@ -1,4 +1,5 @@
 {
 	"wordlistPath": "path/to/wordlist.txt",
-	"hashFunction": "testHash"
+	"hashFunction": "testHash",
+	"apiPort": 42
 }

@@ -26,3 +26,14 @@ func TestParseHashFunction(t *testing.T) {
 		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
 	}
 }
+
+func TestParseApiPort(t *testing.T) {
+	config := ServerConfig{}
+	config.parseConfig("server_config_test.json")
+	
+	expected := uint16(42)
+	actual := config.ApiPort
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
