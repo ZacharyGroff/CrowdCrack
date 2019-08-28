@@ -10,15 +10,7 @@ import (
 type ServerConfig struct {
 	WordlistPath string `json:"wordlistPath"`
 	HashFunction string `json:"hashFunction"`
-}
-
-func (c *ServerConfig) parseConfig(path string) error {
-	file, err := os.Open(path)
-	defer file.Close()
-	byteValue, _ := ioutil.ReadAll(file)
-	json.Unmarshal(byteValue, &c)
-	
-	return err
+	ApiPort uint16 `json:"apiPort"`
 }
 
 func NewServerConfig() *ServerConfig {
@@ -30,4 +22,13 @@ func NewServerConfig() *ServerConfig {
 	}
 	
 	return &config
+}
+
+func (c *ServerConfig) parseConfig(path string) error {
+	file, err := os.Open(path)
+	defer file.Close()
+	byteValue, _ := ioutil.ReadAll(file)
+	json.Unmarshal(byteValue, &c)
+	
+	return err
 }

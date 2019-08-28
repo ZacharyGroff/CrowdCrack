@@ -1,4 +1,5 @@
 {
 	"wordlistPath": "~/wordlist.txt",
-	"hashFunction": "sha256"
+	"hashFunction": "sha256",
+	"apiPort": 2725 
 }
