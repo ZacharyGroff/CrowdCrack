@@ -11,6 +11,7 @@ type ServerConfig struct {
 	WordlistPath string `json:"wordlistPath"`
 	HashFunction string `json:"hashFunction"`
 	ApiPort uint16 `json:"apiPort"`
+	QueueBuffer uint64 `json:"queueBuffer"`
 }
 
 func NewServerConfig() *ServerConfig {

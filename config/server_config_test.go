@@ -37,3 +37,14 @@ func TestParseApiPort(t *testing.T) {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
 }
+
+func TestParseQueueBuffer(t *testing.T) {
+	config := ServerConfig{}
+	config.parseConfig("server_config_test.json")
+	
+	expected := uint64(43)
+	actual := config.QueueBuffer
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
