@@ -14,6 +14,7 @@ type ServerConfig struct {
 	PasswordQueueBuffer uint64 `json:"passwordQueueBuffer"`
 	HashQueueBuffer uint64 `json:"hashQueueBuffer"`
 	FlushToFile bool `json:"flushToFile"`
+	HashPath string `json:"hashPath"`
 }
 
 func NewServerConfig() *ServerConfig {

@@ -4,5 +4,6 @@
 	"apiPort": 2725,
 	"passwordQueueBuffer": 10000,
 	"hashQueueBuffer": 10000,
-	"flushToFile": true
+	"flushToFile": true,
+	"hashPath": "overflow/hashes.txt"
 }
