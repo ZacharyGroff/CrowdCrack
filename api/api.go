@@ -18,7 +18,7 @@ func NewApi(c *config.ServerConfig) *Api {
 
 func (a Api) HandleRequests() {
 	log.Printf("Api listening to requests on port %d", a.Config.ApiPort)
-	http.HandleFunc("/hash", a.getHash)
+	http.HandleFunc("/current-hash", a.getHash)
 	port := fmt.Sprintf(":%d", a.Config.ApiPort)
 	log.Fatal(http.ListenAndServe(port, nil))
 }
