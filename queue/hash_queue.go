@@ -10,11 +10,11 @@ import (
 
 type HashQueue struct {
 	hashes chan string
-	config *config.Config
+	config *config.ServerConfig
 }
 
 func NewHashQueue(config *config.ServerConfig) *HashQueue {
-	hashes := make(chan string, config.HashBuffer)
+	hashes := make(chan string, config.HashQueueBuffer)
 	return &HashQueue{hashes, config}
 }
 
@@ -67,7 +67,7 @@ func (q HashQueue) flushToFile() error {
 	}
 
 	for _, hash := range hashes {
-		fmt.Fprintln(writer, hash.String()) 
+		fmt.Fprintln(writer, hash) 
 	}
 
 	return writer.Flush()
