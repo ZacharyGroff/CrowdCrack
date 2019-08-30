@@ -38,13 +38,46 @@ func TestParseApiPort(t *testing.T) {
 	}
 }
 
-func TestParseQueueBuffer(t *testing.T) {
+func TestParsePasswordQueueBuffer(t *testing.T) {
 	config := ServerConfig{}
 	config.parseConfig("server_config_test.json")
 	
 	expected := uint64(43)
-	actual := config.QueueBuffer
+	actual := config.PasswordQueueBuffer
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestParseHashQueueBuffer(t *testing.T) {
+	config := ServerConfig{}
+	config.parseConfig("server_config_test.json")
+	
+	expected := uint64(44)
+	actual := config.HashQueueBuffer
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestParseFlushToFile(t *testing.T) {
+	config := ServerConfig{}
+	config.parseConfig("server_config_test.json")
+	
+	expected := true
+	actual := config.FlushToFile
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
+	}
+}
+
+func TestParseHashPath(t *testing.T) {
+	config := ServerConfig{}
+	config.parseConfig("server_config_test.json")
+	
+	expected := "test/path/to/hashFile"
+	actual := config.HashPath
+	if strings.Compare(expected, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
 	}
 }

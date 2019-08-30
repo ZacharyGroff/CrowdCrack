@@ -2,5 +2,8 @@
 	"wordlistPath": "path/to/wordlist.txt",
 	"hashFunction": "testHash",
 	"apiPort": 42,
-	"queueBuffer": 43
+	"passwordQueueBuffer": 43,
+	"hashQueueBuffer": 44,
+	"flushToFile": true,
+	"hashPath": "test/path/to/hashFile"
 }
