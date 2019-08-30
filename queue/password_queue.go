@@ -12,7 +12,7 @@ type PasswordQueue struct {
 }
 
 func NewPasswordQueue(config *config.ServerConfig) *PasswordQueue {
-	passwords := make(chan string, config.QueueBuffer)
+	passwords := make(chan string, config.PasswordQueueBuffer)
 	return &PasswordQueue{passwords, config}
 }
 
