@@ -11,7 +11,9 @@ type ServerConfig struct {
 	WordlistPath string `json:"wordlistPath"`
 	HashFunction string `json:"hashFunction"`
 	ApiPort uint16 `json:"apiPort"`
-	QueueBuffer uint64 `json:"queueBuffer"`
+	PasswordQueueBuffer uint64 `json:"passwordQueueBuffer"`
+	HashQueueBuffer uint64 `json:"hashQueueBuffer"`
+	FlushToFile bool `json:"flushToFile"`
 }
 
 func NewServerConfig() *ServerConfig {
