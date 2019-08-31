@@ -6,14 +6,17 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/queue"
 )
 
 type Api struct {
 	Config *config.ServerConfig
+	Passwords queue.Queue
+	Hashes queue.FlushingQueue
 }
 
-func NewApi(c *config.ServerConfig) *Api {
-	return &Api{c}
+func NewApi(c *config.ServerConfig, p *queue.PasswordQueue, h *queue.HashQueue) *Api {
+	return &Api{c, p, h}
 }
 
 func (a Api) HandleRequests() {
