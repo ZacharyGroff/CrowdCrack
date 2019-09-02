@@ -46,3 +46,29 @@ func (a Api) retrieveHashes(w http.ResponseWriter, r *http.Request) {
 	
 	json.NewEncoder(w).Encode("Submission Successful")
 }
+
+func (a Api) sendPasswords(w http.ResponseWriter, r *http.Request) {
+	var passwordRequest PasswordRequest
+	decoder := json.NewDecoder(r.Body)
+
+	err := decoder.Decode(r.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var numPasswords uint64
+	if uint64(a.Passwords.Size()) < passwordRequest.NumPasswords {
+		numPasswords = uint64(a.Passwords.Size())
+	} else {
+		numPasswords = passwordRequest.NumPasswords
+	}
+
+	var passwords []string
+	var i uint64
+	for i = 0; i < numPasswords; i++ {
+		password, _ := a.Passwords.Get()
+		passwords = append(passwords, password)
+	}
+
+	json.NewEncoder(w).Encode(passwords)
+}
