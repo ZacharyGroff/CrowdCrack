@@ -10,6 +10,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
+	"github.com/ZacharyGroff/CrowdCrack/reader"
 	"github.com/ZacharyGroff/CrowdCrack/server"
 )
 
@@ -26,6 +27,7 @@ func InitializeServer() server.Server {
 	passwordQueue := queue.NewPasswordQueue(serverConfig)
 	hashQueue := queue.NewHashQueue(serverConfig)
 	apiApi := api.NewApi(serverConfig, passwordQueue, hashQueue)
-	serverServer := server.NewServer(serverConfig, apiApi)
+	wordlistReader := reader.NewWordlistReader(serverConfig, passwordQueue)
+	serverServer := server.NewServer(serverConfig, apiApi, wordlistReader)
 	return serverServer
 }
