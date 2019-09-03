@@ -51,7 +51,7 @@ func (a Api) sendPasswords(w http.ResponseWriter, r *http.Request) {
 	var passwordRequest PasswordRequest
 	decoder := json.NewDecoder(r.Body)
 
-	err := decoder.Decode(r.Body)
+	err := decoder.Decode(&passwordRequest)
 	if err != nil {
 		fmt.Println(err)
 	}
