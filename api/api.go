@@ -56,19 +56,30 @@ func (a Api) sendPasswords(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
+	numPasswords := a.getNumPasswords(passwordRequest)
+	passwords := a.getPasswords(numPasswords)
+
+	json.NewEncoder(w).Encode(passwords)
+}
+
+func (a Api) getNumPasswords(p PasswordRequest) uint64 {
 	var numPasswords uint64
-	if uint64(a.Passwords.Size()) < passwordRequest.NumPasswords {
+	if uint64(a.Passwords.Size()) < p.NumPasswords {
 		numPasswords = uint64(a.Passwords.Size())
 	} else {
-		numPasswords = passwordRequest.NumPasswords
+		numPasswords = p.NumPasswords
 	}
 
+	return numPasswords
+}
+
+func (a Api) getPasswords(n uint64) []string {
 	var passwords []string
-	var i uint64
-	for i = 0; i < numPasswords; i++ {
+	i := uint64(0)
+	for ; i < n; i++ {
 		password, _ := a.Passwords.Get()
 		passwords = append(passwords, password)
 	}
 
-	json.NewEncoder(w).Encode(passwords)
+	return passwords
 }
