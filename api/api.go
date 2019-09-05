@@ -23,6 +23,7 @@ func (a Api) HandleRequests() {
 	log.Printf("Api listening to requests on port %d", a.Config.ApiPort)
 	http.HandleFunc("/current-hash", a.getHashName)
 	http.HandleFunc("/hashes", a.retrieveHashes)
+	http.HandleFunc("/passwords", a.sendPasswords)
 	port := fmt.Sprintf(":%d", a.Config.ApiPort)
 	log.Fatal(http.ListenAndServe(port, nil))
 }
