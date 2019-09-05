@@ -25,14 +25,20 @@ func (m mockQueue) Put(password string) error {
 	return nil
 }
 
+func setupWordlist(testPath string, passwords []string) {
+	file, _ := os.Create(testPath)
+	defer file.Close()
+	writer := bufio.NewWriter(file)
+	for _, password := range passwords {
+		fmt.Fprintln(writer, password) 
+	}
+}
+
 func TestLoadPasswordsNoError(t *testing.T) {
 	testPath := "wordlist_test.txt"
-	file, _ := os.Create(testPath)
-	writer := bufio.NewWriter(file)
-	fmt.Fprintln(writer, "testpassword1") 
-	fmt.Fprintln(writer, "testpassword2") 
-	file.Close()
-	
+	passwords := []string{"password1"}
+	setupWordlist(testPath, passwords)
+
 	config := config.ServerConfig{WordlistPath: testPath}
 	queue := mockQueue{PutCalls: 0}
 	reader := WordlistReader{config: &config, passwords: &queue}
@@ -45,4 +51,4 @@ func TestLoadPasswordsNoError(t *testing.T) {
 	}
 
 	os.Remove(testPath)
-} 
+}
