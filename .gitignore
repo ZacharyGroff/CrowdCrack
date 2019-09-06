@@ -1,5 +1,7 @@
 # Our executable
 CrowdCrack
+wordlist.txt
+hashlist.txt
 
 # Binaries for programs and plugins
 *.exe
