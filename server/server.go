@@ -5,16 +5,18 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/api"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
+	"github.com/ZacharyGroff/CrowdCrack/verifier"
 )
 
 type Server struct {
 	Config *config.ServerConfig
 	Api *api.Api
 	Reader reader.PasswordReader
+	Verifier *verifier.Verifier
 }
 
-func NewServer(c *config.ServerConfig, a *api.Api, r *reader.WordlistReader) Server {
-	return Server{c, a, r}
+func NewServer(c *config.ServerConfig, a *api.Api, r *reader.WordlistReader, v *verifier.Verifier) Server {
+	return Server{c, a, r, v}
 }
 
 func (s Server) Start() {
@@ -23,6 +25,8 @@ func (s Server) Start() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	go s.Verifier.Verify()
 
 	s.Api.HandleRequests()
 }
