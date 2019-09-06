@@ -1,5 +1,6 @@
 {
 	"wordlistPath": "path/to/wordlist.txt",
+	"hashlistPath": "path/to/hashlist.txt",
 	"hashFunction": "testHash",
 	"apiPort": 42,
 	"passwordQueueBuffer": 43,

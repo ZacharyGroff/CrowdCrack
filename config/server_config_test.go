@@ -16,6 +16,17 @@ func TestParseWordlistPath(t *testing.T) {
 	}
 }
 
+func TestParseHashlistPath(t *testing.T) {
+	config := ServerConfig{}
+	config.parseConfig("server_config_test.json")
+	
+	expected := "path/to/hashlist.txt"
+	actual := config.HashlistPath
+	if strings.Compare(expected, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
+	}
+}
+
 func TestParseHashFunction(t *testing.T) {
 	config := ServerConfig{}
 	config.parseConfig("server_config_test.json")
