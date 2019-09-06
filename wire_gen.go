@@ -12,6 +12,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
 	"github.com/ZacharyGroff/CrowdCrack/server"
+	"github.com/ZacharyGroff/CrowdCrack/verifier"
 )
 
 // Injectors from wire.go:
@@ -28,6 +29,8 @@ func InitializeServer() server.Server {
 	hashQueue := queue.NewHashQueue(serverConfig)
 	apiApi := api.NewApi(serverConfig, passwordQueue, hashQueue)
 	wordlistReader := reader.NewWordlistReader(serverConfig, passwordQueue)
-	serverServer := server.NewServer(serverConfig, apiApi, wordlistReader)
+	hashlistReader := reader.NewHashlistReader(serverConfig)
+	verifierVerifier := verifier.NewVerifier(serverConfig, hashQueue, hashlistReader)
+	serverServer := server.NewServer(serverConfig, apiApi, wordlistReader, verifierVerifier)
 	return serverServer
 }

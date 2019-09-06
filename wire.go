@@ -10,6 +10,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
 	"github.com/ZacharyGroff/CrowdCrack/server"
+	"github.com/ZacharyGroff/CrowdCrack/verifier"
 )
 
 func InitializeClient() client.Client {
@@ -18,6 +19,6 @@ func InitializeClient() client.Client {
 }
 
 func InitializeServer() server.Server {
-	wire.Build(server.NewServer, api.NewApi, reader.NewWordlistReader, queue.NewPasswordQueue, queue.NewHashQueue, config.NewServerConfig)
+	wire.Build(server.NewServer, api.NewApi, verifier.NewVerifier, reader.NewHashlistReader, reader.NewWordlistReader, queue.NewPasswordQueue, queue.NewHashQueue, config.NewServerConfig)
 	return server.Server{}
 }
