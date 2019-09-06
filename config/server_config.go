@@ -9,6 +9,7 @@ import (
 
 type ServerConfig struct {
 	WordlistPath string `json:"wordlistPath"`
+	HashlistPath string `json:"hashlistPath"`
 	HashFunction string `json:"hashFunction"`
 	ApiPort uint16 `json:"apiPort"`
 	PasswordQueueBuffer uint64 `json:"passwordQueueBuffer"`

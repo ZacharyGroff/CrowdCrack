@@ -1,5 +1,6 @@
 {
-	"wordlistPath": "~/wordlist.txt",
+	"wordlistPath": "wordlist.txt",
+	"hashlistPath": "hashlist.txt",
 	"hashFunction": "sha256",
 	"apiPort": 2725,
 	"passwordQueueBuffer": 10000,
