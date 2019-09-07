@@ -6,5 +6,5 @@
 	"passwordQueueBuffer": 43,
 	"hashQueueBuffer": 44,
 	"flushToFile": true,
-	"hashPath": "test/path/to/hashFile"
+	"computedHashOverflowPath": "test/path/to/hashFile"
 }

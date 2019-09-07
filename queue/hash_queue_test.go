@@ -53,7 +53,7 @@ func TestFlushSize(t *testing.T) {
 	testPath := "hash_test.txt"
 	os.Create(testPath)
 
-	config := config.ServerConfig{HashPath: testPath, HashQueueBuffer: 1, FlushToFile: false}
+	config := config.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: false}
 	q := NewHashQueue(&config)
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
@@ -73,7 +73,7 @@ func TestFlushToFileSuccess(t *testing.T) {
 	f, err := os.Create(testPath)
 	f.Close()
 
-	config := config.ServerConfig{HashPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
+	config := config.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
 	q := NewHashQueue(&config)
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
@@ -91,7 +91,7 @@ func TestFlushToFileSuccess(t *testing.T) {
 func TestFlushToFileError(t *testing.T) {
 	testPath := "hash_test.txt"
 
-	config := config.ServerConfig{HashPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
+	config := config.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
 	q := NewHashQueue(&config)
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"

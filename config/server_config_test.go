@@ -82,12 +82,12 @@ func TestParseFlushToFile(t *testing.T) {
 	}
 }
 
-func TestParseHashPath(t *testing.T) {
+func TestParseComputedHashOverflowPath(t *testing.T) {
 	config := ServerConfig{}
 	config.parseConfig("server_config_test.json")
 	
 	expected := "test/path/to/hashFile"
-	actual := config.HashPath
+	actual := config.ComputedHashOverflowPath
 	if strings.Compare(expected, actual) != 0 {
 		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
 	}
