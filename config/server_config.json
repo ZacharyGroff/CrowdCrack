@@ -6,5 +6,5 @@
 	"passwordQueueBuffer": 10000,
 	"hashQueueBuffer": 10000,
 	"flushToFile": true,
-	"hashPath": "overflow/hashes.txt"
+	"computedHashOverflowPath": "overflow/hashes.txt"
 }
