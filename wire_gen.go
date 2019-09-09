@@ -9,6 +9,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/api"
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/encoder"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
 	"github.com/ZacharyGroff/CrowdCrack/server"
@@ -19,14 +20,17 @@ import (
 
 func InitializeClient() client.Client {
 	clientConfig := config.NewClientConfig()
-	clientClient := client.NewClient(clientConfig)
+	hashQueue := queue.NewClientHashQueue(clientConfig)
+	passwordQueue := queue.NewClientPasswordQueue(clientConfig)
+	hasher := encoder.NewHasher(clientConfig, hashQueue, passwordQueue)
+	clientClient := client.NewClient(clientConfig, hasher)
 	return clientClient
 }
 
 func InitializeServer() server.Server {
 	serverConfig := config.NewServerConfig()
-	passwordQueue := queue.NewPasswordQueue(serverConfig)
-	hashQueue := queue.NewHashQueue(serverConfig)
+	passwordQueue := queue.NewServerPasswordQueue(serverConfig)
+	hashQueue := queue.NewServerHashQueue(serverConfig)
 	apiApi := api.NewApi(serverConfig, passwordQueue, hashQueue)
 	wordlistReader := reader.NewWordlistReader(serverConfig, passwordQueue)
 	hashlistReader := reader.NewHashlistReader(serverConfig)
