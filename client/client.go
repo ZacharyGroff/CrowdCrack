@@ -3,14 +3,16 @@ package client
 import (
 	"log"
 	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/encoder"
 )
 
 type Client struct {
 	config *config.ClientConfig
+	encoder encoder.Encoder
 }
 
-func NewClient(c *config.ClientConfig) Client {
-	return Client{c}
+func NewClient(c *config.ClientConfig, e *encoder.Hasher) Client {
+	return Client{c, e}
 }
 
 func (client Client) Start() {
