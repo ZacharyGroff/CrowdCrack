@@ -8,12 +8,17 @@ import (
 
 type PasswordQueue struct {
 	passwords chan string
-	config *config.ServerConfig
+	config config.QueueConfig
 }
 
-func NewPasswordQueue(config *config.ServerConfig) *PasswordQueue {
-	passwords := make(chan string, config.PasswordQueueBuffer)
-	return &PasswordQueue{passwords, config}
+func NewServerPasswordQueue(config *config.ServerConfig) *PasswordQueue {
+	passwords := make(chan string, config.GetPasswordQueueBuffer())
+	return &PasswordQueue{passwords, *config}
+}
+
+func NewClientPasswordQueue(config *config.ClientConfig) *PasswordQueue {
+	passwords := make(chan string, config.GetPasswordQueueBuffer())
+	return &PasswordQueue{passwords, *config}
 }
 
 func (q PasswordQueue) Size() int {

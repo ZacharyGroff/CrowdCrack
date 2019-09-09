@@ -10,12 +10,17 @@ import (
 
 type HashQueue struct {
 	hashes chan string
-	config *config.ServerConfig
+	config config.QueueConfig
 }
 
-func NewHashQueue(config *config.ServerConfig) *HashQueue {
-	hashes := make(chan string, config.HashQueueBuffer)
-	return &HashQueue{hashes, config}
+func NewServerHashQueue(config *config.ServerConfig) *HashQueue {
+	hashes := make(chan string, config.GetHashQueueBuffer())
+	return &HashQueue{hashes, *config}
+}
+
+func NewClientHashQueue(config *config.ClientConfig) *HashQueue {
+	hashes := make(chan string, config.GetHashQueueBuffer())
+	return &HashQueue{hashes, *config}
 }
 
 func (q HashQueue) Size() int {
@@ -45,7 +50,7 @@ func (q HashQueue) Put(hash string) error {
 }
 
 func (q HashQueue) Flush() error {
-	if q.config.FlushToFile {
+	if q.config.GetFlushToFile() {
 		return q.flushToFile()
 	}
 	_, err := q.emptyChannel()
@@ -54,7 +59,7 @@ func (q HashQueue) Flush() error {
 }
 
 func (q HashQueue) flushToFile() error {
-	file, err := os.OpenFile(q.config.ComputedHashOverflowPath, os.O_WRONLY, os.ModePerm)
+	file, err := os.OpenFile(q.config.GetComputedHashOverflowPath(), os.O_WRONLY, os.ModePerm)
 	if err != nil {
 		return err
 	}
