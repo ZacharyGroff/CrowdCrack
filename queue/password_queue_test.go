@@ -7,7 +7,7 @@ import (
 
 func TestPutSuccess(t *testing.T) {
 	config := config.ServerConfig{PasswordQueueBuffer: 1}	
-	q := NewPasswordQueue(&config)
+	q := NewServerPasswordQueue(&config)
 	password := "hunter2"
 	err := q.Put(password)
 	if err != nil {
@@ -17,7 +17,7 @@ func TestPutSuccess(t *testing.T) {
 
 func TestPutError(t *testing.T) {
 	config := config.ServerConfig{PasswordQueueBuffer: 0}	
-	q := NewPasswordQueue(&config)
+	q := NewServerPasswordQueue(&config)
 	password := "hunter2"
 	err := q.Put(password)
 	if err == nil {
@@ -28,7 +28,7 @@ func TestPutError(t *testing.T) {
 func TestGetSuccess(t *testing.T) {
 	expected := "hunter2"
 	config := config.ServerConfig{PasswordQueueBuffer: 1}	
-	q := NewPasswordQueue(&config)
+	q := NewServerPasswordQueue(&config)
 	q.Put(expected)
 
 	actual, _ := q.Get()
@@ -39,7 +39,7 @@ func TestGetSuccess(t *testing.T) {
 
 func TestGetError(t *testing.T) {
 	config := config.ServerConfig{PasswordQueueBuffer: 0}
-	q := NewPasswordQueue(&config)
+	q := NewServerPasswordQueue(&config)
 
 	_, err := q.Get()
 	if err == nil {
@@ -51,7 +51,7 @@ func TestSizeZero(t *testing.T) {
 	expected := 0
 
 	config := config.ServerConfig{PasswordQueueBuffer: 5}
-	q := NewPasswordQueue(&config)
+	q := NewServerPasswordQueue(&config)
 	actual := q.Size()
 
 	if expected != actual {
@@ -63,7 +63,7 @@ func TestSizeNotZero(t *testing.T) {
 	expected := 2
 
 	config := config.ServerConfig{PasswordQueueBuffer: 5}
-	q := NewPasswordQueue(&config)
+	q := NewServerPasswordQueue(&config)
 	password := "hunter2"
 
 	q.Put(password)

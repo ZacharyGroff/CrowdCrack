@@ -9,7 +9,7 @@ import (
 
 func TestPutHashSuccess(t *testing.T) {
 	config := config.ServerConfig{HashQueueBuffer: 1}	
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	err := q.Put(hash)
 	if err != nil {
@@ -19,7 +19,7 @@ func TestPutHashSuccess(t *testing.T) {
 
 func TestPutHashError(t *testing.T) {
 	config := config.ServerConfig{HashQueueBuffer: 0}	
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	err := q.Put(hash)
 	if err == nil {
@@ -30,7 +30,7 @@ func TestPutHashError(t *testing.T) {
 func TestGetHashSuccess(t *testing.T) {
 	expected := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	config := config.ServerConfig{HashQueueBuffer: 1}	
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 	q.Put(expected)
 
 	actual, _ := q.Get()
@@ -41,7 +41,7 @@ func TestGetHashSuccess(t *testing.T) {
 
 func TestGetHashError(t *testing.T) {
 	config := config.ServerConfig{HashQueueBuffer: 0}
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 
 	_, err := q.Get()
 	if err == nil {
@@ -54,7 +54,7 @@ func TestFlushSize(t *testing.T) {
 	os.Create(testPath)
 
 	config := config.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: false}
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
@@ -74,7 +74,7 @@ func TestFlushToFileSuccess(t *testing.T) {
 	f.Close()
 
 	config := config.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
@@ -92,7 +92,7 @@ func TestFlushToFileError(t *testing.T) {
 	testPath := "hash_test.txt"
 
 	config := config.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
@@ -105,7 +105,7 @@ func TestFlushToFileError(t *testing.T) {
 
 func TestFlushWithoutFileSuccess(t *testing.T) {
 	config := config.ServerConfig{HashQueueBuffer: 1, FlushToFile: false}
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
@@ -120,7 +120,7 @@ func TestSizeZeroHashes(t *testing.T) {
 	expected := 0
 
 	config := config.ServerConfig{HashQueueBuffer: 5}
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 	actual := q.Size()
 
 	if expected != actual {
@@ -132,7 +132,7 @@ func TestSizeNotZeroHashes(t *testing.T) {
 	expected := 2
 
 	config := config.ServerConfig{HashQueueBuffer: 5}
-	q := NewHashQueue(&config)
+	q := NewServerHashQueue(&config)
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
