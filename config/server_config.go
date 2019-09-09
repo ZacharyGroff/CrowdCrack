@@ -29,6 +29,22 @@ func NewServerConfig() *ServerConfig {
 	return &config
 }
 
+func (c ServerConfig) GetHashQueueBuffer() uint64 {
+	return c.HashQueueBuffer
+}
+
+func (c ServerConfig) GetPasswordQueueBuffer() uint64 {
+	return c.PasswordQueueBuffer
+}
+
+func (c ServerConfig) GetFlushToFile() bool {
+	return c.FlushToFile
+}
+
+func (c ServerConfig) GetComputedHashOverflowPath() string {
+	return c.ComputedHashOverflowPath
+}
+
 func (c *ServerConfig) parseConfig(path string) error {
 	file, err := os.Open(path)
 	defer file.Close()

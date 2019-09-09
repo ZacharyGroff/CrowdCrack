@@ -9,15 +9,10 @@ import (
 
 type ClientConfig struct {
 	ServerAddress string `json:"serverAddress"`
-}
-
-func (c *ClientConfig) parseConfig(path string) error {
-	file, err := os.Open(path)
-	defer file.Close()
-	byteValue, _ := ioutil.ReadAll(file)
-	json.Unmarshal(byteValue, &c)
-	
-	return err
+	HashQueueBuffer uint64 `json:"hashQueueBuffer"`
+	PasswordQueueBuffer uint64 `json:"passwordQueueBuffer"`
+	FlushToFile bool `json:"flushToFile"`
+	ComputedHashOverflowPath string `json:"computedHashOverflowPath"`	
 }
 
 func NewClientConfig() *ClientConfig {
@@ -29,4 +24,29 @@ func NewClientConfig() *ClientConfig {
 	}
 	
 	return &config
+}
+
+func (c ClientConfig) GetHashQueueBuffer() uint64 {
+	return c.HashQueueBuffer
+}
+
+func (c ClientConfig) GetPasswordQueueBuffer() uint64 {
+	return c.PasswordQueueBuffer
+}
+
+func (c ClientConfig) GetFlushToFile() bool {
+	return c.FlushToFile
+}
+
+func (c ClientConfig) GetComputedHashOverflowPath() string {
+	return c.ComputedHashOverflowPath
+}
+
+func (c *ClientConfig) parseConfig(path string) error {
+	file, err := os.Open(path)
+	defer file.Close()
+	byteValue, _ := ioutil.ReadAll(file)
+	json.Unmarshal(byteValue, &c)
+	
+	return err
 }
