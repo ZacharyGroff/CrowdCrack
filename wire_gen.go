@@ -12,7 +12,9 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
+	"github.com/ZacharyGroff/CrowdCrack/requester"
 	"github.com/ZacharyGroff/CrowdCrack/server"
+	"github.com/ZacharyGroff/CrowdCrack/submitter"
 	"github.com/ZacharyGroff/CrowdCrack/verifier"
 )
 
@@ -23,7 +25,9 @@ func InitializeClient() client.Client {
 	hashQueue := queue.NewClientHashQueue(clientConfig)
 	passwordQueue := queue.NewClientPasswordQueue(clientConfig)
 	hasher := encoder.NewHasher(clientConfig, hashQueue, passwordQueue)
-	clientClient := client.NewClient(clientConfig, hasher)
+	passwordRequester := requester.NewPasswordRequester(clientConfig, passwordQueue)
+	hashSubmitter := submitter.NewHashSubmitter(clientConfig, hashQueue)
+	clientClient := client.NewClient(clientConfig, hasher, passwordRequester, hashSubmitter)
 	return clientClient
 }
 

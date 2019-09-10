@@ -10,12 +10,14 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
+	"github.com/ZacharyGroff/CrowdCrack/requester"
 	"github.com/ZacharyGroff/CrowdCrack/server"
+	"github.com/ZacharyGroff/CrowdCrack/submitter"
 	"github.com/ZacharyGroff/CrowdCrack/verifier"
 )
 
 func InitializeClient() client.Client {
-	wire.Build(client.NewClient, encoder.NewHasher, queue.NewClientPasswordQueue, queue.NewClientHashQueue, config.NewClientConfig)
+	wire.Build(client.NewClient, encoder.NewHasher, requester.NewPasswordRequester, submitter.NewHashSubmitter, queue.NewClientPasswordQueue, queue.NewClientHashQueue, config.NewClientConfig)
 	return client.Client{}
 }
 
