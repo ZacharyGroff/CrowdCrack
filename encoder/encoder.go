@@ -1,5 +1,9 @@
 package encoder
 
+import (
+	"hash"
+)
+
 type Encoder interface {
-	Encode() error
+	Encode(hash.Hash) error
 }
