@@ -49,29 +49,21 @@ func (a Api) retrieveHashes(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a Api) sendPasswords(w http.ResponseWriter, r *http.Request) {
-	var passwordRequest PasswordRequest
+	var numPasswords uint64
 	decoder := json.NewDecoder(r.Body)
 
-	err := decoder.Decode(&passwordRequest)
+	err := decoder.Decode(&numPasswords)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	numPasswords := a.getNumPasswords(passwordRequest)
+	if uint64(a.Passwords.Size()) < numPasswords {
+		numPasswords = uint64(a.Passwords.Size())
+	}
+
 	passwords := a.getPasswords(numPasswords)
 
 	json.NewEncoder(w).Encode(passwords)
-}
-
-func (a Api) getNumPasswords(p PasswordRequest) uint64 {
-	var numPasswords uint64
-	if uint64(a.Passwords.Size()) < p.NumPasswords {
-		numPasswords = uint64(a.Passwords.Size())
-	} else {
-		numPasswords = p.NumPasswords
-	}
-
-	return numPasswords
 }
 
 func (a Api) getPasswords(n uint64) []string {
