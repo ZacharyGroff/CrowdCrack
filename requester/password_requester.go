@@ -3,6 +3,7 @@ package requester
 import (
 	"fmt"
 	"hash"
+	"strings"
 	"crypto/sha256"
 	"encoding/json"
 	"net/http"
@@ -28,13 +29,16 @@ func getSupportedHashes() map[string]hash.Hash {
 }
 
 func (p PasswordRequester) Request() (hash.Hash, error) {
-	hash, err := p.requestHash()
+	hash, err := p.getHash()
 
 	if err != nil {
 		return nil, err
 	}
 
-	passwords, err := 
+	passwords, err := p.getPasswords() 
+	for _, password := range passwords {
+		p.passwords.Put(password)
+	}
 
 	return hash, nil
 }
@@ -42,7 +46,7 @@ func (p PasswordRequester) Request() (hash.Hash, error) {
 func (p PasswordRequester) getHash() (hash.Hash, error) {
 	hashName, err := p.requestHashName()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	currentHash, isSupported := p.supportedHashes[hashName]
@@ -54,10 +58,10 @@ func (p PasswordRequester) getHash() (hash.Hash, error) {
 }
 
 func (p PasswordRequester) requestHashName() (string, error) {
-	address := p.config.ServerAddress + "/current-hash"
-	r, err := http.Get(address)
+	url := p.config.ServerAddress + "/current-hash"
+	r, err := http.Get(url)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer r.Body.Close()
 
@@ -66,4 +70,21 @@ func (p PasswordRequester) requestHashName() (string, error) {
 	err = decoder.Decode(&hashName)
 
 	return hashName, err
+}
+
+func (p PasswordRequester) getPasswords() ([]string, error) {
+	url := p.config.ServerAddress + "/passwords"
+	numPasswords := strings.NewReader("1000")
+
+	var passwords []string
+	r, err := http.Post(url, "text/plain", numPasswords)
+	if err != nil {
+		return passwords, err
+	}
+	defer r.Body.Close()
+
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode (&passwords)
+
+	return passwords, err
 }
