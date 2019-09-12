@@ -31,7 +31,7 @@ func (q PasswordQueue) Get() (string, error) {
 		case password := <- q.passwords:
 			return password, nil
 		default:
-			err := errors.New("No Urls in queue.")
+			err := errors.New("No passwords in queue.")
 			return "", err
 		}
 	}

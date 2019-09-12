@@ -33,7 +33,7 @@ func (q HashQueue) Get() (string, error) {
 		case hash := <- q.hashes:
 			return hash, nil
 		default:
-			err := errors.New("No Urls in queue.")
+			err := errors.New("No hashes in queue.")
 			return "", err
 		}
 	}
