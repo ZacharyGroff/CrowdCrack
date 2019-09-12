@@ -5,7 +5,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/config"
 )
 
-func TestPutSuccess(t *testing.T) {
+func TestPutPasswordSuccess(t *testing.T) {
 	config := config.ServerConfig{PasswordQueueBuffer: 1}	
 	q := NewServerPasswordQueue(&config)
 	password := "hunter2"
@@ -15,7 +15,7 @@ func TestPutSuccess(t *testing.T) {
 	}
 }
 
-func TestPutError(t *testing.T) {
+func TestPutPasswordError(t *testing.T) {
 	config := config.ServerConfig{PasswordQueueBuffer: 0}	
 	q := NewServerPasswordQueue(&config)
 	password := "hunter2"
@@ -25,7 +25,7 @@ func TestPutError(t *testing.T) {
 	}
 }
 
-func TestGetSuccess(t *testing.T) {
+func TestGetPasswordSuccess(t *testing.T) {
 	expected := "hunter2"
 	config := config.ServerConfig{PasswordQueueBuffer: 1}	
 	q := NewServerPasswordQueue(&config)
@@ -37,7 +37,7 @@ func TestGetSuccess(t *testing.T) {
 	}
 }
 
-func TestGetError(t *testing.T) {
+func TestGetPasswordError(t *testing.T) {
 	config := config.ServerConfig{PasswordQueueBuffer: 0}
 	q := NewServerPasswordQueue(&config)
 
@@ -47,7 +47,7 @@ func TestGetError(t *testing.T) {
 	}
 }
 
-func TestSizeZero(t *testing.T) {
+func TestSizeZeroPasswords(t *testing.T) {
 	expected := 0
 
 	config := config.ServerConfig{PasswordQueueBuffer: 5}
@@ -59,7 +59,7 @@ func TestSizeZero(t *testing.T) {
 	}
 }
 
-func TestSizeNotZero(t *testing.T) {
+func TestSizeNotZeroPasswords(t *testing.T) {
 	expected := 2
 
 	config := config.ServerConfig{PasswordQueueBuffer: 5}
