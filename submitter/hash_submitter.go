@@ -8,10 +8,11 @@ import (
 type HashSubmitter struct {
 	config *config.ClientConfig
 	hashes queue.FlushingQueue
+	submissionQueue queue.SubmissionQueue
 }
 
-func NewHashSubmitter(c *config.ClientConfig, q *queue.HashQueue) *HashSubmitter {
-	return &HashSubmitter{c, q}
+func NewHashSubmitter(c *config.ClientConfig, q *queue.HashQueue, s *queue.HashingSubmissionQueue) *HashSubmitter {
+	return &HashSubmitter{c, q, s}
 }
 
 func (h HashSubmitter) Submit() error {

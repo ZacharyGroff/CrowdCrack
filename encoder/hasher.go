@@ -11,10 +11,12 @@ type Hasher struct {
 	config *config.ClientConfig
  	hashes queue.FlushingQueue
 	passwords queue.Queue
+	requestQueue queue.RequestQueue
+	submissionQueue queue.SubmissionQueue
 }
 
-func NewHasher(c *config.ClientConfig, h *queue.HashQueue, p *queue.PasswordQueue) *Hasher {
-	return &Hasher{c, h, p}
+func NewHasher(c *config.ClientConfig, h *queue.HashQueue, p *queue.PasswordQueue, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
+	return &Hasher{c, h, p, r, s}
 }
 
 func (e Hasher) Encode(h hash.Hash) error {

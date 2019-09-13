@@ -15,11 +15,12 @@ type PasswordRequester struct {
 	config *config.ClientConfig
 	passwords queue.Queue
 	supportedHashes map[string]hash.Hash
+	requestQueue queue.RequestQueue
 }
 
-func NewPasswordRequester(c *config.ClientConfig, q *queue.PasswordQueue) *PasswordRequester {
+func NewPasswordRequester(c *config.ClientConfig, q *queue.PasswordQueue, r *queue.HashingRequestQueue) *PasswordRequester {
 	s := getSupportedHashes()
-	return &PasswordRequester{c, q, s}
+	return &PasswordRequester{c, q, s, r}
 }
 
 func getSupportedHashes() map[string]hash.Hash {
