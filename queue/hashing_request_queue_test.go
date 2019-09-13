@@ -48,27 +48,3 @@ func TestGetHashingRequestError(t *testing.T) {
 		t.Error("Expected error but nil returned")
 	}
 }
-
-func TestSizeZeroHashingRequests(t *testing.T) {
-	expected := 0	
-	q := NewHashingRequestQueue()
-	actual := q.Size()
-
-	if expected != actual {
-		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
-	}
-}
-
-func TestSizeNotZeroHashingRequests(t *testing.T) {
-	expected := 2
-
-	request := models.HashingRequest{sha256.New(), 5}
-	q := NewHashingRequestQueue()
-	q.Put(request)
-	q.Put(request)
-
-	actual := q.Size()
-	if expected != actual {
-		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)	
-	}
-}
