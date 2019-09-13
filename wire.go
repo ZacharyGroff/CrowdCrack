@@ -17,7 +17,7 @@ import (
 )
 
 func InitializeClient() client.Client {
-	wire.Build(client.NewClient, encoder.NewHasher, requester.NewPasswordRequester, submitter.NewHashSubmitter, queue.NewClientPasswordQueue, queue.NewClientHashQueue, config.NewClientConfig)
+	wire.Build(client.NewClient, encoder.NewHasher, requester.NewPasswordRequester, submitter.NewHashSubmitter, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, queue.NewClientPasswordQueue, queue.NewClientHashQueue, config.NewClientConfig)
 	return client.Client{}
 }
 
