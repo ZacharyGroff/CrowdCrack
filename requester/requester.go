@@ -5,5 +5,5 @@ import (
 )
 
 type Requester interface {
-	Request() (hash.Hash, error)
+	Request() error
 }

@@ -5,5 +5,5 @@ import (
 )
 
 type Encoder interface {
-	Encode(hash.Hash) error
+	Encode() error
 }
