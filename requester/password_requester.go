@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 )
 
@@ -29,19 +30,24 @@ func getSupportedHashes() map[string]hash.Hash {
 	}
 }
 
-func (p PasswordRequester) Request() (hash.Hash, error) {
+func (p PasswordRequester) Request() error {
 	hash, err := p.getHash()
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	passwords, err := p.getPasswords() 
+	passwords, err := p.getPasswords()
+
+	numPasswords := uint64(len(passwords))
+	hashingRequest := models.HashingRequest{hash, numPasswords}
+	p.requestQueue.Put(hashingRequest)
+
 	for _, password := range passwords {
 		p.passwords.Put(password)
 	}
 
-	return hash, nil
+	return nil
 }
 
 func (p PasswordRequester) getHash() (hash.Hash, error) {
