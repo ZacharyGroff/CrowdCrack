@@ -1,7 +1,6 @@
 package encoder
 
 import (
-	"hash"
 	"log"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
@@ -19,7 +18,7 @@ func NewHasher(c *config.ClientConfig, h *queue.HashQueue, p *queue.PasswordQueu
 	return &Hasher{c, h, p, r, s}
 }
 
-func (e Hasher) Encode(h hash.Hash) error {
+func (e Hasher) Encode() error {
 	log.Println("Starting encoding...")
 	return nil
 }
