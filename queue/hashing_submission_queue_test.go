@@ -4,6 +4,30 @@ import (
 	"testing"
 )
 
+func TestSizeHashingSubmissionZero(t *testing.T) {
+	expected := 0
+	q := NewHashingSubmissionQueue()
+	
+	actual := q.Size()
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestSizeHashingSubmissionNotZero(t *testing.T) {
+	expected := 2
+	submission := uint64(42)
+	q := NewHashingSubmissionQueue()
+	q.Put(submission)
+	q.Put(submission)
+	
+	actual := q.Size()
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+
 func TestPutHashingSubmissionSuccess(t *testing.T) {
 	submission := uint64(42)
 	q := NewHashingSubmissionQueue()
