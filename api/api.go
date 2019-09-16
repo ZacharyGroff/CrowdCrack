@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 )
 
@@ -33,7 +34,7 @@ func (a Api) getHashName(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a Api) retrieveHashes(w http.ResponseWriter, r *http.Request) {
-	var hashSubmission HashSubmission
+	var hashSubmission models.HashSubmission
 	decoder := json.NewDecoder(r.Body)
 
 	err := decoder.Decode(&hashSubmission)

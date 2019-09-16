@@ -1,4 +1,4 @@
-package api
+package models
 
 type HashSubmission struct {
 	HashType string `json:"hashType"`
