@@ -15,6 +15,10 @@ func NewHashingRequestQueue() *HashingRequestQueue {
 	return &HashingRequestQueue{r}
 }
 
+func (q HashingRequestQueue) Size() int {
+	return len(q.requests)
+}
+
 func (q HashingRequestQueue) Get() (models.HashingRequest, error) {
 	for {
 		select {

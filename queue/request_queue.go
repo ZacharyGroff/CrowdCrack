@@ -5,6 +5,7 @@ import (
 )
 
 type RequestQueue interface {
+	Size() int
 	Get() (models.HashingRequest, error)
 	Put(models.HashingRequest) error
 }
