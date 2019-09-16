@@ -14,6 +14,10 @@ func NewHashingSubmissionQueue() *HashingSubmissionQueue{
 	return &HashingSubmissionQueue{s}
 }
 
+func (q HashingSubmissionQueue) Size() int {
+	return len(q.submissions)
+}
+
 func (q HashingSubmissionQueue) Get() (uint64, error) {
 	for {
 		select{
