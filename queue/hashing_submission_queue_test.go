@@ -1,7 +1,9 @@
 package queue
 
 import (
+	"reflect"
 	"testing"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 func TestSizeHashingSubmissionZero(t *testing.T) {
@@ -16,7 +18,7 @@ func TestSizeHashingSubmissionZero(t *testing.T) {
 
 func TestSizeHashingSubmissionNotZero(t *testing.T) {
 	expected := 2
-	submission := uint64(42)
+	submission := models.HashSubmission{}
 	q := NewHashingSubmissionQueue()
 	q.Put(submission)
 	q.Put(submission)
@@ -29,7 +31,7 @@ func TestSizeHashingSubmissionNotZero(t *testing.T) {
 
 
 func TestPutHashingSubmissionSuccess(t *testing.T) {
-	submission := uint64(42)
+	submission := models.HashSubmission{}
 	q := NewHashingSubmissionQueue()
 
 	err := q.Put(submission)
@@ -39,7 +41,7 @@ func TestPutHashingSubmissionSuccess(t *testing.T) {
 }
 
 func TestPutHashingSubmissionError(t *testing.T) {
-	submission := uint64(42)
+	submission := models.HashSubmission{}
 	q := NewHashingSubmissionQueue()
 
 	q.Put(submission)	
@@ -51,14 +53,14 @@ func TestPutHashingSubmissionError(t *testing.T) {
 }
 
 func TestGetHashingSubmissionSuccess(t *testing.T) {
-	expected := uint64(42)
+	expected := models.HashSubmission{"sha256", []string{"result1"}}
 	q := NewHashingSubmissionQueue()
 
 	q.Put(expected)
 	actual, _ := q.Get()
 
-	if expected != actual {
-		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
 	}
 }
 
