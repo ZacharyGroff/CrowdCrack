@@ -1,20 +1,48 @@
 package submitter
 
 import (
+	"bytes"
+	"log"
+	"time"
+	"encoding/json"
+	"net/http"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 )
 
 type HashSubmitter struct {
 	config *config.ClientConfig
-	hashes queue.FlushingQueue
 	submissionQueue queue.SubmissionQueue
 }
 
-func NewHashSubmitter(c *config.ClientConfig, q *queue.HashQueue, s *queue.HashingSubmissionQueue) *HashSubmitter {
-	return &HashSubmitter{c, q, s}
+func NewHashSubmitter(c *config.ClientConfig, q *queue.HashingSubmissionQueue) *HashSubmitter {
+	return &HashSubmitter{c, q}
 }
 
 func (h HashSubmitter) Submit() error {
-	return nil
+	log.Println("Starting HashSubmitter...")
+	for {
+		if h.submissionQueue.Size() > 0 {
+			hashSubmission, err := h.submissionQueue.Get()
+			if err != nil {
+				return err
+			}
+
+			jsonHashSubmission, err := json.Marshal(hashSubmission)
+			if err != nil {
+				return err
+			}		
+
+			response, err := http.Post(h.config.ServerAddress, "application/json", bytes.NewBuffer(jsonHashSubmission))
+			if err != nil {
+				return err
+			}
+
+			log.Println(response)
+		} else {
+			sleepDurationSeconds := time.Duration(60)
+			log.Println("No submissions in queue. HashSubmitter sleeping for %d seconds\n", sleepDurationSeconds)
+			time.Sleep(sleepDurationSeconds * time.Second)
+		}
+	}
 }
