@@ -6,5 +6,5 @@ import (
 
 type HashingRequest struct {
 	Hash hash.Hash
-	NumPasswords uint64
+	Passwords []string
 }
