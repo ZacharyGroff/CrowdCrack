@@ -6,6 +6,29 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
+func TestSizeHashingRequestZero(t *testing.T) {
+	expected := 0
+	q := NewHashingRequestQueue()
+	
+	actual := q.Size()
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestSizeHashingRequestNotZero(t *testing.T) {
+	expected := 2
+	request := models.HashingRequest{sha256.New(), 5}
+	q := NewHashingRequestQueue()
+	q.Put(request)
+	q.Put(request)
+	
+	actual := q.Size()
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
 func TestPutHashingRequestSuccess(t *testing.T) {
 	request := models.HashingRequest{sha256.New(), 5}
 	q := NewHashingRequestQueue()
