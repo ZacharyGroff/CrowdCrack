@@ -8,14 +8,12 @@ import (
 
 type Hasher struct {
 	config *config.ClientConfig
- 	hashes queue.FlushingQueue
-	passwords queue.Queue
 	requestQueue queue.RequestQueue
 	submissionQueue queue.SubmissionQueue
 }
 
-func NewHasher(c *config.ClientConfig, h *queue.HashQueue, p *queue.PasswordQueue, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
-	return &Hasher{c, h, p, r, s}
+func NewHasher(c *config.ClientConfig, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
+	return &Hasher{c, r, s}
 }
 
 func (e Hasher) Encode() error {

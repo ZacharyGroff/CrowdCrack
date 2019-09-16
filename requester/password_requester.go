@@ -14,14 +14,13 @@ import (
 
 type PasswordRequester struct {
 	config *config.ClientConfig
-	passwords queue.Queue
 	supportedHashes map[string]hash.Hash
 	requestQueue queue.RequestQueue
 }
 
-func NewPasswordRequester(c *config.ClientConfig, q *queue.PasswordQueue, r *queue.HashingRequestQueue) *PasswordRequester {
+func NewPasswordRequester(c *config.ClientConfig, r *queue.HashingRequestQueue) *PasswordRequester {
 	s := getSupportedHashes()
-	return &PasswordRequester{c, q, s, r}
+	return &PasswordRequester{c, s, r}
 }
 
 func getSupportedHashes() map[string]hash.Hash {
@@ -39,13 +38,8 @@ func (p PasswordRequester) Request() error {
 
 	passwords, err := p.getPasswords()
 
-	numPasswords := uint64(len(passwords))
-	hashingRequest := models.HashingRequest{hash, numPasswords}
+	hashingRequest := models.HashingRequest{hash, passwords}
 	p.requestQueue.Put(hashingRequest)
-
-	for _, password := range passwords {
-		p.passwords.Put(password)
-	}
 
 	return nil
 }
