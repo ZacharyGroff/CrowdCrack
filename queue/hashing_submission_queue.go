@@ -3,14 +3,15 @@ package queue
 import (
 	"errors"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 type HashingSubmissionQueue struct {
-	submissions chan uint64
+	submissions chan models.HashSubmission
 }
 
 func NewHashingSubmissionQueue() *HashingSubmissionQueue{
-	s := make(chan uint64, 2)
+	s := make(chan models.HashSubmission, 2)
 	return &HashingSubmissionQueue{s}
 }
 
@@ -18,24 +19,24 @@ func (q HashingSubmissionQueue) Size() int {
 	return len(q.submissions)
 }
 
-func (q HashingSubmissionQueue) Get() (uint64, error) {
+func (q HashingSubmissionQueue) Get() (models.HashSubmission, error) {
 	for {
 		select{
 		case submission := <- q.submissions:
 			return submission, nil
 		default:
 			err := errors.New("No submissions in queue.")
-			return 0, err
+			return models.HashSubmission{}, err
 		}
 	}
 }
 
-func (q HashingSubmissionQueue) Put(submission uint64) error {
+func (q HashingSubmissionQueue) Put(submission models.HashSubmission) error {
 	select {
 	case q.submissions <- submission:
 		return nil
 	default:
-		err := fmt.Errorf("No room in buffer. Discarding submission: %d\n", submission)
+		err := fmt.Errorf("No room in buffer. Discarding submission: %+v\n", submission)
 		return err
 	}
 }

@@ -1,7 +1,11 @@
 package queue
 
+import (
+	"github.com/ZacharyGroff/CrowdCrack/models"
+)
+
 type SubmissionQueue interface {
 	Size() int
-	Get() (uint64, error)
-	Put(uint64) error
+	Get() (models.HashSubmission, error)
+	Put(models.HashSubmission) error
 }
