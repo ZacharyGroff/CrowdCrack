@@ -3,7 +3,9 @@ package requester
 import (
 	"fmt"
 	"hash"
+	"log"
 	"strings"
+	"time"
 	"crypto/sha256"
 	"encoding/json"
 	"net/http"
@@ -30,18 +32,41 @@ func getSupportedHashes() map[string]hash.Hash {
 }
 
 func (p PasswordRequester) Request() error {
-	hash, err := p.getHash()
+	for {
+		if p.requestQueue.Size() < 2 { 
+			err := p.addRequestToQueue()
+			if err != nil {
+				return err
+			}
+		} else {
+			p.sleep()
+		}
+	}
 
+	return nil
+}
+
+func (p PasswordRequester) addRequestToQueue() error {
+	hash, err := p.getHash()
 	if err != nil {
 		return err
 	}
 
 	passwords, err := p.getPasswords()
+	if err != nil {
+		return err
+	}
 
 	hashingRequest := models.HashingRequest{hash, passwords}
 	p.requestQueue.Put(hashingRequest)
-
+	
 	return nil
+}
+
+func (p PasswordRequester) sleep() {
+	sleepDurationSeconds := time.Duration(60)
+	log.Printf("Request queue full. Password requester sleeping for %d seconds\n", sleepDurationSeconds)
+	time.Sleep(sleepDurationSeconds * time.Second)
 }
 
 func (p PasswordRequester) getHash() (hash.Hash, error) {
