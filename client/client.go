@@ -21,14 +21,29 @@ func NewClient(c *config.ClientConfig, e *encoder.Hasher, r *requester.PasswordR
 
 func (c Client) Start() {
 	log.Println("Starting Client...")
-	for {
-		hash, err := c.requester.Request()
+	go func() {
+		err := c.requester.Request()
 		if err != nil {
 			log.Println(err)
 		}
-		c.encoder.Encode(hash)
-		c.submitter.Submit()
-	}
+		c.Stop()
+	}()
+	go func() {
+		err := c.encoder.Encode()
+		if err != nil {
+			log.Println(err)
+		}
+		c.Stop()
+	}()
+	go func() {
+		err := c.submitter.Submit()
+		if err != nil {
+			log.Println(err)
+		}
+		c.Stop()
+	}()
+
+	for {}
 }
 
 func (c Client) Stop() {
