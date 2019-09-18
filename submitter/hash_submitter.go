@@ -33,14 +33,12 @@ func (h HashSubmitter) Submit() error {
 				return err
 			}		
 
-			response, err := http.Post(h.config.ServerAddress, "application/json", bytes.NewBuffer(jsonHashSubmission))
+			response, err := http.Post(h.config.ServerAddress + "/hashes", "application/json", bytes.NewBuffer(jsonHashSubmission))
 			if err != nil {
 				return err
 			}
-
-			log.Println(response)
 		} else {
-			sleepDurationSeconds := time.Duration(60)
+			sleepDurationSeconds := time.Duration(5)
 			log.Printf("No submissions in queue. HashSubmitter sleeping for %d seconds\n", sleepDurationSeconds)
 			time.Sleep(sleepDurationSeconds * time.Second)
 		}

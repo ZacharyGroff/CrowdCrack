@@ -43,8 +43,10 @@ func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error
 		return err
 	}
 	
+
+	err = e.submissionQueue.Put(hashSubmission)
 	for err != nil {
-		err = e.submissionQueue.Put(hashSubmission)
+		return err
 	}
 
 	return nil
