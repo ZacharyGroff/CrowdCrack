@@ -43,7 +43,7 @@ func (a Api) retrieveHashes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, hash := range hashSubmission.Results {
-		for a.Hashes.Put(hash) != nil {}
+		for a.Hashes.Put(hash) == nil {}
 	}
 	
 	json.NewEncoder(w).Encode("Submission Successful")
