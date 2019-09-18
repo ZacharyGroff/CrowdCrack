@@ -47,7 +47,7 @@ func (p PasswordRequester) Request() error {
 }
 
 func (p PasswordRequester) addRequestToQueue() error {
-	hash, err := p.getHash()
+	hash, hashName, err := p.getHash()
 	if err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (p PasswordRequester) addRequestToQueue() error {
 		return err
 	}
 
-	hashingRequest := models.HashingRequest{hash, passwords}
+	hashingRequest := models.HashingRequest{hash, hashName, passwords}
 	p.requestQueue.Put(hashingRequest)
 	
 	return nil
@@ -69,18 +69,18 @@ func (p PasswordRequester) sleep() {
 	time.Sleep(sleepDurationSeconds * time.Second)
 }
 
-func (p PasswordRequester) getHash() (hash.Hash, error) {
+func (p PasswordRequester) getHash() (hash.Hash, string, error) {
 	hashName, err := p.requestHashName()
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	currentHash, isSupported := p.supportedHashes[hashName]
 	if !isSupported {
-		return nil, fmt.Errorf("Current hash: %s is unsupported.", hashName)
+		return nil, "", fmt.Errorf("Current hash: %s is unsupported.", hashName)
 	}
 
-	return currentHash, nil
+	return currentHash, hashName, nil
 }
 
 func (p PasswordRequester) requestHashName() (string, error) {
