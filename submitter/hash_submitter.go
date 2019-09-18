@@ -37,6 +37,8 @@ func (h HashSubmitter) Submit() error {
 			if err != nil {
 				return err
 			}
+
+			log.Println(response)
 		} else {
 			sleepDurationSeconds := time.Duration(5)
 			log.Printf("No submissions in queue. HashSubmitter sleeping for %d seconds\n", sleepDurationSeconds)

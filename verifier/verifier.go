@@ -25,14 +25,15 @@ func NewVerifier(c *config.ServerConfig, q *queue.HashQueue, r *reader.HashlistR
 
 func (v Verifier) Verify() {
 	for {
-		hash := v.getNextHash()
+		passwordHash := v.getNextPasswordHash()
+		password, hash := v.parsePasswordHash(passwordHash)
 		if v.isMatch(hash) {
-			v.inform(hash)
+			v.inform(password, hash)
 		}
 	}
 }
 
-func (v Verifier) getNextHash() string {
+func (v Verifier) getNextPasswordHash() string {
 	for {
 		hash, err := v.computedHashes.Get()
 		if err == nil {
@@ -41,16 +42,19 @@ func (v Verifier) getNextHash() string {
 	}	
 }
 
+func (v Verifier) parsePasswordHash(passwordHash string) (string, string) {
+	passwordHashArray := strings.Split(passwordHash, ":")
+	return passwordHashArray[0], passwordHashArray[1]
+}
+
 func (v Verifier) isMatch(hash string) bool {
-	hashAndPassword := strings.Split(hash, ":")
-	hashValue := hashAndPassword[0]
-	if v.userProvidedHashes[hashValue] {
+	if v.userProvidedHashes[hash] {
 		return true
 	}
 
 	return false
 }
 
-func (v Verifier) inform(hash string) {
-	log.Printf("Password Cracked: %s\n", hash)
+func (v Verifier) inform(password string, hash string) {
+	log.Printf("Hash Cracked: %s\nResult: %s\n", hash, password)
 }

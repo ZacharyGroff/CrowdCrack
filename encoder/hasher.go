@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 	"crypto/sha256"
+	"encoding/hex"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
@@ -61,7 +62,8 @@ func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) (models.
 	var passwordHashes []string
 	for _, password := range hashingRequest.Passwords {
 		hash := hashFunction([]byte(password))
-		passwordHash := password + ":" + string(hash[:])
+		humanReadableHash := hex.EncodeToString(hash[:])
+		passwordHash := password + ":" + humanReadableHash
 		passwordHashes = append(passwordHashes, passwordHash)
 	}
 
