@@ -19,7 +19,7 @@ func TestSizeHashingRequestZero(t *testing.T) {
 
 func TestSizeHashingRequestNotZero(t *testing.T) {
 	expected := 2
-	request := models.HashingRequest{sha256.New(), []string{"password1"}}
+	request := models.HashingRequest{sha256.New(), "sha256", []string{"password1"}}
 	q := NewHashingRequestQueue()
 	q.Put(request)
 	q.Put(request)
@@ -31,7 +31,7 @@ func TestSizeHashingRequestNotZero(t *testing.T) {
 }
 
 func TestPutHashingRequestSuccess(t *testing.T) {
-	request := models.HashingRequest{sha256.New(), []string{"password1"}}
+	request := models.HashingRequest{sha256.New(), "sha256", []string{"password1"}}
 	q := NewHashingRequestQueue()
 
 	err := q.Put(request)
@@ -41,7 +41,7 @@ func TestPutHashingRequestSuccess(t *testing.T) {
 }
 
 func TestPutHashingRequestError(t *testing.T) {
-	request := models.HashingRequest{sha256.New(), []string{"password1"}}
+	request := models.HashingRequest{sha256.New(), "sha256", []string{"password1"}}
 	q := NewHashingRequestQueue()
 
 	q.Put(request)
@@ -53,7 +53,7 @@ func TestPutHashingRequestError(t *testing.T) {
 }
 
 func TestGetHashingRequestSuccess(t *testing.T) {
-	expected := models.HashingRequest{sha256.New(), []string{"password1"}}
+	expected := models.HashingRequest{sha256.New(), "sha256", []string{"password1"}}
 	q := NewHashingRequestQueue()
 
 	q.Put(expected)
