@@ -19,7 +19,7 @@ func NewHashSubmitter(c *config.ClientConfig, q *queue.HashingSubmissionQueue) *
 	return &HashSubmitter{c, q}
 }
 
-func (h HashSubmitter) Submit() error {
+func (h HashSubmitter) Start() error {
 	log.Println("Starting HashSubmitter...")
 	for {
 		if h.submissionQueue.Size() > 0 {

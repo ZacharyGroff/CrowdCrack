@@ -21,7 +21,7 @@ func NewHasher(c *config.ClientConfig, r *queue.HashingRequestQueue, s *queue.Ha
 	return &Hasher{c, r, s}
 }
 
-func (e Hasher) Encode() error {
+func (e Hasher) Start() error {
 	log.Println("Starting hasher...")
 	for {
 		hashingRequest, err := e.requestQueue.Get()

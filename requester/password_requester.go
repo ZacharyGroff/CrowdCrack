@@ -31,7 +31,7 @@ func getSupportedHashes() map[string]hash.Hash {
 	}
 }
 
-func (p PasswordRequester) Request() error {
+func (p PasswordRequester) Start() error {
 	for {
 		if p.requestQueue.Size() < 2 { 
 			err := p.addRequestToQueue()
