@@ -38,7 +38,7 @@ func InitializeServer() server.Server {
 	apiApi := api.NewApi(serverConfig, passwordQueue, hashQueue)
 	wordlistReader := reader.NewWordlistReader(serverConfig, passwordQueue)
 	hashlistReader := reader.NewHashlistReader(serverConfig)
-	verifierVerifier := verifier.NewVerifier(serverConfig, hashQueue, hashlistReader)
-	serverServer := server.NewServer(serverConfig, apiApi, wordlistReader, verifierVerifier)
+	hashVerifier := verifier.NewHashVerifier(serverConfig, hashQueue, hashlistReader)
+	serverServer := server.NewServer(serverConfig, apiApi, wordlistReader, hashVerifier)
 	return serverServer
 }

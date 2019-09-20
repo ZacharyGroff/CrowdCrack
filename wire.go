@@ -22,6 +22,6 @@ func InitializeClient() client.Client {
 }
 
 func InitializeServer() server.Server {
-	wire.Build(server.NewServer, api.NewApi, verifier.NewVerifier, reader.NewHashlistReader, reader.NewWordlistReader, queue.NewServerPasswordQueue, queue.NewServerHashQueue, config.NewServerConfig)
+	wire.Build(server.NewServer, api.NewApi, verifier.NewHashVerifier, reader.NewHashlistReader, reader.NewWordlistReader, queue.NewServerPasswordQueue, queue.NewServerHashQueue, config.NewServerConfig)
 	return server.Server{}
 }
