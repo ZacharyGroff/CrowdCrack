@@ -10,12 +10,12 @@ import (
 
 type Server struct {
 	Config *config.ServerConfig
-	Api *api.Api
+	Api api.Api
 	Reader reader.PasswordReader
 	Verifier verifier.Verifier
 }
 
-func NewServer(c *config.ServerConfig, a *api.Api, r *reader.WordlistReader, v *verifier.HashVerifier) Server {
+func NewServer(c *config.ServerConfig, a *api.HashApi, r *reader.WordlistReader, v *verifier.HashVerifier) Server {
 	return Server{c, a, r, v}
 }
 
