@@ -39,6 +39,6 @@ func InitializeServer() server.Server {
 	wordlistReader := reader.NewWordlistReader(serverConfig, passwordQueue)
 	hashlistReader := reader.NewHashlistReader(serverConfig)
 	hashVerifier := verifier.NewHashVerifier(serverConfig, hashQueue, hashlistReader)
-	serverServer := server.NewServer(serverConfig, hashApi, wordlistReader, hashVerifier)
+	serverServer := server.NewServer(hashApi, wordlistReader, hashVerifier)
 	return serverServer
 }
