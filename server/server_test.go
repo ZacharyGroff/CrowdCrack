@@ -3,70 +3,71 @@ package server
 import (
 	"testing"
 	"time"
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
 )
 
 type testObject struct {
 	server *Server
-	mockApi *mockApi
-	mockPasswordReader *mockPasswordReader
-	mockVerifier *mockVerifier	
+	mockApi *mocks.MockApi
+	mockPasswordReader *mocks.MockPasswordReader
+	mockVerifier *mocks.MockVerifier	
 }
 
 func setupServerForNoError() testObject {
-	mockApi := mockApi{0}
-	mockPasswordReader := mockPasswordReader{0, false}
-	mockVerifier := mockVerifier{0}
+	mockApi := mocks.MockApi{0}
+	mockPasswordReader := mocks.NewMockPasswordReader(false)
+	mockVerifier := mocks.MockVerifier{0}
 	server := Server{&mockApi, &mockPasswordReader, &mockVerifier}
 	
 	return testObject{&server, &mockApi, &mockPasswordReader, &mockVerifier}
 }
 
 func setupServerForError() testObject {
-	mockApi := mockApi{0}
-	mockPasswordReader := mockPasswordReader{0, true}
-	mockVerifier := mockVerifier{0}
+	mockApi := mocks.MockApi{0}
+	mockPasswordReader := mocks.NewMockPasswordReader(true)
+	mockVerifier := mocks.MockVerifier{0}
 	server := Server{&mockApi, &mockPasswordReader, &mockVerifier}
 
 	return testObject{&server, &mockApi, &mockPasswordReader, &mockVerifier}
 }
 
-func assertLoadPasswordsCalled(t *testing.T, p *mockPasswordReader) {
+func assertLoadPasswordsCalled(t *testing.T, p *mocks.MockPasswordReader) {
 	expected := uint64(1)
-	actual := p.loadPasswordsCalls 
+	actual := p.LoadPasswordsCalls 
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
 }
 
-func assertVerifyCalled(t *testing.T, v *mockVerifier) {
+func assertVerifyCalled(t *testing.T, v *mocks.MockVerifier) {
 	time.Sleep(100 * time.Millisecond)
 	expected := uint64(1)
-	actual := v.verifyCalls
+	actual := v.VerifyCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
 }
 
-func assertHandleRequestsCalled(t *testing.T, a *mockApi) {
+func assertHandleRequestsCalled(t *testing.T, a *mocks.MockApi) {
 	expected := uint64(1)
-	actual := a.handleRequestsCalls
+	actual := a.HandleRequestsCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
 }
 
-func assertVerifyNotCalled(t *testing.T, v *mockVerifier) {
+func assertVerifyNotCalled(t *testing.T, v *mocks.MockVerifier) {
 	time.Sleep(100 * time.Millisecond)
 	expected := uint64(0)
-	actual := v.verifyCalls
+	actual := v.VerifyCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
 }
 
-func assertHandleRequestsNotCalled(t *testing.T, a *mockApi) {
+func assertHandleRequestsNotCalled(t *testing.T, a *mocks.MockApi) {
 	expected := uint64(0)
-	actual := a.handleRequestsCalls
+	actual := a.HandleRequestsCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}

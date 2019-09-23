@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
 )
 
 func TestLoadPasswordsNoError(t *testing.T) {
@@ -12,7 +13,7 @@ func TestLoadPasswordsNoError(t *testing.T) {
 	setupFile(testPath, passwords)
 
 	config := config.ServerConfig{WordlistPath: testPath}
-	queue := mockQueue{PutCalls: 0}
+	queue := mocks.MockQueue{PutCalls: 0}
 	reader := WordlistReader{config: &config, passwords: &queue}
 
 	err := reader.LoadPasswords()
@@ -28,7 +29,7 @@ func TestLoadPasswordsError(t *testing.T) {
 	testPath := "wordlist_test.txt"
 
 	config := config.ServerConfig{WordlistPath: testPath}
-	queue := mockQueue{PutCalls: 0}
+	queue := mocks.MockQueue{PutCalls: 0}
 	reader := WordlistReader{config: &config, passwords: &queue}
 
 	err := reader.LoadPasswords()
@@ -46,7 +47,7 @@ func TestLoadPasswordsPutNoCalls(t *testing.T) {
 	setupFile(testPath, passwords)
 
 	config := config.ServerConfig{WordlistPath: testPath}
-	queue := mockQueue{PutCalls: 0}
+	queue := mocks.MockQueue{PutCalls: 0}
 	reader := WordlistReader{config: &config, passwords: &queue}
 
 	reader.LoadPasswords()
@@ -67,7 +68,7 @@ func TestLoadPasswordsPutMultipleCalls(t *testing.T) {
 	setupFile(testPath, passwords)
 
 	config := config.ServerConfig{WordlistPath: testPath}
-	queue := mockQueue{PutCalls: 0}
+	queue := mocks.MockQueue{PutCalls: 0}
 	reader := WordlistReader{config: &config, passwords: &queue}
 
 	reader.LoadPasswords()
