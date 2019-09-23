@@ -1,9 +1,9 @@
 package mocks
 
-type mockVerifier struct {
-    verifyCalls uint64
+type MockVerifier struct {
+    VerifyCalls uint64
 }
 
-func (m *mockVerifier) Verify() {
-    m.verifyCalls++
+func (m *MockVerifier) Verify() {
+    m.VerifyCalls++
 }

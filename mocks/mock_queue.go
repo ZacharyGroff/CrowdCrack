@@ -1,18 +1,18 @@
 package mocks
 
-type mockQueue struct {
+type MockQueue struct {
     PutCalls uint64
 }
 
-func (m mockQueue) Size() int {
+func (m MockQueue) Size() int {
     return -1
 }
 
-func (m mockQueue) Get() (string, error) {
+func (m MockQueue) Get() (string, error) {
     return "", nil
 }
 
-func (m *mockQueue) Put(password string) error {
+func (m *MockQueue) Put(password string) error {
     m.PutCalls++
     return nil
 }

@@ -1,9 +1,9 @@
 package mocks
 
-type mockApi struct {
-    handleRequestsCalls uint64
+type MockApi struct {
+    HandleRequestsCalls uint64
 }
 
-func (m *mockApi) HandleRequests() {
-    m.handleRequestsCalls++
+func (m *MockApi) HandleRequests() {
+    m.HandleRequestsCalls++
 }

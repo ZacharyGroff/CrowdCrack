@@ -4,13 +4,17 @@ import (
 	"errors"
 )
 
-type mockPasswordReader struct {
-    loadPasswordsCalls uint64
+type MockPasswordReader struct {
+    LoadPasswordsCalls uint64
     isErrorCall bool
 }
 
-func (m *mockPasswordReader) LoadPasswords() error {
-    m.loadPasswordsCalls++
+func NewMockPasswordReader(isErrorCall bool) MockPasswordReader {
+	return MockPasswordReader{0, isErrorCall}
+}
+
+func (m *MockPasswordReader) LoadPasswords() error {
+    m.LoadPasswordsCalls++
     if m.isErrorCall {
         return errors.New("test error")
     }
