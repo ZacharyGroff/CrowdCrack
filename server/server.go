@@ -21,7 +21,7 @@ func (s Server) Start() {
 	log.Println("Starting Server...")
 	err := s.Reader.LoadPasswords()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	go s.Verifier.Verify()
