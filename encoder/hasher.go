@@ -67,15 +67,10 @@ func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) (models.
 		return models.HashSubmission{}, err
 	}
 
-	var passwordHashes []string
-	for _, password := range hashingRequest.Passwords {
-		passwordHash := getPasswordHash(hashFunction, password)
-		passwordHashes = append(passwordHashes, passwordHash)
-	}
+	passwordHashes := getPasswordHashes(hashFunction, hashingRequest.Passwords)
 
 	return models.HashSubmission{hashingRequest.HashName, passwordHashes}, nil
 }
-
 
 func (e Hasher) getHashFunction(hashName string) (func([]byte) [32]byte, error) {
 	switch hashName {
@@ -92,10 +87,19 @@ func sleep() {
 	time.Sleep(sleepDurationSeconds * time.Second)
 }
 
+func getPasswordHashes(hashFunction func([]byte) [32]byte, passwords []string) []string {
+	var passwordHashes []string
+	for _, password := range passwords {
+		passwordHash := getPasswordHash(hashFunction, password)
+		passwordHashes = append(passwordHashes, passwordHash)
+	}
+
+	return passwordHashes
+}
+
 func getPasswordHash(hashFunction func([]byte) [32]byte, password string) string {
 	hash := hashFunction([]byte(password))
 	humanReadableHash := hex.EncodeToString(hash[:])
 
 	return password + ":" + humanReadableHash
 }
-
