@@ -3,22 +3,32 @@ package encoder
 import (
 	"fmt"
 	"log"
-	"time"
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
+	"github.com/ZacharyGroff/CrowdCrack/waiter"
 )
 
 type Hasher struct {
 	config *config.ClientConfig
 	requestQueue queue.RequestQueue
 	submissionQueue queue.SubmissionQueue
+	waiter waiter.Waiter
 }
 
 func NewHasher(c *config.ClientConfig, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
-	return &Hasher{c, r, s}
+	w := getWaiter()
+	return &Hasher{c, r, s, w}
+}
+
+func getWaiter() waiter.Waiter {
+	sleepDuration := 5
+	isLogging := true
+	logMessage := fmt.Sprintf("No requests in queue. Hasher sleeping for %d seconds", sleepDuration)
+
+	return waiter.NewSleeper(sleepDuration, isLogging, logMessage)
 }
 
 func (e Hasher) Start() error {
@@ -36,7 +46,7 @@ func (e Hasher) Start() error {
 func (e Hasher) processOrSleep() error {
 	hashingRequest, err := e.requestQueue.Get()
 	if err != nil {
-		sleep()
+		e.waiter.Wait()
 	} else {
 		err = e.handleHashingRequest(hashingRequest)
 		if err != nil {
@@ -79,12 +89,6 @@ func (e Hasher) getHashFunction(hashName string) (func([]byte) [32]byte, error) 
 	default:
 		return nil, fmt.Errorf("%s is not a supported hash. If the hash is currently available in golang crypto package, please create a GitHub issue to have support for it added.", hashName)
 	}
-}
-
-func sleep() {
-	sleepDurationSeconds := time.Duration(5)
-	log.Printf("No requests in queue. Hasher sleeping for %d seconds\n", sleepDurationSeconds)
-	time.Sleep(sleepDurationSeconds * time.Second)
 }
 
 func getPasswordHashes(hashFunction func([]byte) [32]byte, passwords []string) []string {
