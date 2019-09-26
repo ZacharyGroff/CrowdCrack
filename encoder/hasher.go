@@ -3,38 +3,57 @@ package encoder
 import (
 	"fmt"
 	"log"
-	"time"
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
+	"github.com/ZacharyGroff/CrowdCrack/waiter"
 )
 
 type Hasher struct {
 	config *config.ClientConfig
 	requestQueue queue.RequestQueue
 	submissionQueue queue.SubmissionQueue
+	waiter waiter.Waiter
 }
 
 func NewHasher(c *config.ClientConfig, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
-	return &Hasher{c, r, s}
+	w := getWaiter()
+	return &Hasher{c, r, s, w}
+}
+
+func getWaiter() waiter.Waiter {
+	sleepDuration := 5
+	isLogging := true
+	logMessage := fmt.Sprintf("No requests in queue. Hasher sleeping for %d seconds", sleepDuration)
+
+	return waiter.NewSleeper(sleepDuration, isLogging, logMessage)
 }
 
 func (e Hasher) Start() error {
 	log.Println("Starting hasher...")
 	for {
-		hashingRequest, err := e.requestQueue.Get()
+		err := e.processOrSleep()
 		if err != nil {
-			e.sleep()
-		} else {
-			err = e.handleHashingRequest(hashingRequest)
-			if err != nil {
-				return err
-			}
+			return err
 		}
 	}
 
+	return nil
+}
+
+func (e Hasher) processOrSleep() error {
+	hashingRequest, err := e.requestQueue.Get()
+	if err != nil {
+		e.waiter.Wait()
+	} else {
+		err = e.handleHashingRequest(hashingRequest)
+		if err != nil {
+			return err
+		}
+	}
+	
 	return nil
 }
 
@@ -44,7 +63,6 @@ func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error
 		return err
 	}
 	
-
 	err = e.submissionQueue.Put(hashSubmission)
 	for err != nil {
 		return err
@@ -59,13 +77,7 @@ func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) (models.
 		return models.HashSubmission{}, err
 	}
 
-	var passwordHashes []string
-	for _, password := range hashingRequest.Passwords {
-		hash := hashFunction([]byte(password))
-		humanReadableHash := hex.EncodeToString(hash[:])
-		passwordHash := password + ":" + humanReadableHash
-		passwordHashes = append(passwordHashes, passwordHash)
-	}
+	passwordHashes := getPasswordHashes(hashFunction, hashingRequest.Passwords)
 
 	return models.HashSubmission{hashingRequest.HashName, passwordHashes}, nil
 }
@@ -79,8 +91,19 @@ func (e Hasher) getHashFunction(hashName string) (func([]byte) [32]byte, error) 
 	}
 }
 
-func (e Hasher) sleep() {
-	sleepDurationSeconds := time.Duration(5)
-	log.Printf("No requests in queue. Hasher sleeping for %d seconds\n", sleepDurationSeconds)
-	time.Sleep(sleepDurationSeconds * time.Second)
+func getPasswordHashes(hashFunction func([]byte) [32]byte, passwords []string) []string {
+	var passwordHashes []string
+	for _, password := range passwords {
+		passwordHash := getPasswordHash(hashFunction, password)
+		passwordHashes = append(passwordHashes, passwordHash)
+	}
+
+	return passwordHashes
+}
+
+func getPasswordHash(hashFunction func([]byte) [32]byte, password string) string {
+	hash := hashFunction([]byte(password))
+	humanReadableHash := hex.EncodeToString(hash[:])
+
+	return password + ":" + humanReadableHash
 }
