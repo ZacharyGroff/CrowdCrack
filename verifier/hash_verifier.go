@@ -3,33 +3,35 @@ package verifier
 import (
 	"log"
 	"strings"
-	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
 )
 
 type HashVerifier struct {
-	config *config.ServerConfig
 	computedHashes queue.FlushingQueue
 	userProvidedHashes map[string]bool
 }
 
-func NewHashVerifier(c *config.ServerConfig, q *queue.HashQueue, r *reader.HashlistReader) *HashVerifier {
+func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader) *HashVerifier {
 	u, err := r.GetHashes()
 	if err != nil {
 		panic(err)
 	}
 
-	return &HashVerifier{c, q, u}
+	return &HashVerifier{q, u}
 }
 
 func (v HashVerifier) Verify() {
 	for {
-		passwordHash := v.getNextPasswordHash()
-		password, hash := v.parsePasswordHash(passwordHash)
-		if v.isMatch(hash) {
-			v.inform(password, hash)
-		}
+		v.verifyNextPasswordHash()
+	}
+}
+
+func (v HashVerifier) verifyNextPasswordHash() {
+	passwordHash := v.getNextPasswordHash()
+	password, hash := v.parsePasswordHash(passwordHash)
+	if v.isMatch(hash) {
+		v.inform(password, hash)
 	}
 }
 
