@@ -15,7 +15,11 @@ type HashVerifier struct {
 
 func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader) *HashVerifier {
 	hashVerifier := HashVerifier{computedHashes: q, hashReader: r}
-	hashVerifier.loadUserProvidedHashes()
+
+	err := hashVerifier.loadUserProvidedHashes()
+	if err != nil {
+		panic(err)
+	}
 
 	return &hashVerifier
 }
@@ -26,12 +30,14 @@ func (v HashVerifier) Verify() {
 	}
 }
 
-func (v HashVerifier) loadUserProvidedHashes() {
+func (v HashVerifier) loadUserProvidedHashes() error {
 	userProvidedHashes, err := v.hashReader.GetHashes()
 	if err != nil {
-		panic(err)
+		return err
 	}
 	v.userProvidedHashes = userProvidedHashes
+
+	return nil
 }
 
 func (v HashVerifier) verifyNextPasswordHash() {
