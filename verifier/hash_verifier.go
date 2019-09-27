@@ -9,22 +9,29 @@ import (
 
 type HashVerifier struct {
 	computedHashes queue.FlushingQueue
+	hashReader reader.HashReader
 	userProvidedHashes map[string]bool
 }
 
 func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader) *HashVerifier {
-	u, err := r.GetHashes()
-	if err != nil {
-		panic(err)
-	}
+	hashVerifier := HashVerifier{computedHashes: q, hashReader: r}
+	hashVerifier.loadUserProvidedHashes()
 
-	return &HashVerifier{q, u}
+	return &hashVerifier
 }
 
 func (v HashVerifier) Verify() {
 	for {
 		v.verifyNextPasswordHash()
 	}
+}
+
+func (v HashVerifier) loadUserProvidedHashes() {
+	userProvidedHashes, err := v.hashReader.GetHashes()
+	if err != nil {
+		panic(err)
+	}
+	v.userProvidedHashes = userProvidedHashes
 }
 
 func (v HashVerifier) verifyNextPasswordHash() {
