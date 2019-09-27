@@ -30,7 +30,7 @@ func (v HashVerifier) Verify() {
 	}
 }
 
-func (v HashVerifier) loadUserProvidedHashes() error {
+func (v *HashVerifier) loadUserProvidedHashes() error {
 	userProvidedHashes, err := v.hashReader.GetHashes()
 	if err != nil {
 		return err
