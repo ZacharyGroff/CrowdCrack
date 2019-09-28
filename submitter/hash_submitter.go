@@ -33,25 +33,40 @@ func getWaiter() waiter.Sleeper {
 func (h HashSubmitter) Start() error {
 	log.Println("Starting HashSubmitter...")
 	for {
-		if h.submissionQueue.Size() > 0 {
-			hashSubmission, err := h.submissionQueue.Get()
-			if err != nil {
-				return err
-			}
-
-			jsonHashSubmission, err := json.Marshal(hashSubmission)
-			if err != nil {
-				return err
-			}		
-
-			response, err := http.Post(h.config.ServerAddress + "/hashes", "application/json", bytes.NewBuffer(jsonHashSubmission))
-			if err != nil {
-				return err
-			}
-
-			log.Println(response)
-		} else {
-			h.waiter.Wait()
+		err := h.processOrSleep()
+		if err != nil {
+			return err
 		}
 	}
+}
+
+func (h HashSubmitter) processOrSleep() error {
+	if h.submissionQueue.Size() > 0 {
+		err := h.processSubmission()
+		if err != nil {
+			return err
+		}
+	} else {
+		h.waiter.Wait()
+	}
+
+	return nil
+}
+
+func (h HashSubmitter) processSubmission() error {
+	hashSubmission, err := h.submissionQueue.Get()
+	if err != nil {
+		return err
+	}
+	jsonHashSubmission, err := json.Marshal(hashSubmission)
+	if err != nil {
+		return err
+	}
+	response, err := http.Post(h.config.ServerAddress+"/hashes", "application/json", bytes.NewBuffer(jsonHashSubmission))
+	if err != nil {
+		return err
+	}
+	log.Println(response)
+	
+	return nil
 }
