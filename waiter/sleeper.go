@@ -11,9 +11,9 @@ type Sleeper struct {
 	logMessage string
 }
 
-func NewSleeper(s int, i bool, l string) Sleeper {
-	d := time.Duration(s) * time.Second
-	return Sleeper{d, i, l}
+func NewSleeper(sleepSeconds int, isLogging bool, logMessage string) Sleeper {
+	sleepDuration := time.Duration(sleepSeconds) * time.Second
+	return Sleeper{sleepDuration, isLogging, logMessage}
 }
 
 func (s Sleeper) Wait() {
