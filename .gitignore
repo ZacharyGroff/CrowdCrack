@@ -1,7 +1,12 @@
 # Our executable
 CrowdCrack
+
+# Text lists
 wordlist.txt
 hashlist.txt
+
+# IDE
+.idea/*
 
 # Binaries for programs and plugins
 *.exe
