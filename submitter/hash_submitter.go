@@ -2,21 +2,32 @@ package submitter
 
 import (
 	"bytes"
-	"log"
-	"time"
 	"encoding/json"
-	"net/http"
+	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
+	"github.com/ZacharyGroff/CrowdCrack/waiter"
+	"log"
+	"net/http"
 )
 
 type HashSubmitter struct {
 	config *config.ClientConfig
 	submissionQueue queue.SubmissionQueue
+	waiter waiter.Waiter
 }
 
 func NewHashSubmitter(c *config.ClientConfig, q *queue.HashingSubmissionQueue) *HashSubmitter {
-	return &HashSubmitter{c, q}
+	w := getWaiter()
+	return &HashSubmitter{c, q, w}
+}
+
+func getWaiter() waiter.Sleeper {
+	sleepSeconds := 5
+	logMessage := fmt.Sprintf("No submissions in queue. HashSubmitter sleeping for %d seconds\n", sleepSeconds)
+	isLogging := true
+	
+	return waiter.NewSleeper(sleepSeconds, isLogging, logMessage)
 }
 
 func (h HashSubmitter) Start() error {
@@ -40,9 +51,7 @@ func (h HashSubmitter) Start() error {
 
 			log.Println(response)
 		} else {
-			sleepDurationSeconds := time.Duration(5)
-			log.Printf("No submissions in queue. HashSubmitter sleeping for %d seconds\n", sleepDurationSeconds)
-			time.Sleep(sleepDurationSeconds * time.Second)
+			h.waiter.Wait()
 		}
 	}
 }
