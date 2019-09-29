@@ -2,13 +2,13 @@ package submitter
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
+	"log"
+	"encoding/json"
+	"net/http"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
-	"log"
-	"net/http"
 )
 
 type HashSubmitter struct {
@@ -67,6 +67,6 @@ func (h HashSubmitter) processSubmission() error {
 		return err
 	}
 	log.Println(response)
-	
+
 	return nil
 }
