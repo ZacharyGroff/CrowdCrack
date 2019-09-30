@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"hash"
 	"log"
-	"strings"
 	"time"
 	"crypto/sha256"
-	"encoding/json"
-	"net/http"
+	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
@@ -16,13 +14,14 @@ import (
 
 type PasswordRequester struct {
 	config *config.ClientConfig
+	client apiclient.ApiClient
 	supportedHashes map[string]hash.Hash
 	requestQueue queue.RequestQueue
 }
 
-func NewPasswordRequester(c *config.ClientConfig, r *queue.HashingRequestQueue) *PasswordRequester {
+func NewPasswordRequester(c *config.ClientConfig, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue) *PasswordRequester {
 	s := getSupportedHashes()
-	return &PasswordRequester{c, s, r}
+	return &PasswordRequester{c,cl, s, r}
 }
 
 func getSupportedHashes() map[string]hash.Hash {
@@ -77,40 +76,31 @@ func (p PasswordRequester) getHash() (hash.Hash, string, error) {
 
 	currentHash, isSupported := p.supportedHashes[hashName]
 	if !isSupported {
-		return nil, "", fmt.Errorf("Current hash: %s is unsupported.", hashName)
+		err = fmt.Errorf("Current hash: %s is unsupported", hashName)
+		return nil, "", err
 	}
 
 	return currentHash, hashName, nil
 }
 
 func (p PasswordRequester) requestHashName() (string, error) {
-	url := p.config.ServerAddress + "/current-hash"
-	r, err := http.Get(url)
-	if err != nil {
+	statusCode, hashName := p.client.GetHashName()
+	if statusCode != 200 {
+		err := fmt.Errorf("Unexpected response from api on hash name request with status code: %d\n", statusCode)
 		return "", err
 	}
-	defer r.Body.Close()
 
-	var hashName string
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&hashName)
-
-	return hashName, err
+	return hashName, nil
 }
 
 func (p PasswordRequester) getPasswords() ([]string, error) {
-	url := p.config.ServerAddress + "/passwords"
-	numPasswords := strings.NewReader("1000")
+	numPasswords := 1000
 
-	var passwords []string
-	r, err := http.Post(url, "text/plain", numPasswords)
-	if err != nil {
+	statusCode, passwords := p.client.GetPasswords(numPasswords)
+	if statusCode != 200 {
+		err := fmt.Errorf("Unexpected response from api on password request with status code: %d\n", statusCode)
 		return passwords, err
 	}
-	defer r.Body.Close()
 
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode (&passwords)
-
-	return passwords, err
+	return passwords, nil
 }
