@@ -13,6 +13,10 @@ type HashApiClient struct {
 	config *config.ClientConfig
 }
 
+func NewHashApiClient(c *config.ClientConfig) *HashApiClient {
+	return &HashApiClient{c}
+}
+
 func (h HashApiClient) GetHashName() (int, string) {
 	url := h.config.ServerAddress + "/current-hash"
 	var hashName string
