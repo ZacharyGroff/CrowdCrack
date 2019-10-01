@@ -13,8 +13,8 @@ type MockApiClient struct {
 	passwordsToReturn []string
 }
 
-func NewMockApiClient(statusCodeToReturn int, hashNameToReturn string, passwordsToReturn []string) *MockApiClient {
-	return &MockApiClient{0, 0, 0, statusCodeToReturn, hashNameToReturn, passwordsToReturn}
+func NewMockApiClient(statusCodeToReturn int, hashNameToReturn string, passwordsToReturn []string) MockApiClient {
+	return MockApiClient{0, 0, 0, statusCodeToReturn, hashNameToReturn, passwordsToReturn}
 }
 
 func (m *MockApiClient) GetHashName() (int, string) {
