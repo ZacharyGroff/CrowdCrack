@@ -28,7 +28,7 @@ func InitializeClient() client.Client {
 	hasher := encoder.NewHasher(clientConfig, hashingRequestQueue, hashingSubmissionQueue)
 	hashApiClient := apiclient.NewHashApiClient(clientConfig)
 	passwordRequester := requester.NewPasswordRequester(clientConfig, hashApiClient, hashingRequestQueue)
-	hashSubmitter := submitter.NewHashSubmitter(clientConfig, hashingSubmissionQueue, hashApiClient)
+	hashSubmitter := submitter.NewHashSubmitter(clientConfig, hashApiClient, hashingSubmissionQueue)
 	clientClient := client.NewClient(clientConfig, hasher, passwordRequester, hashSubmitter)
 	return clientClient
 }
