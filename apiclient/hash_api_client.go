@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 type HashApiClient struct {
@@ -56,7 +57,7 @@ func (h HashApiClient) GetPasswords(numPasswords int) (int, []string) {
 	return response.StatusCode, passwords
 }
 
-func (h HashApiClient) SubmitHashes(hashSubmission []string) int {
+func (h HashApiClient) SubmitHashes(hashSubmission models.HashSubmission) int {
 	url := h.config.ServerAddress + "/hashes"
 
 	jsonHashSubmission, err := json.Marshal(hashSubmission)

@@ -5,6 +5,7 @@ package main
 import (
 	"github.com/google/wire"
 	"github.com/ZacharyGroff/CrowdCrack/api"
+	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
@@ -17,7 +18,7 @@ import (
 )
 
 func InitializeClient() client.Client {
-	wire.Build(client.NewClient, encoder.NewHasher, requester.NewPasswordRequester, submitter.NewHashSubmitter, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, config.NewClientConfig)
+	wire.Build(client.NewClient, encoder.NewHasher, requester.NewPasswordRequester, submitter.NewHashSubmitter, apiclient.NewHashApiClient, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, config.NewClientConfig)
 	return client.Client{}
 }
 

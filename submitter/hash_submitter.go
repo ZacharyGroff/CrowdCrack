@@ -1,11 +1,9 @@
 package submitter
 
 import (
-	"bytes"
 	"fmt"
 	"log"
-	"encoding/json"
-	"net/http"
+	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
@@ -13,13 +11,14 @@ import (
 
 type HashSubmitter struct {
 	config *config.ClientConfig
+	client apiclient.ApiClient
 	submissionQueue queue.SubmissionQueue
 	waiter waiter.Waiter
 }
 
-func NewHashSubmitter(c *config.ClientConfig, q *queue.HashingSubmissionQueue) *HashSubmitter {
+func NewHashSubmitter(c *config.ClientConfig, cl *apiclient.HashApiClient, q *queue.HashingSubmissionQueue) *HashSubmitter {
 	w := getWaiter()
-	return &HashSubmitter{c, q, w}
+	return &HashSubmitter{c, cl, q, w}
 }
 
 func getWaiter() waiter.Sleeper {
@@ -58,15 +57,11 @@ func (h HashSubmitter) processSubmission() error {
 	if err != nil {
 		return err
 	}
-	jsonHashSubmission, err := json.Marshal(hashSubmission)
-	if err != nil {
-		return err
+
+	statusCode := h.client.SubmitHashes(hashSubmission)
+	if statusCode != 200 {
+		return fmt.Errorf("Unexpected response from api on hash submission with status code: %d\n", statusCode)
 	}
-	response, err := http.Post(h.config.ServerAddress+"/hashes", "application/json", bytes.NewBuffer(jsonHashSubmission))
-	if err != nil {
-		return err
-	}
-	log.Println(response)
 
 	return nil
 }

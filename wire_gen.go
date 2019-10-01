@@ -7,6 +7,7 @@ package main
 
 import (
 	"github.com/ZacharyGroff/CrowdCrack/api"
+	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
@@ -25,8 +26,9 @@ func InitializeClient() client.Client {
 	hashingRequestQueue := queue.NewHashingRequestQueue()
 	hashingSubmissionQueue := queue.NewHashingSubmissionQueue()
 	hasher := encoder.NewHasher(clientConfig, hashingRequestQueue, hashingSubmissionQueue)
-	passwordRequester := requester.NewPasswordRequester(clientConfig, hashingRequestQueue)
-	hashSubmitter := submitter.NewHashSubmitter(clientConfig, hashingSubmissionQueue)
+	hashApiClient := apiclient.NewHashApiClient(clientConfig)
+	passwordRequester := requester.NewPasswordRequester(clientConfig, hashApiClient, hashingRequestQueue)
+	hashSubmitter := submitter.NewHashSubmitter(clientConfig, hashApiClient, hashingSubmissionQueue)
 	clientClient := client.NewClient(clientConfig, hasher, passwordRequester, hashSubmitter)
 	return clientClient
 }
