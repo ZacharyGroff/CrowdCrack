@@ -39,7 +39,7 @@ func TestHasherProcessOrSleepProcessSuccess(t *testing.T) {
 	}
 	hashSubmission := models.HashSubmission{}
 	mockRequestQueue := mocks.NewMockRequestQueue(queueError, hashingRequest)
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(queueError,hashSubmission) 
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(queueError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue, submissionQueue: &mockSubmissionQueue}
 	
@@ -98,7 +98,7 @@ func TestHasherProcessOrSleepError(t *testing.T) {
 func TestHasherHandleHashingRequestSuccess(t *testing.T) {
 	submissionQueueError := error(nil)
 	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
 
 	hashingRequest := models.HashingRequest {
@@ -117,7 +117,7 @@ func TestHasherHandleHashingRequestSuccess(t *testing.T) {
 func TestHasherHandleHashingRequestHashSubmissionError(t *testing.T) {
 	submissionQueueError := error(nil)
 	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
 
 	hashingRequest := models.HashingRequest {
@@ -136,7 +136,7 @@ func TestHasherHandleHashingRequestHashSubmissionError(t *testing.T) {
 func TestHasherHandleHashingRequestHashSubmissionErrorSubmissionQueuePutNotCalled(t *testing.T) {
 	submissionQueueError := error(nil)
 	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
 
 	hashingRequest := models.HashingRequest {
@@ -158,7 +158,7 @@ func TestHasherHandleHashingRequestHashSubmissionErrorSubmissionQueuePutNotCalle
 func TestHasherHandleHashingRequestSubmissionQueueError(t *testing.T) {
 	submissionQueueError := errors.New("test error")
 	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
 
 	hashingRequest := models.HashingRequest {
@@ -177,7 +177,7 @@ func TestHasherHandleHashingRequestSubmissionQueueError(t *testing.T) {
 func TestHasherHandleHashingRequestSubmissionQueueErrorPutCalled(t *testing.T) {
 	submissionQueueError := errors.New("test error")
 	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
 
 	hashingRequest := models.HashingRequest {

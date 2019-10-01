@@ -15,7 +15,7 @@ type testObject struct {
 }
 
 func setupHashSubmitterForNoError() testObject {
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{})
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{}, 0)
 	mockApiClient := mocks.NewMockApiClient(200, "fakeHash", []string{})
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
@@ -24,7 +24,7 @@ func setupHashSubmitterForNoError() testObject {
 }
 
 func setupHashSubmitterForClientError() testObject {
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{})
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{}, 0)
 	mockApiClient := mocks.NewMockApiClient(500, "fakeHash", []string{})
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
@@ -33,7 +33,7 @@ func setupHashSubmitterForClientError() testObject {
 }
 
 func setupHashSubmitterForSubmissionQueueError() testObject {
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(errors.New("test error"), models.HashSubmission{})
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(errors.New("test error"), models.HashSubmission{}, 0)
 	mockApiClient := mocks.NewMockApiClient(200, "fakeHash", []string{})
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
@@ -57,9 +57,33 @@ func assertSubmissionQueueGetCalled(t *testing.T, testObject testObject) {
 	}
 }
 
+func assertSubmissionQueueSizeCalled(t *testing.T, testObject testObject) {
+	expected := uint64(1)
+	actual := testObject.mockSubmissionQueue.SizeCalls
+	if expected != actual {
+		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertWaiterWaitCalled(t *testing.T, testObject testObject) {
+	expected := uint64(1)
+	actual := testObject.mockWaiter.WaitCalls
+	if expected != actual {
+		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
+	}
+}
+
 func assertClientSubmitHashesNotCalled(t *testing.T, testObject testObject) {
 	expected := uint64(0)
 	actual := testObject.mockApiClient.SubmitHashesCalls
+	if expected != actual {
+		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertWaiterWaitNotCalled(t *testing.T, testObject testObject) {
+	expected := uint64(0)
+	actual := testObject.mockWaiter.WaitCalls
 	if expected != actual {
 		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
 	}
