@@ -16,7 +16,7 @@ type HashSubmitter struct {
 	waiter waiter.Waiter
 }
 
-func NewHashSubmitter(c *config.ClientConfig, q *queue.HashingSubmissionQueue, cl *apiclient.HashApiClient) *HashSubmitter {
+func NewHashSubmitter(c *config.ClientConfig, cl *apiclient.HashApiClient, q *queue.HashingSubmissionQueue) *HashSubmitter {
 	w := getWaiter()
 	return &HashSubmitter{c, cl, q, w}
 }
