@@ -39,8 +39,6 @@ func (e Hasher) Start() error {
 			return err
 		}
 	}
-
-	return nil
 }
 
 func (e Hasher) processOrSleep() error {
