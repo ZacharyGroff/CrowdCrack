@@ -15,6 +15,15 @@ type testObject struct {
 }
 
 func setupHashSubmitterForNoError() testObject {
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{}, 1)
+	mockApiClient := mocks.NewMockApiClient(200, "fakeHash", []string{})
+	mockWaiter := mocks.NewMockWaiter()
+	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
+
+	return testObject{&hashSubmitter, &mockSubmissionQueue, &mockApiClient, &mockWaiter}
+}
+
+func setupHashSubmitterForNoErrorEmptySubmissionQueue() testObject {
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{}, 0)
 	mockApiClient := mocks.NewMockApiClient(200, "fakeHash", []string{})
 	mockWaiter := mocks.NewMockWaiter()
@@ -24,7 +33,7 @@ func setupHashSubmitterForNoError() testObject {
 }
 
 func setupHashSubmitterForClientError() testObject {
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{}, 0)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{}, 1)
 	mockApiClient := mocks.NewMockApiClient(500, "fakeHash", []string{})
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
@@ -33,7 +42,7 @@ func setupHashSubmitterForClientError() testObject {
 }
 
 func setupHashSubmitterForSubmissionQueueError() testObject {
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(errors.New("test error"), models.HashSubmission{}, 0)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(errors.New("test error"), models.HashSubmission{}, 1)
 	mockApiClient := mocks.NewMockApiClient(200, "fakeHash", []string{})
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
@@ -87,6 +96,74 @@ func assertWaiterWaitNotCalled(t *testing.T, testObject testObject) {
 	if expected != actual {
 		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
 	}
+}
+
+func TestStartError(t *testing.T) {
+	testObject := setupHashSubmitterForClientError()
+	err := testObject.hashSubmitter.Start()
+	if err == nil {
+		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestProcessOrSleepSuccess(t *testing.T) {
+	testObject := setupHashSubmitterForNoError()
+	err := testObject.hashSubmitter.processOrSleep()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestProcessOrSleepSuccessCorrectSizeCalls(t *testing.T) {
+	testObject := setupHashSubmitterForNoError()
+	testObject.hashSubmitter.processOrSleep()
+	assertSubmissionQueueSizeCalled(t, testObject)
+}
+
+func TestProcessOrSleepSuccessCorrectWaiterCalls(t *testing.T) {
+	testObject := setupHashSubmitterForNoError()
+	testObject.hashSubmitter.processOrSleep()
+	assertWaiterWaitNotCalled(t, testObject)
+}
+
+func TestProcessOrSleepEmptySubmissionQueueSuccess(t *testing.T) {
+	testObject := setupHashSubmitterForNoErrorEmptySubmissionQueue()
+	err := testObject.hashSubmitter.processOrSleep()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestProcessOrSleepEmptySubmissionQueueSuccessCorrectSizeCalls(t *testing.T) {
+	testObject := setupHashSubmitterForNoErrorEmptySubmissionQueue()
+	testObject.hashSubmitter.processOrSleep()
+	assertSubmissionQueueSizeCalled(t, testObject)
+}
+
+func TestProcessOrSleepEmptySubmissionQueueSuccessCorrectWaiterCalls(t *testing.T) {
+	testObject := setupHashSubmitterForNoErrorEmptySubmissionQueue()
+	testObject.hashSubmitter.processOrSleep()
+	assertWaiterWaitCalled(t, testObject)
+}
+
+func TestProcessOrSleepProcessSubmissionError(t *testing.T) {
+	testObject := setupHashSubmitterForClientError()
+	err := testObject.hashSubmitter.processOrSleep()
+	if err == nil {
+		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestProcessOrSleepProcessSubmissionErrorCorrectSizeCalls(t *testing.T) {
+	testObject := setupHashSubmitterForClientError()
+	testObject.hashSubmitter.processOrSleep()
+	assertSubmissionQueueSizeCalled(t, testObject)
+}
+
+func TestProcessOrSleepProcessSubmissionErrorCorrectWaiterCalls(t *testing.T) {
+	testObject := setupHashSubmitterForClientError()
+	testObject.hashSubmitter.processOrSleep()
+	assertWaiterWaitNotCalled(t, testObject)
 }
 
 func TestProcessSubmissionSuccess(t *testing.T) {
