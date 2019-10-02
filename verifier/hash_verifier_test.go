@@ -24,7 +24,6 @@ func TestHashVerifierLoadUserProvidedHashesCorrectHashes(t *testing.T) {
 	}
 }
 
-
 func TestHashVerifierLoadUserProvidedHashesSuccess(t *testing.T) {
 	var mapToReturn map[string]bool
 	var errorToReturn error
@@ -46,6 +45,44 @@ func TestHashVerifierLoadUserProvidedHashesError(t *testing.T) {
 	err := hashVerifier.loadUserProvidedHashes()
 	if err == nil {
 		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestHashVerifierVerifyNextPasswordHashIsMatch(t *testing.T) {
+	expected := true
+
+	hash := "fakeHash"
+	password := "fakePassword"
+	passwordHash := password + ":" + hash
+	var errToReturn error
+	mockFlushingQueue := mocks.NewMockFlushingQueue(passwordHash, errToReturn)
+
+	userProvidedHashes := map[string]bool {
+		hash: true,
+	}
+	hashVerifier := HashVerifier{computedHashes: &mockFlushingQueue, userProvidedHashes: userProvidedHashes}
+
+	actual := hashVerifier.verifyNextPasswordHash()
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
+	}
+}
+
+func TestHashVerifierVerifyNextPasswordHashIsNotMatch(t *testing.T) {
+	expected := false
+
+	hash := "fakeHash"
+	password := "fakePassword"
+	passwordHash := password + ":" + hash
+	var errToReturn error
+	mockFlushingQueue := mocks.NewMockFlushingQueue(passwordHash, errToReturn)
+
+	var userProvidedHashes map[string]bool
+	hashVerifier := HashVerifier{computedHashes: &mockFlushingQueue, userProvidedHashes: userProvidedHashes}
+
+	actual := hashVerifier.verifyNextPasswordHash()
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
 }
 

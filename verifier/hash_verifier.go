@@ -40,12 +40,16 @@ func (v *HashVerifier) loadUserProvidedHashes() error {
 	return nil
 }
 
-func (v HashVerifier) verifyNextPasswordHash() {
+func (v HashVerifier) verifyNextPasswordHash() bool {
 	passwordHash := v.getNextPasswordHash()
 	password, hash := v.parsePasswordHash(passwordHash)
-	if v.isMatch(hash) {
+
+	isMatch := v.isMatch(hash)
+	if isMatch {
 		v.inform(password, hash)
 	}
+
+	return isMatch
 }
 
 func (v HashVerifier) getNextPasswordHash() string {
