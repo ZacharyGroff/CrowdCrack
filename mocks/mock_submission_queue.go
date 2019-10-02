@@ -10,15 +10,16 @@ type MockSubmissionQueue struct {
 	SizeCalls uint64
 	errorToReturn error
 	hashSubmissionToReturn models.HashSubmission
+	sizeToReturn int
 }
 
-func NewMockSubmissionQueue(e error, h models.HashSubmission) MockSubmissionQueue {
-	return MockSubmissionQueue{0, 0, 0, e, h}
+func NewMockSubmissionQueue(e error, h models.HashSubmission, s int) MockSubmissionQueue {
+	return MockSubmissionQueue{0, 0, 0, e, h, s}
 }
 
 func (m *MockSubmissionQueue) Size() int {
 	m.SizeCalls++
-	return int(m.PutCalls) - int(m.GetCalls)
+	return m.sizeToReturn
 }
 
 func (m *MockSubmissionQueue) Get() (models.HashSubmission, error) {
