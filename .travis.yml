@@ -1,6 +1,9 @@
 language: go
 before_install:
 - go get github.com/google/wire
+- go get github.com/mattn/goveralls
 - go test -v ./...
 go:
 - 1.x
+script:
+  - $GOPATH/bin/goveralls -service=travis-ci
