@@ -2,8 +2,8 @@ language: go
 before_install:
 - go get github.com/google/wire
 - go get github.com/mattn/goveralls
-- go test -v ./...
+- go test -v -covermode=count -coverprofile=coverage.out ./...
 go:
 - 1.x
 script:
-  - $GOPATH/bin/goveralls -service=travis-ci
+  - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
