@@ -1,9 +1,12 @@
 package requester
 
 import (
+	"crypto/sha256"
+	"hash"
+	"strings"
+	"testing"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"testing"
 )
 
 type testObject struct {
@@ -17,17 +20,26 @@ var expectedPasswords = []string {
 	"hunter2",
 	"password123",
 }
+var expectedHashName = "sha256"
+var expectedHash = sha256.New()
+var successCode = 200
+var errorCode = 500
 
-var expectedHashName = "testHashName"
 
 func setupApiClientForSuccess() mocks.MockApiClient {
-	statusCode := 200
-	return mocks.NewMockApiClient(statusCode, expectedHashName, expectedPasswords)
+	return mocks.NewMockApiClient(successCode, successCode, successCode, expectedHashName, expectedPasswords)
 }
 
 func setupApiClientForError() mocks.MockApiClient {
-	statusCode := 500
-	return mocks.NewMockApiClient(statusCode, expectedHashName, expectedPasswords)
+	return mocks.NewMockApiClient(errorCode, errorCode, errorCode, expectedHashName, expectedPasswords)
+}
+
+func setupApiClientForGetHashNameError() mocks.MockApiClient {
+	return mocks.NewMockApiClient(errorCode, successCode, successCode, expectedHashName, expectedPasswords)
+}
+
+func setupApiClientForGetPasswordsError() mocks.MockApiClient {
+	return mocks.NewMockApiClient(successCode, errorCode, successCode, expectedHashName, expectedPasswords)
 }
 
 func setupRequestQueueForSuccess() mocks.MockRequestQueue {
@@ -42,11 +54,18 @@ func setupRequestQueueFull() mocks.MockRequestQueue {
 	return mocks.NewMockRequestQueue(err, hashingRequest, 2)
 }
 
+func setupSupportedHashes() map[string]hash.Hash {
+	return map[string]hash.Hash {
+		"sha256": sha256.New(),
+	}
+}
+
 func setupPasswordRequestForSuccess() testObject {
 	apiClient := setupApiClientForSuccess()
 	requestQueue := setupRequestQueueForSuccess()
+	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
@@ -54,8 +73,29 @@ func setupPasswordRequestForSuccess() testObject {
 func setupPasswordRequestForApiClientError() testObject {
 	apiClient := setupApiClientForError()
 	requestQueue := setupRequestQueueForSuccess()
+	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+
+	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+}
+
+func setupPasswordRequestForGetHashNameError() testObject {
+	apiClient := setupApiClientForGetHashNameError()
+	requestQueue := setupRequestQueueForSuccess()
+	supportedHashes := setupSupportedHashes()
+	waiter := mocks.NewMockWaiter()
+	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+
+	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+}
+
+func setupPasswordRequestForGetPasswordsError() testObject {
+	apiClient := setupApiClientForGetPasswordsError()
+	requestQueue := setupRequestQueueForSuccess()
+	supportedHashes := setupSupportedHashes()
+	waiter := mocks.NewMockWaiter()
+	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
@@ -63,8 +103,9 @@ func setupPasswordRequestForApiClientError() testObject {
 func setupPasswordRequestForFullRequestQueue() testObject {
 	apiClient := setupApiClientForSuccess()
 	requestQueue := setupRequestQueueFull()
+	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
@@ -123,4 +164,120 @@ func assertApiClientGetPasswordsCalled(t *testing.T, testObject testObject) {
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
+}
+
+func TestStartError(t *testing.T) {
+	testObject := setupPasswordRequestForApiClientError()
+	err := testObject.passwordRequester.Start()
+	if err == nil {
+		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestProcessOrWaitAddRequestToQueueNoError(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	err := testObject.passwordRequester.processOrWait()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestProcessOrWaitAddRequestToQueueNoErrorSizeCalled(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	testObject.passwordRequester.processOrWait()
+	assertRequestQueueSizeCalled(t, testObject)
+}
+
+func TestProcessOrWaitAddRequestToQueueNoErrorWaitNotCalled(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	testObject.passwordRequester.processOrWait()
+	assertWaiterNotCalled(t, testObject)
+}
+
+func TestProcessOrWaitAddRequestToQueueError(t *testing.T) {
+	testObject := setupPasswordRequestForApiClientError()
+	err := testObject.passwordRequester.processOrWait()
+	if err == nil {
+		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestProcessOrWaitAddRequestToQueueErrorSizeCalled(t *testing.T) {
+	testObject := setupPasswordRequestForApiClientError()
+	testObject.passwordRequester.processOrWait()
+	assertRequestQueueSizeCalled(t, testObject)
+}
+
+func TestProcessOrWaitAddRequestToQueueErrorWaitNotCalled(t *testing.T) {
+	testObject := setupPasswordRequestForApiClientError()
+	testObject.passwordRequester.processOrWait()
+	assertWaiterNotCalled(t, testObject)
+}
+
+func TestProcessOrWaitRequestQueueFullNoError(t *testing.T) {
+	testObject := setupPasswordRequestForFullRequestQueue()
+	err := testObject.passwordRequester.processOrWait()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestProcessOrWaitRequestQueueFullSizeCalled(t *testing.T) {
+	testObject := setupPasswordRequestForFullRequestQueue()
+	testObject.passwordRequester.processOrWait()
+	assertRequestQueueSizeCalled(t, testObject)
+}
+
+func TestProcessOrWaitRequestQueueFullWaitCalled(t *testing.T) {
+	testObject := setupPasswordRequestForFullRequestQueue()
+	testObject.passwordRequester.processOrWait()
+	assertWaiterCalled(t, testObject)
+}
+
+func TestAddRequestToQueueNoError(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	err := testObject.passwordRequester.addRequestToQueue()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestAddRequestToQueueNoErrorPutCalled(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	testObject.passwordRequester.addRequestToQueue()
+	assertRequestQueuePutCalled(t, testObject)
+}
+
+func TestAddRequestToQueueGetHashError(t *testing.T) {
+	expected := "Unexpected response from api on hash name request with status code: 500\n"
+	testObject := setupPasswordRequestForGetHashNameError()
+	err := testObject.passwordRequester.addRequestToQueue()
+
+	actual := err.Error()
+	if strings.Compare(expected, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
+	}
+}
+
+func TestAddRequestToQueueGetHashErrorPutNotCalled(t *testing.T) {
+	testObject := setupPasswordRequestForGetHashNameError()
+	testObject.passwordRequester.addRequestToQueue()
+	assertRequestQueuePutNotCalled(t, testObject)
+}
+
+func TestAddRequestToQueueGetPasswordsError(t *testing.T) {
+	expected := "Unexpected response from api on password request with status code: 500\n"
+	testObject := setupPasswordRequestForGetPasswordsError()
+	err := testObject.passwordRequester.addRequestToQueue()
+
+	actual := err.Error()
+	if strings.Compare(expected, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
+	}
+}
+
+func TestAddRequestToQueueGetPasswordsErrorPutNotCalled(t *testing.T) {
+	testObject := setupPasswordRequestForGetPasswordsError()
+	testObject.passwordRequester.addRequestToQueue()
+	assertRequestQueuePutNotCalled(t, testObject)
 }
