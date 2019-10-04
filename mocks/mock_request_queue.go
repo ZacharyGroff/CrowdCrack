@@ -10,15 +10,16 @@ type MockRequestQueue struct {
 	SizeCalls uint64
 	errorToReturn error
 	hashingRequestToReturn models.HashingRequest
+	intToReturn int
 }
 
-func NewMockRequestQueue(e error, h models.HashingRequest) MockRequestQueue {
-	return MockRequestQueue{0, 0, 0, e, h}
+func NewMockRequestQueue(e error, h models.HashingRequest, i int) MockRequestQueue {
+	return MockRequestQueue{0, 0, 0, e, h, i}
 }
 
 func (m *MockRequestQueue) Size() int {
 	m.SizeCalls++
-	return int(m.PutCalls) - int(m.GetCalls)
+	return m.intToReturn
 }
 
 func (m *MockRequestQueue) Get() (models.HashingRequest, error) {

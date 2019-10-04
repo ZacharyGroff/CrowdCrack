@@ -18,7 +18,7 @@ func TestHasherStartError(t *testing.T) {
 			"password123",
 		},
 	}
-	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest)
+	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue}
 
@@ -38,7 +38,7 @@ func TestHasherProcessOrSleepProcessSuccess(t *testing.T) {
 		},
 	}
 	hashSubmission := models.HashSubmission{}
-	mockRequestQueue := mocks.NewMockRequestQueue(queueError, hashingRequest)
+	mockRequestQueue := mocks.NewMockRequestQueue(queueError, hashingRequest, 0)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(queueError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue, submissionQueue: &mockSubmissionQueue}
@@ -52,7 +52,7 @@ func TestHasherProcessOrSleepProcessSuccess(t *testing.T) {
 func TestHasherProcessOrSleepWaiterSleepsSuccess(t *testing.T) {
 	requestQueueError := errors.New("test error")
 	hashingRequest := models.HashingRequest{}
-	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest)
+	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue}
 	
@@ -65,7 +65,7 @@ func TestHasherProcessOrSleepWaiterSleepsSuccess(t *testing.T) {
 func TestHasherProcessOrSleepWaiterSleepsWaiterCalled(t *testing.T) {
 	requestQueueError := errors.New("test error")
 	hashingRequest := models.HashingRequest{}
-	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest)
+	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue}
 	
@@ -85,7 +85,7 @@ func TestHasherProcessOrSleepError(t *testing.T) {
 			"password123",
 		},
 	}
-	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest)
+	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue}
 	
