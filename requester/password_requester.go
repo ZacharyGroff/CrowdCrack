@@ -73,9 +73,9 @@ func (p PasswordRequester) addRequestToQueue() error {
 	}
 
 	hashingRequest := models.HashingRequest{hash, hashName, passwords}
-	p.requestQueue.Put(hashingRequest)
-	
-	return nil
+	err = p.requestQueue.Put(hashingRequest)
+
+	return err
 }
 
 func (p PasswordRequester) getHash() (hash.Hash, string, error) {
