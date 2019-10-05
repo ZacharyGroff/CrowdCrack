@@ -84,13 +84,22 @@ func (p PasswordRequester) getHash() (hash.Hash, string, error) {
 		return nil, "", err
 	}
 
-	currentHash, isSupported := p.supportedHashes[hashName]
-	if !isSupported {
-		err = fmt.Errorf("Current hash: %s is unsupported\n", hashName)
+	hashFunction, err := p.getHashFunction(hashName)
+	if err != nil {
 		return nil, "", err
 	}
 
-	return currentHash, hashName, nil
+	return hashFunction, hashName, nil
+}
+
+func (p PasswordRequester) getHashFunction(hashName string) (hash.Hash, error) {
+	currentHash, isSupported := p.supportedHashes[hashName]
+	if !isSupported {
+		err := fmt.Errorf("Current hash: %s is unsupported\n", hashName)
+		return nil, err
+	}
+
+	return currentHash, nil
 }
 
 func (p PasswordRequester) requestHashName() (string, error) {
