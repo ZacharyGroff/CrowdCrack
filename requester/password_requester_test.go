@@ -26,7 +26,6 @@ var expectedHash = sha256.New()
 var successCode = 200
 var errorCode = 500
 
-
 func setupApiClientForSuccess() mocks.MockApiClient {
 	return mocks.NewMockApiClient(successCode, successCode, successCode, expectedHashName, expectedPasswords)
 }
@@ -178,6 +177,16 @@ func assertApiClientGetPasswordsCalled(t *testing.T, testObject testObject) {
 	actual := testObject.apiClient.GetPasswordsCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestGetSupportedHashesCorrectHashes(t *testing.T) {
+	expected := map[string]hash.Hash {
+		"sha256": sha256.New(),
+	}
+	actual := getSupportedHashes()
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expectedHash, actual)
 	}
 }
 
@@ -359,6 +368,12 @@ func TestRequestHashNameNoError(t *testing.T) {
 	}
 }
 
+func TestRequestHashClientCalled(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	testObject.passwordRequester.requestHashName()
+	assertApiClientGetHashNameCalled(t, testObject)
+}
+
 func TestRequestHashNameCorrectHashName(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	actual, _ := testObject.passwordRequester.requestHashName()
@@ -381,6 +396,12 @@ func TestGetPasswordsNoError(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
+}
+
+func TestGetPasswordsClientCalled(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	testObject.passwordRequester.getPasswords()
+	assertApiClientGetPasswordsCalled(t, testObject)
 }
 
 func TestGetPasswordsCorrectPasswords(t *testing.T) {
