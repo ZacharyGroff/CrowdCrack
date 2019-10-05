@@ -1,10 +1,11 @@
 package requester
 
 import (
-	"crypto/sha256"
 	"hash"
+	"reflect"
 	"strings"
 	"testing"
+	"crypto/sha256"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
@@ -323,5 +324,77 @@ func TestGetHashGetHashFunctionError(t *testing.T) {
 	actual := err.Error()
 	if strings.Compare(expected, actual) != 0 {
 		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
+	}
+}
+
+func TestGetHashFunctionNoError(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	_, err := testObject.passwordRequester.getHashFunction(expectedHashName)
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestGetHashFunctionCorrectHash(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	actual, _ := testObject.passwordRequester.getHashFunction(expectedHashName)
+	if !reflect.DeepEqual(expectedHash, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expectedHash, actual)
+	}
+}
+
+func TestGetHashFunctionError(t *testing.T) {
+	testObject := setupPasswordRequestFoNoSupportedHashes()
+	_, err := testObject.passwordRequester.getHashFunction(expectedHashName)
+	if err == nil {
+		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestRequestHashNameNoError(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	_, err := testObject.passwordRequester.requestHashName()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestRequestHashNameCorrectHashName(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	actual, _ := testObject.passwordRequester.requestHashName()
+	if strings.Compare(expectedHashName, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", expectedHashName, actual)
+	}
+}
+
+func TestRequestHashNameError(t *testing.T) {
+	testObject := setupPasswordRequestForGetHashNameError()
+	_, err := testObject.passwordRequester.requestHashName()
+	if err == nil {
+		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestGetPasswordsNoError(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	_, err := testObject.passwordRequester.getPasswords()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestGetPasswordsCorrectPasswords(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	actual, _ := testObject.passwordRequester.getPasswords()
+	if !reflect.DeepEqual(expectedPasswords, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expectedHash, actual)
+	}
+}
+
+func TestGetPasswordsError(t *testing.T) {
+	testObject := setupPasswordRequestForGetPasswordsError()
+	_, err := testObject.passwordRequester.getPasswords()
+	if err == nil {
+		t.Error("Expected error but nil returned")
 	}
 }
