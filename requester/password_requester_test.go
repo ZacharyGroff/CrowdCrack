@@ -60,6 +60,10 @@ func setupSupportedHashes() map[string]hash.Hash {
 	}
 }
 
+func setupNoSupportedHashes() map[string]hash.Hash {
+	return map[string]hash.Hash {}
+}
+
 func setupPasswordRequestForSuccess() testObject {
 	apiClient := setupApiClientForSuccess()
 	requestQueue := setupRequestQueueForSuccess()
@@ -104,6 +108,16 @@ func setupPasswordRequestForFullRequestQueue() testObject {
 	apiClient := setupApiClientForSuccess()
 	requestQueue := setupRequestQueueFull()
 	supportedHashes := setupSupportedHashes()
+	waiter := mocks.NewMockWaiter()
+	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+
+	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+}
+
+func setupPasswordRequestFoNoSupportedHashes() testObject {
+	apiClient := setupApiClientForSuccess()
+	requestQueue := setupRequestQueueForSuccess()
+	supportedHashes := setupNoSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
@@ -280,4 +294,34 @@ func TestAddRequestToQueueGetPasswordsErrorPutNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForGetPasswordsError()
 	testObject.passwordRequester.addRequestToQueue()
 	assertRequestQueuePutNotCalled(t, testObject)
+}
+
+func TestGetHashNoError(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	_, _, err := testObject.passwordRequester.getHash()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestGetHashRequestHashNameError(t *testing.T) {
+	expected := "Unexpected response from api on hash name request with status code: 500\n"
+	testObject := setupPasswordRequestForGetHashNameError()
+	_, _, err := testObject.passwordRequester.getHash()
+
+	actual := err.Error()
+	if strings.Compare(expected, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
+	}
+}
+
+func TestGetHashGetHashFunctionError(t *testing.T) {
+	expected := "Current hash: sha256 is unsupported\n"
+	testObject := setupPasswordRequestFoNoSupportedHashes()
+	_, _, err := testObject.passwordRequester.getHash()
+
+	actual := err.Error()
+	if strings.Compare(expected, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
+	}
 }
