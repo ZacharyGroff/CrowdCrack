@@ -9,37 +9,37 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/api"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/client"
-	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
 	"github.com/ZacharyGroff/CrowdCrack/requester"
 	"github.com/ZacharyGroff/CrowdCrack/server"
 	"github.com/ZacharyGroff/CrowdCrack/submitter"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/verifier"
 )
 
 // Injectors from wire.go:
 
 func InitializeClient() client.Client {
-	clientConfig := config.NewClientConfig()
+	cmdLineConfigProvider := userinput.NewCmdLineConfigProvider()
 	hashingRequestQueue := queue.NewHashingRequestQueue()
 	hashingSubmissionQueue := queue.NewHashingSubmissionQueue()
-	hasher := encoder.NewHasher(clientConfig, hashingRequestQueue, hashingSubmissionQueue)
-	hashApiClient := apiclient.NewHashApiClient(clientConfig)
-	passwordRequester := requester.NewPasswordRequester(clientConfig, hashApiClient, hashingRequestQueue)
-	hashSubmitter := submitter.NewHashSubmitter(clientConfig, hashApiClient, hashingSubmissionQueue)
-	clientClient := client.NewClient(clientConfig, hasher, passwordRequester, hashSubmitter)
+	hasher := encoder.NewHasher(cmdLineConfigProvider, hashingRequestQueue, hashingSubmissionQueue)
+	hashApiClient := apiclient.NewHashApiClient(cmdLineConfigProvider)
+	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, hashingRequestQueue)
+	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, hashingSubmissionQueue)
+	clientClient := client.NewClient(cmdLineConfigProvider, hasher, passwordRequester, hashSubmitter)
 	return clientClient
 }
 
 func InitializeServer() server.Server {
-	serverConfig := config.NewServerConfig()
-	passwordQueue := queue.NewServerPasswordQueue(serverConfig)
-	hashQueue := queue.NewServerHashQueue(serverConfig)
-	hashApi := api.NewHashApi(serverConfig, passwordQueue, hashQueue)
-	wordlistReader := reader.NewWordlistReader(serverConfig, passwordQueue)
-	hashlistReader := reader.NewHashlistReader(serverConfig)
+	cmdLineConfigProvider := userinput.NewCmdLineConfigProvider()
+	passwordQueue := queue.NewPasswordQueue(cmdLineConfigProvider)
+	hashQueue := queue.NewHashQueue(cmdLineConfigProvider)
+	hashApi := api.NewHashApi(cmdLineConfigProvider, passwordQueue, hashQueue)
+	wordlistReader := reader.NewWordlistReader(cmdLineConfigProvider, passwordQueue)
+	hashlistReader := reader.NewHashlistReader(cmdLineConfigProvider)
 	hashVerifier := verifier.NewHashVerifier(hashQueue, hashlistReader)
 	serverServer := server.NewServer(hashApi, wordlistReader, hashVerifier)
 	return serverServer
