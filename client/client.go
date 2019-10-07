@@ -2,20 +2,22 @@ package client
 
 import (
 	"log"
-	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/requester"
 	"github.com/ZacharyGroff/CrowdCrack/submitter"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type Client struct {
-	config *config.ClientConfig
+	config *models.ClientConfig
 	encoder encoder.Encoder
 	requester requester.Requester
 	submitter submitter.Submitter
 }
 
-func NewClient(c *config.ClientConfig, e *encoder.Hasher, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
+func NewClient(p userinput.CmdLineConfigProvider, e *encoder.Hasher, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
+	c := p.GetClientConfig()
 	return Client{c, e, r, s}
 }
 

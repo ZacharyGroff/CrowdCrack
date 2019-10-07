@@ -3,21 +3,18 @@ package queue
 import (
 	"errors"
 	"fmt"
-	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/models"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type PasswordQueue struct {
 	passwords chan string
-	config config.QueueConfig
+	config models.ServerConfig
 }
 
-func NewServerPasswordQueue(config *config.ServerConfig) *PasswordQueue {
-	passwords := make(chan string, config.GetPasswordQueueBuffer())
-	return &PasswordQueue{passwords, *config}
-}
-
-func NewClientPasswordQueue(config *config.ClientConfig) *PasswordQueue {
-	passwords := make(chan string, config.GetPasswordQueueBuffer())
+func NewPasswordQueue(p userinput.CmdLineConfigProvider) *PasswordQueue {
+	config := p.GetServerConfig()
+	passwords := make(chan string, config.PasswordQueueBuffer)
 	return &PasswordQueue{passwords, *config}
 }
 

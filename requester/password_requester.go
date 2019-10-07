@@ -1,25 +1,26 @@
 package requester
 
 import (
+	"crypto/sha256"
 	"fmt"
 	"hash"
-	"crypto/sha256"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
-	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
 )
 
 type PasswordRequester struct {
-	config *config.ClientConfig
+	config *models.ClientConfig
 	client apiclient.ApiClient
 	requestQueue queue.RequestQueue
 	supportedHashes map[string]hash.Hash
 	waiter waiter.Waiter
 }
 
-func NewPasswordRequester(c *config.ClientConfig, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue) *PasswordRequester {
+func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue) *PasswordRequester {
+	c := p.GetClientConfig()
 	s := getSupportedHashes()
 	w := getWaiter()
 	return &PasswordRequester{c,cl, r, s, w}

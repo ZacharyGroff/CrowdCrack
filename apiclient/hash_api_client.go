@@ -6,15 +6,16 @@ import (
 	"strings"
 	"encoding/json"
 	"net/http"
-	"github.com/ZacharyGroff/CrowdCrack/config"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type HashApiClient struct {
-	config *config.ClientConfig
+	config *models.ClientConfig
 }
 
-func NewHashApiClient(c *config.ClientConfig) *HashApiClient {
+func NewHashApiClient(p userinput.CmdLineConfigProvider) *HashApiClient {
+	c := p.GetClientConfig()
 	return &HashApiClient{c}
 }
 

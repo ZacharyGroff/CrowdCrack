@@ -5,21 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/models"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type HashQueue struct {
 	hashes chan string
-	config config.QueueConfig
+	config models.ServerConfig
 }
 
-func NewServerHashQueue(config *config.ServerConfig) *HashQueue {
-	hashes := make(chan string, config.GetHashQueueBuffer())
-	return &HashQueue{hashes, *config}
-}
-
-func NewClientHashQueue(config *config.ClientConfig) *HashQueue {
-	hashes := make(chan string, config.GetHashQueueBuffer())
+func NewHashQueue(p userinput.CmdLineConfigProvider) *HashQueue {
+	config := p.GetServerConfig()
+	hashes := make(chan string, config.HashQueueBuffer)
 	return &HashQueue{hashes, *config}
 }
 
@@ -50,7 +47,7 @@ func (q HashQueue) Put(hash string) error {
 }
 
 func (q HashQueue) Flush() error {
-	if q.config.GetFlushToFile() {
+	if q.config.FlushToFile {
 		return q.flushToFile()
 	}
 	_, err := q.emptyChannel()
@@ -59,7 +56,7 @@ func (q HashQueue) Flush() error {
 }
 
 func (q HashQueue) flushToFile() error {
-	file, err := os.OpenFile(q.config.GetComputedHashOverflowPath(), os.O_WRONLY, os.ModePerm)
+	file, err := os.OpenFile(q.config.ComputedHashOverflowPath, os.O_WRONLY, os.ModePerm)
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-package config
+package models
 
 type ServerConfig struct {
 	WordlistPath string `json:"wordlistPath"`

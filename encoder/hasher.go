@@ -1,24 +1,25 @@
 package encoder
 
 import (
-	"fmt"
-	"log"
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/ZacharyGroff/CrowdCrack/config"
+	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
+	"log"
 )
 
 type Hasher struct {
-	config *config.ClientConfig
+	config *models.ClientConfig
 	requestQueue queue.RequestQueue
 	submissionQueue queue.SubmissionQueue
 	waiter waiter.Waiter
 }
 
-func NewHasher(c *config.ClientConfig, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
+func NewHasher(p userinput.CmdLineConfigProvider, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
+	c := p.GetClientConfig()
 	w := getWaiter()
 	return &Hasher{c, r, s, w}
 }

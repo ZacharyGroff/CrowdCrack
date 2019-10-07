@@ -1,4 +1,4 @@
-package config
+package models
 
 type ClientConfig struct {
 	ServerAddress string `json:"serverAddress"`
