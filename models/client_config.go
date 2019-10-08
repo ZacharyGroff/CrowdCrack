@@ -1,9 +1,9 @@
 package models
 
 type ClientConfig struct {
-	ServerAddress string `json:"serverAddress"`
-	HashQueueBuffer uint64 `json:"hashQueueBuffer"`
-	PasswordQueueBuffer uint64 `json:"passwordQueueBuffer"`
-	FlushToFile bool `json:"flushToFile"`
-	ComputedHashOverflowPath string `json:"computedHashOverflowPath"`	
+	ServerAddress string
+	HashQueueBuffer uint64
+	PasswordQueueBuffer uint64
+	FlushToFile bool
+	ComputedHashOverflowPath string
 }

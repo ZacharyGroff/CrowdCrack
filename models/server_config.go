@@ -1,12 +1,12 @@
 package models
 
 type ServerConfig struct {
-	WordlistPath string `json:"wordlistPath"`
-	HashlistPath string `json:"hashlistPath"`
-	HashFunction string `json:"hashFunction"`
-	ApiPort uint16 `json:"apiPort"`
-	PasswordQueueBuffer uint64 `json:"passwordQueueBuffer"`
-	HashQueueBuffer uint64 `json:"hashQueueBuffer"`
-	FlushToFile bool `json:"flushToFile"`
-	ComputedHashOverflowPath string `json:"computedHashOverflowPath"`
+	WordlistPath string
+	HashlistPath string
+	HashFunction string
+	ApiPort uint16
+	PasswordQueueBuffer uint64
+	HashQueueBuffer uint64
+	FlushToFile bool
+	ComputedHashOverflowPath string
 }
