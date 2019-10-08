@@ -2,25 +2,17 @@ package main
 
 import (
 	"os"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 func main() {
 	args := os.Args[1:]
 
-	if isClient(args) {
+	if userinput.IsClient(args) {
 		client := InitializeClient()
 		client.Start()
 	}
 
 	server := InitializeServer()
 	server.Start()
-}
-
-func isClient(args []string) bool {
-	for _, b := range args {
-		if b == "--client" {
-			return true
-		}
-	}
-	return false
 }

@@ -57,6 +57,15 @@ func parseServer() *models.ServerConfig {
 	}
 }
 
+func IsClient(args []string) bool {
+	for _, b := range args {
+		if b == "--client" {
+			return true
+		}
+	}
+	return false
+}
+
 func (c *CmdLineConfigProvider) GetClientConfig() *models.ClientConfig {
 	return c.clientConfig
 }
