@@ -57,13 +57,10 @@ func parseServer() *models.ServerConfig {
 	}
 }
 
-func IsClient(args []string) bool {
-	for _, b := range args {
-		if b == "--client" {
-			return true
-		}
-	}
-	return false
+func IsClient() bool {
+	isClientPtr := flag.Bool("client", false, "start application as client")
+	flag.Parse()
+	return *isClientPtr
 }
 
 func (c *CmdLineConfigProvider) GetClientConfig() *models.ClientConfig {
