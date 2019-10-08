@@ -1,9 +1,9 @@
 package reader
 
 import (
-	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
 	"testing"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 func TestGetHashesNoError(t *testing.T) {

@@ -1,10 +1,10 @@
 package reader
 
 import (
-	"github.com/ZacharyGroff/CrowdCrack/mocks"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
 	"testing"
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 func TestLoadPasswordsNoError(t *testing.T) {

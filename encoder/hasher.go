@@ -1,14 +1,14 @@
 package encoder
 
 import (
+	"fmt"
+	"log"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
-	"log"
 )
 
 type Hasher struct {

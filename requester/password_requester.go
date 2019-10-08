@@ -1,9 +1,9 @@
 package requester
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"hash"
+	"crypto/sha256"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
@@ -23,7 +23,7 @@ func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashA
 	c := p.GetClientConfig()
 	s := getSupportedHashes()
 	w := getWaiter()
-	return &PasswordRequester{c,cl, r, s, w}
+	return &PasswordRequester{c, cl, r, s, w}
 }
 
 func getSupportedHashes() map[string]hash.Hash {
