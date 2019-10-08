@@ -4,19 +4,21 @@ import (
 	"fmt"
 	"log"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
-	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
 )
 
 type HashSubmitter struct {
-	config *config.ClientConfig
+	config *models.ClientConfig
 	client apiclient.ApiClient
 	submissionQueue queue.SubmissionQueue
 	waiter waiter.Waiter
 }
 
-func NewHashSubmitter(c *config.ClientConfig, cl *apiclient.HashApiClient, q *queue.HashingSubmissionQueue) *HashSubmitter {
+func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, q *queue.HashingSubmissionQueue) *HashSubmitter {
+	c := p.GetClientConfig()
 	w := getWaiter()
 	return &HashSubmitter{c, cl, q, w}
 }

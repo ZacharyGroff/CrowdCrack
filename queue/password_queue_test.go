@@ -2,12 +2,10 @@ package queue
 
 import (
 	"testing"
-	"github.com/ZacharyGroff/CrowdCrack/config"
 )
 
 func TestPutPasswordSuccess(t *testing.T) {
-	config := config.ServerConfig{PasswordQueueBuffer: 1}	
-	q := NewServerPasswordQueue(&config)
+	q := PasswordQueue{passwords: make(chan string, 1)}
 	password := "hunter2"
 	err := q.Put(password)
 	if err != nil {
@@ -16,8 +14,7 @@ func TestPutPasswordSuccess(t *testing.T) {
 }
 
 func TestPutPasswordError(t *testing.T) {
-	config := config.ServerConfig{PasswordQueueBuffer: 0}	
-	q := NewServerPasswordQueue(&config)
+	q := PasswordQueue{passwords: make(chan string, 0)}
 	password := "hunter2"
 	err := q.Put(password)
 	if err == nil {
@@ -27,8 +24,7 @@ func TestPutPasswordError(t *testing.T) {
 
 func TestGetPasswordSuccess(t *testing.T) {
 	expected := "hunter2"
-	config := config.ServerConfig{PasswordQueueBuffer: 1}	
-	q := NewServerPasswordQueue(&config)
+	q := PasswordQueue{passwords: make(chan string, 1)}
 	q.Put(expected)
 
 	actual, _ := q.Get()
@@ -38,8 +34,7 @@ func TestGetPasswordSuccess(t *testing.T) {
 }
 
 func TestGetPasswordError(t *testing.T) {
-	config := config.ServerConfig{PasswordQueueBuffer: 0}
-	q := NewServerPasswordQueue(&config)
+	q := PasswordQueue{passwords: make(chan string, 0)}
 
 	_, err := q.Get()
 	if err == nil {
@@ -50,8 +45,7 @@ func TestGetPasswordError(t *testing.T) {
 func TestSizeZeroPasswords(t *testing.T) {
 	expected := 0
 
-	config := config.ServerConfig{PasswordQueueBuffer: 5}
-	q := NewServerPasswordQueue(&config)
+	q := PasswordQueue{passwords: make(chan string, 5)}
 	actual := q.Size()
 
 	if expected != actual {
@@ -62,8 +56,7 @@ func TestSizeZeroPasswords(t *testing.T) {
 func TestSizeNotZeroPasswords(t *testing.T) {
 	expected := 2
 
-	config := config.ServerConfig{PasswordQueueBuffer: 5}
-	q := NewServerPasswordQueue(&config)
+	q := PasswordQueue{passwords: make(chan string, 5)}
 	password := "hunter2"
 
 	q.Put(password)

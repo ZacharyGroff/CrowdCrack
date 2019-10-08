@@ -3,14 +3,16 @@ package reader
 import (
 	"bufio"
 	"os"
-	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/models"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type HashlistReader struct {
-	config *config.ServerConfig
+	config *models.ServerConfig
 }
 
-func NewHashlistReader(c *config.ServerConfig) *HashlistReader {
+func NewHashlistReader(p userinput.CmdLineConfigProvider) *HashlistReader {
+	c := p.GetServerConfig()
 	return &HashlistReader{c}
 }
 

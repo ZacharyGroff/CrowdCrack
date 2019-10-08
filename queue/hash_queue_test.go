@@ -4,12 +4,11 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"github.com/ZacharyGroff/CrowdCrack/config"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 func TestPutHashSuccess(t *testing.T) {
-	config := config.ServerConfig{HashQueueBuffer: 1}	
-	q := NewServerHashQueue(&config)
+	q := HashQueue{hashes: make(chan string, 1)}
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	err := q.Put(hash)
 	if err != nil {
@@ -18,8 +17,7 @@ func TestPutHashSuccess(t *testing.T) {
 }
 
 func TestPutHashError(t *testing.T) {
-	config := config.ServerConfig{HashQueueBuffer: 0}	
-	q := NewServerHashQueue(&config)
+	q := HashQueue{hashes: make(chan string, 0)}
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	err := q.Put(hash)
 	if err == nil {
@@ -29,8 +27,7 @@ func TestPutHashError(t *testing.T) {
 
 func TestGetHashSuccess(t *testing.T) {
 	expected := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
-	config := config.ServerConfig{HashQueueBuffer: 1}	
-	q := NewServerHashQueue(&config)
+	q := HashQueue{hashes: make(chan string, 1)}
 	q.Put(expected)
 
 	actual, _ := q.Get()
@@ -40,8 +37,7 @@ func TestGetHashSuccess(t *testing.T) {
 }
 
 func TestGetHashError(t *testing.T) {
-	config := config.ServerConfig{HashQueueBuffer: 0}
-	q := NewServerHashQueue(&config)
+	q := HashQueue{hashes: make(chan string, 0)}
 
 	_, err := q.Get()
 	if err == nil {
@@ -53,8 +49,8 @@ func TestFlushSize(t *testing.T) {
 	testPath := "hash_test.txt"
 	os.Create(testPath)
 
-	config := config.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: false}
-	q := NewServerHashQueue(&config)
+	config := models.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: false}
+	q := HashQueue{hashes: make(chan string, 1), config: config}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
@@ -73,8 +69,8 @@ func TestFlushToFileSuccess(t *testing.T) {
 	f, err := os.Create(testPath)
 	f.Close()
 
-	config := config.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
-	q := NewServerHashQueue(&config)
+	config := models.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
+	q := HashQueue{hashes: make(chan string, 1), config: config}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
@@ -91,8 +87,8 @@ func TestFlushToFileSuccess(t *testing.T) {
 func TestFlushToFileError(t *testing.T) {
 	testPath := "hash_test.txt"
 
-	config := config.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
-	q := NewServerHashQueue(&config)
+	config := models.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
+	q := HashQueue{hashes: make(chan string, 1), config: config}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
@@ -104,8 +100,8 @@ func TestFlushToFileError(t *testing.T) {
 }
 
 func TestFlushWithoutFileSuccess(t *testing.T) {
-	config := config.ServerConfig{HashQueueBuffer: 1, FlushToFile: false}
-	q := NewServerHashQueue(&config)
+	config := models.ServerConfig{HashQueueBuffer: 1, FlushToFile: false}
+	q := HashQueue{hashes: make(chan string, 1), config: config}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
@@ -119,8 +115,7 @@ func TestFlushWithoutFileSuccess(t *testing.T) {
 func TestSizeZeroHashes(t *testing.T) {
 	expected := 0
 
-	config := config.ServerConfig{HashQueueBuffer: 5}
-	q := NewServerHashQueue(&config)
+	q := HashQueue{hashes: make(chan string, 5)}
 	actual := q.Size()
 
 	if expected != actual {
@@ -130,9 +125,7 @@ func TestSizeZeroHashes(t *testing.T) {
 
 func TestSizeNotZeroHashes(t *testing.T) {
 	expected := 2
-
-	config := config.ServerConfig{HashQueueBuffer: 5}
-	q := NewServerHashQueue(&config)
+	q := HashQueue{hashes: make(chan string, 5)}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
