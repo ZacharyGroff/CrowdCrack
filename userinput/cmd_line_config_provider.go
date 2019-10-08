@@ -57,10 +57,10 @@ func parseServer() *models.ServerConfig {
 	}
 }
 
-func (c CmdLineConfigProvider) GetClientConfig() *models.ClientConfig {
+func (c *CmdLineConfigProvider) GetClientConfig() *models.ClientConfig {
 	return c.clientConfig
 }
 
-func (c CmdLineConfigProvider) GetServerConfig() *models.ServerConfig {
+func (c *CmdLineConfigProvider) GetServerConfig() *models.ServerConfig {
 	return c.serverConfig
 }
