@@ -3,6 +3,7 @@ package encoder
 import (
 	"fmt"
 	"log"
+	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
 	"github.com/ZacharyGroff/CrowdCrack/models"
@@ -71,38 +72,39 @@ func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error
 }
 
 func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) (models.HashSubmission, error) {
-	hashFunction, err := e.getHashFunction(hashingRequest.HashName)
+	passwordHashes, err := getPasswordHashes(hashingRequest.HashName, hashingRequest.Passwords)
 	if err != nil {
 		return models.HashSubmission{}, err
 	}
 
-	passwordHashes := getPasswordHashes(hashFunction, hashingRequest.Passwords)
-
 	return models.HashSubmission{hashingRequest.HashName, passwordHashes}, nil
 }
 
-func (e Hasher) getHashFunction(hashName string) (func([]byte) [32]byte, error) {
-	switch hashName {
-	case "sha256":
-		return sha256.Sum256, nil
-	default:
-		return nil, fmt.Errorf("%s is not a supported hash. If the hash is currently available in golang crypto package, please create a GitHub issue to have support for it added.", hashName)
-	}
-}
-
-func getPasswordHashes(hashFunction func([]byte) [32]byte, passwords []string) []string {
+func getPasswordHashes(hashName string, passwords []string) ([]string, error) {
 	var passwordHashes []string
 	for _, password := range passwords {
-		passwordHash := getPasswordHash(hashFunction, password)
+		passwordHash, err := getPasswordHash(hashName, password)
+		if err != nil {
+			return nil, err
+		}
 		passwordHashes = append(passwordHashes, passwordHash)
 	}
 
-	return passwordHashes
+	return passwordHashes, nil
 }
 
-func getPasswordHash(hashFunction func([]byte) [32]byte, password string) string {
-	hash := hashFunction([]byte(password))
-	humanReadableHash := hex.EncodeToString(hash[:])
+func getPasswordHash(hashName string, password string) (string, error) {
+	var humanReadableHash string
+	switch hashName {
+	case "md5":
+		hash := md5.Sum([]byte(password))
+		humanReadableHash = hex.EncodeToString(hash[:])
+	case "sha256":
+		hash := sha256.Sum256([]byte(password))
+		humanReadableHash = hex.EncodeToString(hash[:])
+	default:
+		return "", fmt.Errorf("%s is not a supported hash. If the hash is currently available in golang crypto package, please create a GitHub issue to have support for it added.", hashName)
+	}
 
-	return password + ":" + humanReadableHash
+	return password + ":" + humanReadableHash, nil
 }

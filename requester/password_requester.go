@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hash"
 	"crypto/sha256"
+	"crypto/md5"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
@@ -28,6 +29,7 @@ func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashA
 
 func getSupportedHashes() map[string]hash.Hash {
 	return map[string]hash.Hash {
+		"md5": md5.New(),
 		"sha256": sha256.New(),
 	}
 }
