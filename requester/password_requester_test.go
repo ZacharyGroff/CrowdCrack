@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"crypto/md5"
 	"crypto/sha256"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
@@ -182,6 +183,7 @@ func assertApiClientGetPasswordsCalled(t *testing.T, testObject testObject) {
 
 func TestGetSupportedHashesCorrectHashes(t *testing.T) {
 	expected := map[string]hash.Hash {
+		"md5": md5.New(),
 		"sha256": sha256.New(),
 	}
 	actual := getSupportedHashes()
