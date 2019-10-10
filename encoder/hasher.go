@@ -2,10 +2,9 @@ package encoder
 
 import (
 	"fmt"
+	"hash"
+	"io"
 	"log"
-	"crypto/md5"
-	"crypto/sha256"
-	"encoding/hex"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
@@ -72,7 +71,7 @@ func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error
 }
 
 func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) (models.HashSubmission, error) {
-	passwordHashes, err := getPasswordHashes(hashingRequest.HashName, hashingRequest.Passwords)
+	passwordHashes, err := getPasswordHashes(hashingRequest.Hash, hashingRequest.Passwords)
 	if err != nil {
 		return models.HashSubmission{}, err
 	}
@@ -80,10 +79,10 @@ func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) (models.
 	return models.HashSubmission{hashingRequest.HashName, passwordHashes}, nil
 }
 
-func getPasswordHashes(hashName string, passwords []string) ([]string, error) {
+func getPasswordHashes(hash hash.Hash, passwords []string) ([]string, error) {
 	var passwordHashes []string
 	for _, password := range passwords {
-		passwordHash, err := getPasswordHash(hashName, password)
+		passwordHash, err := getPasswordHash(hash, password)
 		if err != nil {
 			return nil, err
 		}
@@ -93,18 +92,9 @@ func getPasswordHashes(hashName string, passwords []string) ([]string, error) {
 	return passwordHashes, nil
 }
 
-func getPasswordHash(hashName string, password string) (string, error) {
-	var humanReadableHash string
-	switch hashName {
-	case "md5":
-		hash := md5.Sum([]byte(password))
-		humanReadableHash = hex.EncodeToString(hash[:])
-	case "sha256":
-		hash := sha256.Sum256([]byte(password))
-		humanReadableHash = hex.EncodeToString(hash[:])
-	default:
-		return "", fmt.Errorf("%s is not a supported hash. If the hash is currently available in golang crypto package, please create a GitHub issue to have support for it added.", hashName)
-	}
-
+func getPasswordHash(hash hash.Hash, password string) (string, error) {
+	io.WriteString(hash, password)
+	humanReadableHash := fmt.Sprintf("%x", hash.Sum(nil))
+	hash.Reset()
 	return password + ":" + humanReadableHash, nil
 }
