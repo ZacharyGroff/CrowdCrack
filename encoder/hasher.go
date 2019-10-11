@@ -57,12 +57,9 @@ func (e Hasher) processOrSleep() error {
 }
 
 func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error {
-	hashSubmission, err := e.getHashSubmission(hashingRequest)
-	if err != nil {
-		return err
-	}
-	
-	err = e.submissionQueue.Put(hashSubmission)
+	hashSubmission := e.getHashSubmission(hashingRequest)
+
+	err := e.submissionQueue.Put(hashSubmission)
 	for err != nil {
 		return err
 	}
@@ -70,31 +67,25 @@ func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error
 	return nil
 }
 
-func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) (models.HashSubmission, error) {
-	passwordHashes, err := getPasswordHashes(hashingRequest.Hash, hashingRequest.Passwords)
-	if err != nil {
-		return models.HashSubmission{}, err
-	}
+func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) models.HashSubmission {
+	passwordHashes := getPasswordHashes(hashingRequest.Hash, hashingRequest.Passwords)
 
-	return models.HashSubmission{hashingRequest.HashName, passwordHashes}, nil
+	return models.HashSubmission{hashingRequest.HashName, passwordHashes}
 }
 
-func getPasswordHashes(hash hash.Hash, passwords []string) ([]string, error) {
+func getPasswordHashes(hash hash.Hash, passwords []string) []string {
 	var passwordHashes []string
 	for _, password := range passwords {
-		passwordHash, err := getPasswordHash(hash, password)
-		if err != nil {
-			return nil, err
-		}
+		passwordHash := getPasswordHash(hash, password)
 		passwordHashes = append(passwordHashes, passwordHash)
 	}
 
-	return passwordHashes, nil
+	return passwordHashes
 }
 
-func getPasswordHash(hash hash.Hash, password string) (string, error) {
+func getPasswordHash(hash hash.Hash, password string) string {
 	io.WriteString(hash, password)
 	humanReadableHash := fmt.Sprintf("%x", hash.Sum(nil))
 	hash.Reset()
-	return password + ":" + humanReadableHash, nil
+	return password + ":" + humanReadableHash
 }
