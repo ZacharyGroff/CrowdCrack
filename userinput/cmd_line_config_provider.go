@@ -2,6 +2,7 @@ package userinput
 
 import (
 	"flag"
+	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
@@ -16,6 +17,8 @@ func NewCmdLineConfigProvider() CmdLineConfigProvider {
 }
 
 func parseCmdLine() (*models.ClientConfig, *models.ServerConfig) {
+	supportedHashes := "md4, md5, sha1, sha256, sha512, ripemd160, sha3_224, sha3_256, sha3_384, sha3_512, sha512_224, sha512_256"
+
 	serverAddressPtr := flag.String("a", "http://localhost:2725", "address of server to connect to")
 	hashQueueBufferPtr := flag.Uint64("hb", 10000, "buffer size for hash queue")
 	passwordQueueBufferPtr := flag.Uint64("pb", 10000, "buffer size for password queue")
@@ -23,7 +26,7 @@ func parseCmdLine() (*models.ClientConfig, *models.ServerConfig) {
 	computedHashOverFlowPathPtr := flag.String("cp", "output/computed_hash_overflow.txt", "path to file to flush computed hashes to")
 	wordListPathPtr := flag.String("wp", "wordlist.txt", "path to wordlist file")
 	hashListPathPtr := flag.String("hp", "hashlist.txt", "path to file containing hashes to crack")
-	hashFunctionPtr := flag.String("h", "sha256", "name of hash to use - currently supported: sha256")
+	hashFunctionPtr := flag.String("h", "sha256", fmt.Sprintf("name of hash to use - currently supported: %s", supportedHashes))
 	apiPortPtr := flag.Uint("p", 2725, "port to expose for api")
 	flag.Bool("client", false, "placeholder to allow checking of client arg in main")
 

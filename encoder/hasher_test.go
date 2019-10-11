@@ -10,19 +10,62 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
-func TestHasherStartError(t *testing.T) {
-	requestQueueError := error(nil)
-	hashingRequest := models.HashingRequest {
-		HashName: "fakeHashFunction",
-		Passwords: []string {
-			"password123",
-		},
-	}
-	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
-	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue}
+type testObject struct {
+	requestQueue *mocks.MockRequestQueue
+	submissionQueue *mocks.MockSubmissionQueue
+	waiter *mocks.MockWaiter
+	hasher *Hasher
+}
 
-	err := hasher.Start()
+var hashingRequest = models.HashingRequest {
+	Hash: sha256.New(),
+	HashName: "sha256",
+	Passwords: []string {
+		"password123",
+	},
+}
+
+func setupHasherForSuccess() testObject {
+	queueError := error(nil)
+	hashSubmission := models.HashSubmission{}
+	mockRequestQueue := mocks.NewMockRequestQueue(queueError, hashingRequest, 0)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(queueError, hashSubmission, 0)
+	mockWaiter := mocks.MockWaiter{0}
+	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue, submissionQueue: &mockSubmissionQueue}
+
+	return testObject{&mockRequestQueue, &mockSubmissionQueue, &mockWaiter, &hasher}
+}
+
+func setupHasherForSubmissionQueueError() testObject {
+	requestQueueError := error(nil)
+	submissionQueueError := errors.New("test error")
+	hashSubmission := models.HashSubmission{}
+
+	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
+	mockWaiter := mocks.MockWaiter{0}
+	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue, submissionQueue: &mockSubmissionQueue}
+
+	return testObject{&mockRequestQueue, &mockSubmissionQueue, &mockWaiter, &hasher}
+}
+
+func setupHasherForRequestQueueError() testObject {
+	requestQueueError := errors.New("test error")
+	submissionQueueError := error(nil)
+	hashSubmission := models.HashSubmission{}
+
+	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
+	mockWaiter := mocks.MockWaiter{0}
+	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue, submissionQueue: &mockSubmissionQueue}
+
+	return testObject{&mockRequestQueue, &mockSubmissionQueue, &mockWaiter, &hasher}
+}
+
+func TestHasherStartError(t *testing.T) {
+	testObject := setupHasherForSubmissionQueueError()
+
+	err := testObject.hasher.Start()
 
 	if err == nil {
 		t.Error("Expected error but nil returned")
@@ -30,167 +73,77 @@ func TestHasherStartError(t *testing.T) {
 }
 
 func TestHasherProcessOrSleepProcessSuccess(t *testing.T) {
-	queueError := error(nil)
-	hashingRequest := models.HashingRequest {
-		HashName: "sha256",
-		Passwords: []string {
-			"password123",
-		},
-	}
-	hashSubmission := models.HashSubmission{}
-	mockRequestQueue := mocks.NewMockRequestQueue(queueError, hashingRequest, 0)
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(queueError, hashSubmission, 0)
-	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue, submissionQueue: &mockSubmissionQueue}
-	
-	err := hasher.processOrSleep()
+	testObject := setupHasherForSuccess()
+	err := testObject.hasher.processOrSleep()
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
 }
 
-func TestHasherProcessOrSleepWaiterSleepsSuccess(t *testing.T) {
-	requestQueueError := errors.New("test error")
-	hashingRequest := models.HashingRequest{}
-	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
-	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue}
-	
-	err := hasher.processOrSleep()
+func TestHasherProcessOrSleepWaiterSleeps(t *testing.T) {
+	testObject := setupHasherForRequestQueueError()
+
+	err := testObject.hasher.processOrSleep()
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
 }
 
 func TestHasherProcessOrSleepWaiterSleepsWaiterCalled(t *testing.T) {
-	requestQueueError := errors.New("test error")
-	hashingRequest := models.HashingRequest{}
-	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
-	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue}
-	
-	hasher.processOrSleep()
+	testObject := setupHasherForRequestQueueError()
+
+	testObject.hasher.processOrSleep()
+
 	expected := uint64(1)
-	actual := mockWaiter.WaitCalls
+	actual := testObject.waiter.WaitCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
 }
 
 func TestHasherProcessOrSleepError(t *testing.T) {
-	requestQueueError := error(nil)
-	hashingRequest := models.HashingRequest {
-		HashName: "fakeHashFunction",
-		Passwords: []string {
-			"password123",
-		},
-	}
-	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
-	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue}
-	
-	err := hasher.processOrSleep()
+	testObject := setupHasherForSubmissionQueueError()
+
+	err := testObject.hasher.processOrSleep()
 	if err == nil {
 		t.Error("Expected error but nil returned")
 	}
 }
 
 func TestHasherHandleHashingRequestSuccess(t *testing.T) {
-	submissionQueueError := error(nil)
-	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
-	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
+	testObject := setupHasherForSuccess()
 
-	hashingRequest := models.HashingRequest {
-		HashName: "sha256",
-		Passwords: []string {
-			"password123",
-		},
-	}
-
-	err := hasher.handleHashingRequest(hashingRequest)
+	err := testObject.hasher.handleHashingRequest(hashingRequest)
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
 }
 
 func TestHasherHandleHashingRequestHashSubmissionError(t *testing.T) {
-	submissionQueueError := error(nil)
-	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
-	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
+	testObject := setupHasherForSubmissionQueueError()
 
-	hashingRequest := models.HashingRequest {
-		HashName: "fakeHashFunction",
-		Passwords: []string {
-			"password123",
-		},
-	}
-
-	err := hasher.handleHashingRequest(hashingRequest)
+	err := testObject.hasher.handleHashingRequest(hashingRequest)
 	if err == nil {
 		t.Error("Expected error but nil returned.")
 	}
 }
 
-func TestHasherHandleHashingRequestHashSubmissionErrorSubmissionQueuePutNotCalled(t *testing.T) {
-	submissionQueueError := error(nil)
-	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
-	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
-
-	hashingRequest := models.HashingRequest {
-		HashName: "fakeHashFunction",
-		Passwords: []string {
-			"password123",
-		},
-	}
-
-	hasher.handleHashingRequest(hashingRequest)
-
-	expected := uint64(0)
-	actual := mockSubmissionQueue.PutCalls
-	if expected != actual {
-		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
-	}
-}
-
 func TestHasherHandleHashingRequestSubmissionQueueError(t *testing.T) {
-	submissionQueueError := errors.New("test error")
-	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
-	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
+	testObject := setupHasherForSubmissionQueueError()
 
-	hashingRequest := models.HashingRequest {
-		HashName: "sha256",
-		Passwords: []string {
-			"password123",
-		},
-	}
-
-	err := hasher.handleHashingRequest(hashingRequest)
+	err := testObject.hasher.handleHashingRequest(hashingRequest)
 	if err == nil {
 		t.Error("Expected error but nil returned.")
 	}
 }
 
 func TestHasherHandleHashingRequestSubmissionQueueErrorPutCalled(t *testing.T) {
-	submissionQueueError := errors.New("test error")
-	hashSubmission := models.HashSubmission{}
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
-	hasher := Hasher{submissionQueue: &mockSubmissionQueue}		
+	testObject := setupHasherForSubmissionQueueError()
 
-	hashingRequest := models.HashingRequest {
-		HashName: "sha256",
-		Passwords: []string {
-			"password123",
-		},
-	}
-
-	hasher.handleHashingRequest(hashingRequest)
+	testObject.hasher.handleHashingRequest(hashingRequest)
 	
 	expected := uint64(1)
-	actual := mockSubmissionQueue.PutCalls
+	actual := testObject.submissionQueue.PutCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
@@ -209,58 +162,15 @@ func TestHasherGetHashSubmissionCorrectResults(t *testing.T) {
 		"hunter2",
 	}
 	hashingRequest := models.HashingRequest {
+		Hash: sha256.New(),
 		HashName: "sha256",
 		Passwords: passwords,
 	}
-	hasher := Hasher{}
+	testObject := setupHasherForSuccess()
 
-	actual, _ := hasher.getHashSubmission(hashingRequest)
+	actual := testObject.hasher.getHashSubmission(hashingRequest)
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
-	}
-}
-
-func TestHasherGetHashSubmissionSuccess(t *testing.T) {
-	passwords := []string{"password123"}
-	hashingRequest := models.HashingRequest {
-		HashName: "sha256",
-		Passwords: passwords,
-	}
-	hasher := Hasher{}
-
-	_, err := hasher.getHashSubmission(hashingRequest)
-	if err != nil {
-		t.Errorf("Unexpected error returned: %s\n", err.Error())
-	}
-}
-
-func TestHasherGetHashSubmissionError(t *testing.T) {
-	passwords := []string{"password123"}
-	hashingRequest := models.HashingRequest {
-		HashName: "fakeHashFunction",
-		Passwords: passwords,
-	}
-	hasher := Hasher{}
-
-	_, err := hasher.getHashSubmission(hashingRequest)
-	if err == nil {
-		t.Error("Expected error but nil returned.")
-	}
-}
-
-func TestHasherGetHashFunctionHashSupported(t *testing.T) {
-	hasher := Hasher{}
-	_, err := hasher.getHashFunction("sha256")
-	if err != nil {
-		t.Errorf("Unexpected error returned: %s\n", err.Error())
-	}
-}
-
-func TestHasherGetHashFunctionHashNotSupported(t *testing.T) {
-	hasher := Hasher{}
-	_, err := hasher.getHashFunction("fakeHashFunction")
-	if err == nil {
-		t.Error("Expected error but nil returned.")
 	}
 }
 
@@ -273,7 +183,7 @@ func TestHasherGetPasswordHashesCorrectResults(t *testing.T) {
 		"hunter2",
 		"password123",
 	}
-	hashFunction := sha256.Sum256
+	hashFunction := sha256.New()
 
 	var expected []string
 	for i, _ := range passwords {
@@ -292,7 +202,7 @@ func TestHasherGetPasswordHashesCorrectResults(t *testing.T) {
 func TestHasherGetPasswordHashCorrectResult(t *testing.T) {
 	hashResult := "f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7"
 	password := "hunter2"
-	hashFunction := sha256.Sum256
+	hashFunction := sha256.New()
 
 	expected := password + ":" + hashResult
 	actual := getPasswordHash(hashFunction, password)

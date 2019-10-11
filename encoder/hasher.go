@@ -2,9 +2,9 @@ package encoder
 
 import (
 	"fmt"
+	"hash"
+	"io"
 	"log"
-	"crypto/sha256"
-	"encoding/hex"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
@@ -57,12 +57,9 @@ func (e Hasher) processOrSleep() error {
 }
 
 func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error {
-	hashSubmission, err := e.getHashSubmission(hashingRequest)
-	if err != nil {
-		return err
-	}
-	
-	err = e.submissionQueue.Put(hashSubmission)
+	hashSubmission := e.getHashSubmission(hashingRequest)
+
+	err := e.submissionQueue.Put(hashSubmission)
 	for err != nil {
 		return err
 	}
@@ -70,39 +67,25 @@ func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error
 	return nil
 }
 
-func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) (models.HashSubmission, error) {
-	hashFunction, err := e.getHashFunction(hashingRequest.HashName)
-	if err != nil {
-		return models.HashSubmission{}, err
-	}
+func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) models.HashSubmission {
+	passwordHashes := getPasswordHashes(hashingRequest.Hash, hashingRequest.Passwords)
 
-	passwordHashes := getPasswordHashes(hashFunction, hashingRequest.Passwords)
-
-	return models.HashSubmission{hashingRequest.HashName, passwordHashes}, nil
+	return models.HashSubmission{hashingRequest.HashName, passwordHashes}
 }
 
-func (e Hasher) getHashFunction(hashName string) (func([]byte) [32]byte, error) {
-	switch hashName {
-	case "sha256":
-		return sha256.Sum256, nil
-	default:
-		return nil, fmt.Errorf("%s is not a supported hash. If the hash is currently available in golang crypto package, please create a GitHub issue to have support for it added.", hashName)
-	}
-}
-
-func getPasswordHashes(hashFunction func([]byte) [32]byte, passwords []string) []string {
+func getPasswordHashes(hash hash.Hash, passwords []string) []string {
 	var passwordHashes []string
 	for _, password := range passwords {
-		passwordHash := getPasswordHash(hashFunction, password)
+		passwordHash := getPasswordHash(hash, password)
 		passwordHashes = append(passwordHashes, passwordHash)
 	}
 
 	return passwordHashes
 }
 
-func getPasswordHash(hashFunction func([]byte) [32]byte, password string) string {
-	hash := hashFunction([]byte(password))
-	humanReadableHash := hex.EncodeToString(hash[:])
-
+func getPasswordHash(hash hash.Hash, password string) string {
+	io.WriteString(hash, password)
+	humanReadableHash := fmt.Sprintf("%x", hash.Sum(nil))
+	hash.Reset()
 	return password + ":" + humanReadableHash
 }
