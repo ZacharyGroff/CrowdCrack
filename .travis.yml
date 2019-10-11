@@ -2,7 +2,7 @@ language: go
 before_install:
 - go get github.com/google/wire
 - go get github.com/mattn/goveralls
-- go get golang.org/x/crypto
+- go get -t -v https://github.com/golang/go/tree/master/src/crypto/...
 - go test -v -covermode=count -coverprofile=coverage.out ./...
 go:
 - 1.x
