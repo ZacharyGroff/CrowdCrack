@@ -26,6 +26,8 @@ func parseCmdLine() (*models.ClientConfig, *models.ServerConfig) {
 	computedHashOverFlowPathPtr := flag.String("overflow-path", "output/computed_hash_overflow.txt", "path to file to flush computed hashes to")
 	wordListPathPtr := flag.String("wordlist-path", "wordlist.txt", "path to wordlist file")
 	hashListPathPtr := flag.String("hashlist-path", "hashlist.txt", "path to file containing hashes to crack")
+	logPathPtr := flag.String("log-path", "crowdcrack_log.txt", "path to log file")
+	logFrequencyInSecondsPtr := flag.Uint64("log-frequency", 60, "time interval for logging stats")
 	hashFunctionPtr := flag.String("hash", "sha256", fmt.Sprintf("name of hash to use - currently supported: %s", supportedHashes))
 	apiPortPtr := flag.Uint("port", 2725, "port to expose for api")
 	flag.Bool("client", false, "placeholder to allow checking of client arg in main")
@@ -42,6 +44,8 @@ func parseCmdLine() (*models.ClientConfig, *models.ServerConfig) {
 	serverConfig := &models.ServerConfig{
 		WordlistPath:             *wordListPathPtr,
 		HashlistPath:             *hashListPathPtr,
+		LogPath:                  *logPathPtr,
+		LogFrequencyInSeconds:    *logFrequencyInSecondsPtr,
 		HashFunction:             *hashFunctionPtr,
 		ApiPort:                  uint16(*apiPortPtr),
 		PasswordQueueBuffer:      *passwordQueueBufferPtr,
