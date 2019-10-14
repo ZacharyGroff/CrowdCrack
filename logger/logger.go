@@ -5,8 +5,8 @@ import (
 )
 
 type Logger interface {
-	LogPasswordsSent(int, time.Duration)
-	LogHashesComputed(int, time.Duration)
-	LogHashCracked(string)
+	LogPasswordsSent(uint64, time.Duration)
+	LogHashesComputed(uint64, time.Duration)
+	LogHashesCracked(uint64, time.Duration)
 	LogMessage(string)
 }
