@@ -1,8 +1,12 @@
 package logger
 
+import (
+	"time"
+)
+
 type Logger interface {
-	TrackPasswordsSent(int)
-	TrackHashesReceived(int)
-	TrackHashCracked(int)
+	LogPasswordsSent(int, time.Duration)
+	LogHashesComputed(int, time.Duration)
+	LogHashCracked(string)
 	LogMessage(string)
 }
