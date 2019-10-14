@@ -1,5 +1,5 @@
 package logger
 
 type Logger interface {
-	LogMessage(string)
+	LogMessage(string) error
 }
