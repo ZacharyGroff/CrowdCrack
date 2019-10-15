@@ -6,6 +6,14 @@ type StatsTracker struct {
 	hashesCracked uint64
 }
 
+func NewStatsTracker() *StatsTracker {
+	return &StatsTracker{
+		passwordsSent:  0,
+		hashesComputed: 0,
+		hashesCracked:  0,
+	}
+}
+
 func (s *StatsTracker) TrackPasswordsSent(passwordsSent uint64) {
 	s.passwordsSent += passwordsSent
 }
