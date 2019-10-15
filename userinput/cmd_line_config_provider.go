@@ -30,6 +30,7 @@ func parseCmdLine() (*models.ClientConfig, *models.ServerConfig) {
 	logFrequencyInSecondsPtr := flag.Uint64("log-frequency", 60, "time interval for logging stats")
 	hashFunctionPtr := flag.String("hash", "sha256", fmt.Sprintf("name of hash to use - currently supported: %s", supportedHashes))
 	apiPortPtr := flag.Uint("port", 2725, "port to expose for api")
+	verbosePtr := flag.Bool("verbose", true, "print log messages to console as well as log file")
 	flag.Bool("client", false, "placeholder to allow checking of client arg in main")
 
 	flag.Parse()
@@ -52,6 +53,7 @@ func parseCmdLine() (*models.ClientConfig, *models.ServerConfig) {
 		HashQueueBuffer:          *hashQueueBufferPtr,
 		FlushToFile:              *flushToFilePtr,
 		ComputedHashOverflowPath: *computedHashOverFlowPathPtr,
+		Verbose:                  *verbosePtr,
 	}
 
 	return clientConfig, serverConfig

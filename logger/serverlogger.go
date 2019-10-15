@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 type ServerLogger struct {
@@ -17,8 +17,11 @@ func NewServerLogger(c *models.ServerConfig) *ServerLogger {
 }
 
 func (s *ServerLogger) LogMessage(logMessage string) error {
-	log.Println(logMessage)
+	if s.config.Verbose {
+		log.Println(logMessage)
+	}
 	err := s.logToFile(logMessage)
+
 	return err
 }
 

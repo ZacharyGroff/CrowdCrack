@@ -11,4 +11,5 @@ type ServerConfig struct {
 	HashQueueBuffer uint64
 	FlushToFile bool
 	ComputedHashOverflowPath string
+	Verbose bool
 }
