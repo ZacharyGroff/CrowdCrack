@@ -34,10 +34,14 @@ func (s *StatsObserver) Start() {
 			s.logStats()
 		case <- s.stop:
 			ticker.Stop()
-			s.logger.LogMessage("Stopping stats observer...")
 			return
 		}
 	}
+}
+
+func (s *StatsObserver) Stop() {
+	s.logger.LogMessage("Stopping stats observer...")
+	s.stop <- true
 }
 
 func (s *StatsObserver) logStats() {
