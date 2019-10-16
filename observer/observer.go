@@ -1,4 +1,4 @@
-package logger
+package observer
 
 type Observer interface {
 	Start()

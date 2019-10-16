@@ -26,7 +26,7 @@ func (s *ServerLogger) LogMessage(logMessage string) error {
 }
 
 func (s *ServerLogger) logToFile(logMessage string) error {
-	file, err := os.OpenFile(s.config.LogPath, os.O_WRONLY, os.ModePerm)
+	file, err := os.OpenFile(s.config.LogPath, os.O_WRONLY | os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
 	}

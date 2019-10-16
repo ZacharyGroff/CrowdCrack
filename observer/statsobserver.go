@@ -1,20 +1,22 @@
-package logger
+package observer
 
 import (
 	"fmt"
 	"time"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"github.com/ZacharyGroff/CrowdCrack/tracker"
 )
 
 type StatsObserver struct {
-	logger Logger
-	tracker Tracker
-	config *models.ServerConfig
+	logger    logger.Logger
+	tracker   tracker.Tracker
+	config    *models.ServerConfig
 	startTime time.Time
-	stop chan bool
+	stop      chan bool
 }
 
-func NewStatsObserver(l *ServerLogger, t *StatsTracker, c *models.ServerConfig) *StatsObserver {
+func NewStatsObserver(l *logger.ServerLogger, t *tracker.StatsTracker, c *models.ServerConfig) *StatsObserver {
 	start := time.Now()
 	stop := make(chan bool)
 	return &StatsObserver{

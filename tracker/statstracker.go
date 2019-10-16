@@ -1,9 +1,17 @@
-package logger
+package tracker
 
 type StatsTracker struct {
 	passwordsSent uint64
 	hashesComputed uint64
 	hashesCracked uint64
+}
+
+func NewStatsTracker() *StatsTracker {
+	return &StatsTracker{
+		passwordsSent:  0,
+		hashesComputed: 0,
+		hashesCracked:  0,
+	}
 }
 
 func (s *StatsTracker) TrackPasswordsSent(passwordsSent uint64) {
