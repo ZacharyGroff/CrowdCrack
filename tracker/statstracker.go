@@ -1,4 +1,4 @@
-package logger
+package tracker
 
 type StatsTracker struct {
 	passwordsSent uint64

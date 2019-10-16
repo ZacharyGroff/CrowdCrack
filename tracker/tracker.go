@@ -1,4 +1,4 @@
-package logger
+package tracker
 
 type Tracker interface {
 	TrackPasswordsSent(uint64)
