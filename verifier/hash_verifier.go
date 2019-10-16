@@ -1,6 +1,7 @@
 package verifier
 
 import (
+	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"log"
 	"strings"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
@@ -10,11 +11,16 @@ import (
 type HashVerifier struct {
 	computedHashes queue.FlushingQueue
 	hashReader reader.HashReader
+	tracker tracker.Tracker
 	userProvidedHashes map[string]bool
 }
 
-func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader) *HashVerifier {
-	hashVerifier := HashVerifier{computedHashes: q, hashReader: r}
+func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader, t *tracker.StatsTracker) *HashVerifier {
+	hashVerifier := HashVerifier {
+		computedHashes: q,
+		hashReader: r,
+		tracker: t,
+	}
 
 	err := hashVerifier.loadUserProvidedHashes()
 	if err != nil {
@@ -47,6 +53,7 @@ func (v HashVerifier) verifyNextPasswordHash() bool {
 	isMatch := v.isMatch(hash)
 	if isMatch {
 		v.inform(password, hash)
+		v.tracker.TrackHashesCracked(1)
 	}
 
 	return isMatch
