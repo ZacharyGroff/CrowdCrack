@@ -1,24 +1,31 @@
 package api
 
 import (
-	"fmt"
-	"log"
 	"encoding/json"
-	"net/http"
+	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
+	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
+	"log"
+	"net/http"
 )
 
 type HashApi struct {
 	Config *models.ServerConfig
 	Passwords queue.Queue
 	Hashes queue.FlushingQueue
+	Tracker tracker.Tracker
 }
 
-func NewHashApi(p userinput.CmdLineConfigProvider, q *queue.PasswordQueue, h *queue.HashQueue) *HashApi {
+func NewHashApi(p userinput.CmdLineConfigProvider, q *queue.PasswordQueue, h *queue.HashQueue, t *tracker.StatsTracker) *HashApi {
 	c := p.GetServerConfig()
-	return &HashApi{c, q, h}
+	return &HashApi{
+		Config:    c,
+		Passwords: q,
+		Hashes:    h,
+		Tracker:   t,
+	}
 }
 
 func (a HashApi) HandleRequests() {
@@ -48,6 +55,9 @@ func (a HashApi) retrieveHashes(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	json.NewEncoder(w).Encode("Submission Successful")
+
+	numHashesComputed := uint64(len(hashSubmission.Results))
+	a.Tracker.TrackHashesComputed(numHashesComputed)
 }
 
 func (a HashApi) sendPasswords(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +76,8 @@ func (a HashApi) sendPasswords(w http.ResponseWriter, r *http.Request) {
 	passwords := a.getPasswords(numPasswords)
 
 	json.NewEncoder(w).Encode(passwords)
+
+	a.Tracker.TrackPasswordsSent(numPasswords)
 }
 
 func (a HashApi) getPasswords(n uint64) []string {
