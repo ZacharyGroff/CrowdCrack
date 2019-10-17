@@ -3,6 +3,7 @@ package logger
 import (
 	"bufio"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"log"
 	"os"
 	"github.com/ZacharyGroff/CrowdCrack/models"
@@ -12,7 +13,8 @@ type ServerLogger struct {
 	config *models.ServerConfig
 }
 
-func NewServerLogger(c *models.ServerConfig) *ServerLogger {
+func NewServerLogger(p *userinput.CmdLineConfigProvider) *ServerLogger {
+	c := p.GetServerConfig()
 	return &ServerLogger{c}
 }
 
