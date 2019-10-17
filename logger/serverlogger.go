@@ -13,7 +13,7 @@ type ServerLogger struct {
 	config *models.ServerConfig
 }
 
-func NewServerLogger(p *userinput.CmdLineConfigProvider) *ServerLogger {
+func NewServerLogger(p userinput.CmdLineConfigProvider) *ServerLogger {
 	c := p.GetServerConfig()
 	return &ServerLogger{c}
 }
