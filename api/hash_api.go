@@ -1,40 +1,48 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
+	"encoding/json"
+	"net/http"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
-	"log"
-	"net/http"
 )
 
 type HashApi struct {
 	Config *models.ServerConfig
-	Passwords queue.Queue
 	Hashes queue.FlushingQueue
+	Passwords queue.Queue
+	Logger logger.Logger
 	Tracker tracker.Tracker
 }
 
-func NewHashApi(p userinput.CmdLineConfigProvider, q *queue.PasswordQueue, h *queue.HashQueue, t *tracker.StatsTracker) *HashApi {
+func NewHashApi(p userinput.CmdLineConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.ServerLogger, t *tracker.StatsTracker) *HashApi {
 	c := p.GetServerConfig()
 	return &HashApi{
 		Config:    c,
-		Passwords: q,
 		Hashes:    h,
+		Logger:    l,
+		Passwords: q,
 		Tracker:   t,
 	}
 }
 
 func (a HashApi) HandleRequests() {
-	log.Printf("Api listening to requests on port %d", a.Config.ApiPort)
+	logMessage := fmt.Sprintf("Api listening to requests on port %d", a.Config.ApiPort)
+	a.Logger.LogMessage(logMessage)
 	http.HandleFunc("/current-hash", a.getHashName)
 	http.HandleFunc("/hashes", a.retrieveHashes)
 	http.HandleFunc("/passwords", a.sendPasswords)
 	port := fmt.Sprintf(":%d", a.Config.ApiPort)
-	log.Fatal(http.ListenAndServe(port, nil))
+
+	err := http.ListenAndServe(port, nil)
+	if err != nil {
+		a.Logger.LogMessage(err.Error())
+		panic(err)
+	}
 }
 
 func (a HashApi) getHashName(w http.ResponseWriter, r *http.Request) {

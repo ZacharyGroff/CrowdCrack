@@ -1,24 +1,27 @@
 package verifier
 
 import (
-	"github.com/ZacharyGroff/CrowdCrack/tracker"
-	"log"
+	"fmt"
 	"strings"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
+	"github.com/ZacharyGroff/CrowdCrack/tracker"
 )
 
 type HashVerifier struct {
 	computedHashes queue.FlushingQueue
 	hashReader reader.HashReader
+	logger logger.Logger
 	tracker tracker.Tracker
 	userProvidedHashes map[string]bool
 }
 
-func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader, t *tracker.StatsTracker) *HashVerifier {
+func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader, l *logger.ServerLogger, t *tracker.StatsTracker) *HashVerifier {
 	hashVerifier := HashVerifier {
 		computedHashes: q,
 		hashReader: r,
+		logger : l,
 		tracker: t,
 	}
 
@@ -82,5 +85,6 @@ func (v HashVerifier) isMatch(hash string) bool {
 }
 
 func (v HashVerifier) inform(password string, hash string) {
-	log.Printf("Hash Cracked: %s\nResult: %s\n", hash, password)
+	logMessage := fmt.Sprintf("Hash Cracked: %s\nResult: %s\n", hash, password)
+	v.logger.LogMessage(logMessage)
 }
