@@ -44,9 +44,9 @@ func InitializeServer() server.Server {
 	statsTracker := tracker.NewStatsTracker()
 	hashApi := api.NewHashApi(cmdLineConfigProvider, hashQueue, passwordQueue, serverLogger, statsTracker)
 	wordlistReader := reader.NewWordlistReader(cmdLineConfigProvider, passwordQueue)
+	statsObserver := observer.NewStatsObserver(serverLogger, statsTracker, cmdLineConfigProvider)
 	hashlistReader := reader.NewHashlistReader(cmdLineConfigProvider)
 	hashVerifier := verifier.NewHashVerifier(hashQueue, hashlistReader, serverLogger, statsTracker)
-	statsObserver := observer.NewStatsObserver(serverLogger, statsTracker, cmdLineConfigProvider)
-	serverServer := server.NewServer(hashApi, serverLogger, wordlistReader, hashVerifier, statsObserver)
+	serverServer := server.NewServer(hashApi, serverLogger, wordlistReader, statsObserver, hashVerifier)
 	return serverServer
 }
