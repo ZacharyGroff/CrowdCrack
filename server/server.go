@@ -12,17 +12,17 @@ type Server struct {
 	Api api.Api
 	Logger logger.Logger
 	Reader reader.PasswordReader
-	Verifier verifier.Verifier
 	Observer observer.Observer
+	Verifier verifier.Verifier
 }
 
-func NewServer(a *api.HashApi, l *logger.ServerLogger, r *reader.WordlistReader, v *verifier.HashVerifier, o *observer.StatsObserver) Server {
+func NewServer(a *api.HashApi, l *logger.ServerLogger, r *reader.WordlistReader, o *observer.StatsObserver, v *verifier.HashVerifier) Server {
 	return Server{
 		Api:      a,
 		Logger:   l,
 		Reader:   r,
-		Verifier: v,
 		Observer: o,
+		Verifier: v,
 	}
 }
 
