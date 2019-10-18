@@ -91,6 +91,30 @@ func setupHashVerifierForHashReaderError() testObject {
 	}
 }
 
+func assertTrackerCalled(t *testing.T, m *mocks.MockTracker) {
+	expected := uint64(1)
+	actual := m.TrackHashesCrackedCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertLoggerCalled(t *testing.T, m *mocks.MockLogger) {
+	expected := uint64(1)
+	actual := m.LogMessageCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertTrackerNotCalled(t *testing.T, m *mocks.MockTracker) {
+	expected := uint64(0)
+	actual := m.TrackHashesCrackedCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
 func TestHashVerifierLoadUserProvidedHashesCorrectHashes(t *testing.T) {
 	testObject := setupHashVerifierForSuccess()
 	testObject.hashVerifier.loadUserProvidedHashes()
@@ -130,6 +154,12 @@ func TestHashVerifierVerifyNextPasswordHashIsMatch(t *testing.T) {
 	}
 }
 
+func TestHashVerifier_VerifyNextPassword_HashIsMatch_TrackerCalled(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
+	testObject.hashVerifier.verifyNextPasswordHash()
+	assertTrackerCalled(t, testObject.mockTracker)
+}
+
 func TestHashVerifierVerifyNextPasswordHashIsNotMatch(t *testing.T) {
 	expected := false
 
@@ -139,6 +169,12 @@ func TestHashVerifierVerifyNextPasswordHashIsNotMatch(t *testing.T) {
 	if expected != actual {
 		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
+}
+
+func TestHashVerifier_VerifyNextPassword_HashIsNotMatch_TrackerNotCalled(t *testing.T) {
+	testObject := setupHashVerifierForNoMatch()
+	testObject.hashVerifier.verifyNextPasswordHash()
+	assertTrackerNotCalled(t, testObject.mockTracker)
 }
 
 func TestHashVerifierGetNextPasswordHashCorrectHash(t *testing.T) {
@@ -188,4 +224,10 @@ func TestHashVerifierIsMatchFalse(t *testing.T) {
 	if expected != actual {
 		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
+}
+
+func TestHashVerifier_Inform_LoggerCalled(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
+	testObject.hashVerifier.inform(fakePassword, fakeHash)
+	assertLoggerCalled(t, testObject.mockLogger)
 }
