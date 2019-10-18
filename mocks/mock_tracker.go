@@ -10,7 +10,7 @@ type MockTracker struct {
 	uint64ToReturn uint64
 }
 
-func NewMockTracker(u int64) MockTracker {
+func NewMockTracker(u uint64) MockTracker {
 	return MockTracker{
 		TrackPasswordsSentCalls:  0,
 		TrackHashesComputedCalls: 0,
