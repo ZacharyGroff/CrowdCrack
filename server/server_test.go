@@ -9,31 +9,55 @@ import (
 type testObject struct {
 	server *Server
 	mockApi *mocks.MockApi
+	mockLogger *mocks.MockLogger
 	mockPasswordReader *mocks.MockPasswordReader
+	mockObserver *mocks.MockObserver
 	mockVerifier *mocks.MockVerifier	
 }
 
 func setupServerForNoError() testObject {
 	mockApi := mocks.MockApi{0}
+	mockLogger := mocks.NewMockLogger(nil)
 	mockPasswordReader := mocks.NewMockPasswordReader(false)
+	mockObserver := mocks.NewMockObserver()
 	mockVerifier := mocks.MockVerifier{0}
-	server := Server{&mockApi, &mockPasswordReader, &mockVerifier}
+
+	server := Server{&mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
 	
-	return testObject{&server, &mockApi, &mockPasswordReader, &mockVerifier}
+	return testObject{&server, &mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
 }
 
-func setupServerForError() testObject {
+func setupServerForPasswordReaderError() testObject {
 	mockApi := mocks.MockApi{0}
+	mockLogger := mocks.NewMockLogger(nil)
 	mockPasswordReader := mocks.NewMockPasswordReader(true)
+	mockObserver := mocks.NewMockObserver()
 	mockVerifier := mocks.MockVerifier{0}
-	server := Server{&mockApi, &mockPasswordReader, &mockVerifier}
+	server := Server{&mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
 
-	return testObject{&server, &mockApi, &mockPasswordReader, &mockVerifier}
+	return testObject{&server, &mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
 }
 
 func assertLoadPasswordsCalled(t *testing.T, p *mocks.MockPasswordReader) {
 	expected := uint64(1)
 	actual := p.LoadPasswordsCalls 
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertLoggerCalled(t *testing.T, l *mocks.MockLogger) {
+	expected := uint64(1)
+	actual := l.LogMessageCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertObserverCalled(t *testing.T, o *mocks.MockObserver) {
+	time.Sleep(100 * time.Millisecond)
+	expected := uint64(1)
+	actual := o.StartCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
@@ -51,6 +75,15 @@ func assertVerifyCalled(t *testing.T, v *mocks.MockVerifier) {
 func assertHandleRequestsCalled(t *testing.T, a *mocks.MockApi) {
 	expected := uint64(1)
 	actual := a.HandleRequestsCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertObserverNotCalled(t *testing.T, o *mocks.MockObserver) {
+	time.Sleep(100 * time.Millisecond)
+	expected := uint64(0)
+	actual := o.StartCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
@@ -74,13 +107,17 @@ func assertHandleRequestsNotCalled(t *testing.T, a *mocks.MockApi) {
 }
 
 func assertNoError(t *testing.T, testObject testObject) {
+	assertLoggerCalled(t, testObject.mockLogger)
 	assertLoadPasswordsCalled(t, testObject.mockPasswordReader)
+	assertObserverCalled(t, testObject.mockObserver)
 	assertVerifyCalled(t, testObject.mockVerifier)
 	assertHandleRequestsCalled(t, testObject.mockApi)
 }
 
 func assertError(t *testing.T, testObject testObject) {
+	assertLoggerCalled(t, testObject.mockLogger)
 	assertLoadPasswordsCalled(t, testObject.mockPasswordReader)
+	assertObserverNotCalled(t, testObject.mockObserver)
 	assertVerifyNotCalled(t, testObject.mockVerifier)
 	assertHandleRequestsNotCalled(t, testObject.mockApi)
 }
@@ -97,7 +134,7 @@ func TestServerStartNoError(t *testing.T) {
 }
 
 func TestServerStartLoadPasswordsError(t *testing.T) {
-	testObject := setupServerForError()
+	testObject := setupServerForPasswordReaderError()
 	defer recoverAndAssertError(t, testObject)
 	testObject.server.Start()
 }

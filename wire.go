@@ -8,10 +8,13 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
+	"github.com/ZacharyGroff/CrowdCrack/observer"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
 	"github.com/ZacharyGroff/CrowdCrack/requester"
 	"github.com/ZacharyGroff/CrowdCrack/server"
+	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/submitter"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/verifier"
@@ -23,6 +26,6 @@ func InitializeClient() client.Client {
 }
 
 func InitializeServer() server.Server {
-	wire.Build(server.NewServer, api.NewHashApi, verifier.NewHashVerifier, reader.NewHashlistReader, reader.NewWordlistReader, queue.NewPasswordQueue, queue.NewHashQueue, userinput.NewCmdLineConfigProvider)
+	wire.Build(server.NewServer, api.NewHashApi, verifier.NewHashVerifier, reader.NewHashlistReader, reader.NewWordlistReader, queue.NewPasswordQueue, queue.NewHashQueue, observer.NewStatsObserver, logger.NewServerLogger, tracker.NewStatsTracker, userinput.NewCmdLineConfigProvider)
 	return server.Server{}
 }

@@ -2,32 +2,47 @@ package api
 
 import (
 	"fmt"
-	"log"
 	"encoding/json"
 	"net/http"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
+	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type HashApi struct {
 	Config *models.ServerConfig
-	Passwords queue.Queue
 	Hashes queue.FlushingQueue
+	Passwords queue.Queue
+	Logger logger.Logger
+	Tracker tracker.Tracker
 }
 
-func NewHashApi(p userinput.CmdLineConfigProvider, q *queue.PasswordQueue, h *queue.HashQueue) *HashApi {
+func NewHashApi(p userinput.CmdLineConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.ServerLogger, t *tracker.StatsTracker) *HashApi {
 	c := p.GetServerConfig()
-	return &HashApi{c, q, h}
+	return &HashApi{
+		Config:    c,
+		Hashes:    h,
+		Logger:    l,
+		Passwords: q,
+		Tracker:   t,
+	}
 }
 
 func (a HashApi) HandleRequests() {
-	log.Printf("Api listening to requests on port %d", a.Config.ApiPort)
+	logMessage := fmt.Sprintf("Api listening to requests on port %d", a.Config.ApiPort)
+	a.Logger.LogMessage(logMessage)
 	http.HandleFunc("/current-hash", a.getHashName)
 	http.HandleFunc("/hashes", a.retrieveHashes)
 	http.HandleFunc("/passwords", a.sendPasswords)
 	port := fmt.Sprintf(":%d", a.Config.ApiPort)
-	log.Fatal(http.ListenAndServe(port, nil))
+
+	err := http.ListenAndServe(port, nil)
+	if err != nil {
+		a.Logger.LogMessage(err.Error())
+		panic(err)
+	}
 }
 
 func (a HashApi) getHashName(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +63,9 @@ func (a HashApi) retrieveHashes(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	json.NewEncoder(w).Encode("Submission Successful")
+
+	numHashesComputed := uint64(len(hashSubmission.Results))
+	a.Tracker.TrackHashesComputed(numHashesComputed)
 }
 
 func (a HashApi) sendPasswords(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +84,8 @@ func (a HashApi) sendPasswords(w http.ResponseWriter, r *http.Request) {
 	passwords := a.getPasswords(numPasswords)
 
 	json.NewEncoder(w).Encode(passwords)
+
+	a.Tracker.TrackPasswordsSent(numPasswords)
 }
 
 func (a HashApi) getPasswords(n uint64) []string {

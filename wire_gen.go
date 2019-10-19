@@ -10,11 +10,14 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
+	"github.com/ZacharyGroff/CrowdCrack/observer"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
 	"github.com/ZacharyGroff/CrowdCrack/requester"
 	"github.com/ZacharyGroff/CrowdCrack/server"
 	"github.com/ZacharyGroff/CrowdCrack/submitter"
+	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/verifier"
 )
@@ -35,12 +38,15 @@ func InitializeClient() client.Client {
 
 func InitializeServer() server.Server {
 	cmdLineConfigProvider := userinput.NewCmdLineConfigProvider()
-	passwordQueue := queue.NewPasswordQueue(cmdLineConfigProvider)
 	hashQueue := queue.NewHashQueue(cmdLineConfigProvider)
-	hashApi := api.NewHashApi(cmdLineConfigProvider, passwordQueue, hashQueue)
+	passwordQueue := queue.NewPasswordQueue(cmdLineConfigProvider)
+	serverLogger := logger.NewServerLogger(cmdLineConfigProvider)
+	statsTracker := tracker.NewStatsTracker()
+	hashApi := api.NewHashApi(cmdLineConfigProvider, hashQueue, passwordQueue, serverLogger, statsTracker)
 	wordlistReader := reader.NewWordlistReader(cmdLineConfigProvider, passwordQueue)
+	statsObserver := observer.NewStatsObserver(serverLogger, statsTracker, cmdLineConfigProvider)
 	hashlistReader := reader.NewHashlistReader(cmdLineConfigProvider)
-	hashVerifier := verifier.NewHashVerifier(hashQueue, hashlistReader)
-	serverServer := server.NewServer(hashApi, wordlistReader, hashVerifier)
+	hashVerifier := verifier.NewHashVerifier(hashQueue, hashlistReader, serverLogger, statsTracker)
+	serverServer := server.NewServer(hashApi, serverLogger, wordlistReader, statsObserver, hashVerifier)
 	return serverServer
 }

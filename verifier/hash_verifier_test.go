@@ -8,143 +8,226 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 )
 
-func TestHashVerifierLoadUserProvidedHashesCorrectHashes(t *testing.T) {
-	expected := map[string]bool {
-		"fakeHash": true,
+var hashMap = map[string]bool {
+	fakeHash: true,
+}
+var fakePassword = "fakePassword"
+var fakeHash = "fakeHash"
+var fakePasswordHash = fakePassword + ":" + fakeHash
+var testError = errors.New("test error")
+var nilError error
+
+type testObject struct {
+	hashVerifier *HashVerifier
+	mockFlushingQueue *mocks.MockFlushingQueue
+	mockHashReader *mocks.MockHashReader
+	mockLogger *mocks.MockLogger
+	mockTracker *mocks.MockTracker
+}
+
+func setupHashVerifierForSuccess() testObject {
+	mockFlushingQueue := mocks.NewMockFlushingQueue(fakePasswordHash, nilError)
+	mockHashReader := mocks.NewMockHashReader(hashMap, nilError)
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockTracker := mocks.NewMockTracker(42)
+	hashVerifier := HashVerifier{
+		computedHashes:     &mockFlushingQueue,
+		hashReader:         &mockHashReader,
+		logger:             &mockLogger,
+		tracker:            &mockTracker,
+		userProvidedHashes: hashMap,
 	}
-	var errorToReturn error
-	mockHashReader := mocks.NewMockHashReader(expected, errorToReturn)
-	hashVerifier := HashVerifier{hashReader: &mockHashReader}
 
-	hashVerifier.loadUserProvidedHashes()
-
-	actual := hashVerifier.userProvidedHashes 
-	if !reflect.DeepEqual(expected, actual) {
-		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
+	return testObject {
+		hashVerifier:      &hashVerifier,
+		mockFlushingQueue: &mockFlushingQueue,
+		mockHashReader:    &mockHashReader,
+		mockLogger:        &mockLogger,
+		mockTracker:       &mockTracker,
 	}
 }
 
-func TestHashVerifierLoadUserProvidedHashesSuccess(t *testing.T) {
-	var mapToReturn map[string]bool
-	var errorToReturn error
-	mockHashReader := mocks.NewMockHashReader(mapToReturn, errorToReturn)
-	hashVerifier := HashVerifier{hashReader: &mockHashReader}
+func setupHashVerifierForNoMatch() testObject {
+	mockFlushingQueue := mocks.NewMockFlushingQueue(fakePasswordHash, nilError)
+	mockHashReader := mocks.NewMockHashReader(nil, nilError)
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockTracker := mocks.NewMockTracker(42)
+	hashVerifier := HashVerifier{
+		computedHashes:     &mockFlushingQueue,
+		hashReader:         &mockHashReader,
+		logger:             &mockLogger,
+		tracker:            &mockTracker,
+		userProvidedHashes: nil,
+	}
 
-	err := hashVerifier.loadUserProvidedHashes()
+	return testObject {
+		hashVerifier:      &hashVerifier,
+		mockFlushingQueue: &mockFlushingQueue,
+		mockHashReader:    &mockHashReader,
+		mockLogger:        &mockLogger,
+		mockTracker:       &mockTracker,
+	}
+}
+
+func setupHashVerifierForHashReaderError() testObject {
+	mockFlushingQueue := mocks.NewMockFlushingQueue(fakePasswordHash, nilError)
+	mockHashReader := mocks.NewMockHashReader(hashMap, testError)
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockTracker := mocks.NewMockTracker(42)
+	hashVerifier := HashVerifier{
+		computedHashes:     nil,
+		hashReader:         &mockHashReader,
+		logger:             &mockLogger,
+		tracker:            &mockTracker,
+		userProvidedHashes: nil,
+	}
+
+	return testObject {
+		hashVerifier:      &hashVerifier,
+		mockFlushingQueue: &mockFlushingQueue,
+		mockHashReader:    &mockHashReader,
+		mockLogger:        &mockLogger,
+		mockTracker:       &mockTracker,
+	}
+}
+
+func assertTrackerCalled(t *testing.T, m *mocks.MockTracker) {
+	expected := uint64(1)
+	actual := m.TrackHashesCrackedCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertLoggerCalled(t *testing.T, m *mocks.MockLogger) {
+	expected := uint64(1)
+	actual := m.LogMessageCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertTrackerNotCalled(t *testing.T, m *mocks.MockTracker) {
+	expected := uint64(0)
+	actual := m.TrackHashesCrackedCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestHashVerifier_LoadUserProvidedHashes_CorrectHashes(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
+	testObject.hashVerifier.loadUserProvidedHashes()
+
+	actual := testObject.hashVerifier.userProvidedHashes
+	if !reflect.DeepEqual(hashMap, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", hashMap, actual)
+	}
+}
+
+func TestHashVerifier_LoadUserProvidedHashes_Success(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
+
+	err := testObject.hashVerifier.loadUserProvidedHashes()
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
 }
 
-func TestHashVerifierLoadUserProvidedHashesError(t *testing.T) {
-	var mapToReturn map[string]bool
-	errorToReturn := errors.New("test error")
-	mockHashReader := mocks.NewMockHashReader(mapToReturn, errorToReturn)
-	hashVerifier := HashVerifier{hashReader: &mockHashReader}
+func TestHashVerifier_LoadUserProvidedHashes_Error(t *testing.T) {
+	testObject := setupHashVerifierForHashReaderError()
 
-	err := hashVerifier.loadUserProvidedHashes()
+	err := testObject.hashVerifier.loadUserProvidedHashes()
 	if err == nil {
 		t.Error("Expected error but nil returned")
 	}
 }
 
-func TestHashVerifierVerifyNextPasswordHashIsMatch(t *testing.T) {
+func TestHashVerifier_VerifyNextPasswordHash_IsMatch(t *testing.T) {
 	expected := true
 
-	hash := "fakeHash"
-	password := "fakePassword"
-	passwordHash := password + ":" + hash
-	var errToReturn error
-	mockFlushingQueue := mocks.NewMockFlushingQueue(passwordHash, errToReturn)
+	testObject := setupHashVerifierForSuccess()
 
-	userProvidedHashes := map[string]bool {
-		hash: true,
-	}
-	hashVerifier := HashVerifier{computedHashes: &mockFlushingQueue, userProvidedHashes: userProvidedHashes}
-
-	actual := hashVerifier.verifyNextPasswordHash()
+	actual := testObject.hashVerifier.verifyNextPasswordHash()
 	if expected != actual {
 		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
 }
 
-func TestHashVerifierVerifyNextPasswordHashIsNotMatch(t *testing.T) {
+func TestHashVerifier_VerifyNextPassword_HashIsMatch_TrackerCalled(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
+	testObject.hashVerifier.verifyNextPasswordHash()
+	assertTrackerCalled(t, testObject.mockTracker)
+}
+
+func TestHashVerifier_VerifyNextPasswordHash_IsNotMatch(t *testing.T) {
 	expected := false
 
-	hash := "fakeHash"
-	password := "fakePassword"
-	passwordHash := password + ":" + hash
-	var errToReturn error
-	mockFlushingQueue := mocks.NewMockFlushingQueue(passwordHash, errToReturn)
+	testObject := setupHashVerifierForNoMatch()
 
-	var userProvidedHashes map[string]bool
-	hashVerifier := HashVerifier{computedHashes: &mockFlushingQueue, userProvidedHashes: userProvidedHashes}
-
-	actual := hashVerifier.verifyNextPasswordHash()
+	actual := testObject.hashVerifier.verifyNextPasswordHash()
 	if expected != actual {
 		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
 }
 
-func TestHashVerifierGetNextPasswordHashCorrectHash(t *testing.T) {
-	expected := "fakeHash"
-	var errToReturn error
-	mockFlushingQueue := mocks.NewMockFlushingQueue(expected, errToReturn)
-	hashVerifier := HashVerifier{computedHashes: &mockFlushingQueue}
+func TestHashVerifier_VerifyNextPassword_HashIsNotMatch_TrackerNotCalled(t *testing.T) {
+	testObject := setupHashVerifierForNoMatch()
+	testObject.hashVerifier.verifyNextPasswordHash()
+	assertTrackerNotCalled(t, testObject.mockTracker)
+}
 
-	actual := hashVerifier.getNextPasswordHash()
-	if strings.Compare(expected, actual) != 0 {
-		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
+func TestHashVerifier_GetNextPasswordHash_CorrectHash(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
+
+	actual := testObject.hashVerifier.getNextPasswordHash()
+	if strings.Compare(fakePasswordHash, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", fakeHash, actual)
 	}
 }
 
-func TestHashVerifierParsePasswordHashCorrectPassword(t *testing.T) {
-	expected := "fakePassword"
-	hash := "fakeHash"
-	passwordHash := expected + ":" + hash
-	hashVerifier := HashVerifier{}
+func TestHashVerifier_ParsePasswordHash_CorrectPassword(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
 
-	actual, _ := hashVerifier.parsePasswordHash(passwordHash)
-	if strings.Compare(expected, actual) != 0 {
-		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
+	actual, _ := testObject.hashVerifier.parsePasswordHash(fakePasswordHash)
+	if strings.Compare(fakePassword, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", fakePassword, actual)
 	}
 }
 
-func TestHashVerifierParsePasswordHashCorrectHash(t *testing.T) {
-	password := "fakePassword"
-	expected := "fakeHash"
-	passwordHash := password + ":" + expected
-	hashVerifier := HashVerifier{}
+func TestHashVerifier_ParsePasswordHash_CorrectHash(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
 
-	_, actual := hashVerifier.parsePasswordHash(passwordHash)
-	if strings.Compare(expected, actual) != 0 {
-		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
+	_, actual := testObject.hashVerifier.parsePasswordHash(fakePasswordHash)
+	if strings.Compare(fakeHash, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", fakeHash, actual)
 	}
 }
 
-func TestHashVerifierIsMatchTrue(t *testing.T) {
+func TestHashVerifier_IsMatch_True(t *testing.T) {
 	expected := true
-	hash := "fakeHash"
-	userProvidedHashes := map[string]bool {
-		hash: true,
-	}
-	hashVerifier := HashVerifier{userProvidedHashes: userProvidedHashes}
 
-	actual := hashVerifier.isMatch(hash)
+	testObject := setupHashVerifierForSuccess()
+
+	actual := testObject.hashVerifier.isMatch(fakeHash)
 	if expected != actual {
 		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
 }
 
-func TestHashVerifierIsMatchFalse(t *testing.T) {
+func TestHashVerifier_IsMatch_False(t *testing.T) {
 	expected := false
-	userProvidedHashes := map[string]bool {
-		"sha256": true,
-	}
-	hashVerifier := HashVerifier{userProvidedHashes: userProvidedHashes}
 
-	actual := hashVerifier.isMatch("fakeHash")
+	testObject := setupHashVerifierForNoMatch()
+
+	actual := testObject.hashVerifier.isMatch("sha256")
 	if expected != actual {
 		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
+}
+
+func TestHashVerifier_Inform_LoggerCalled(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
+	testObject.hashVerifier.inform(fakePassword, fakeHash)
+	assertLoggerCalled(t, testObject.mockLogger)
 }
