@@ -3,10 +3,10 @@ package logger
 import (
 	"bufio"
 	"fmt"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"log"
 	"os"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type ServerLogger struct {

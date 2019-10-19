@@ -115,7 +115,7 @@ func assertTrackerNotCalled(t *testing.T, m *mocks.MockTracker) {
 	}
 }
 
-func TestHashVerifierLoadUserProvidedHashesCorrectHashes(t *testing.T) {
+func TestHashVerifier_LoadUserProvidedHashes_CorrectHashes(t *testing.T) {
 	testObject := setupHashVerifierForSuccess()
 	testObject.hashVerifier.loadUserProvidedHashes()
 
@@ -125,7 +125,7 @@ func TestHashVerifierLoadUserProvidedHashesCorrectHashes(t *testing.T) {
 	}
 }
 
-func TestHashVerifierLoadUserProvidedHashesSuccess(t *testing.T) {
+func TestHashVerifier_LoadUserProvidedHashes_Success(t *testing.T) {
 	testObject := setupHashVerifierForSuccess()
 
 	err := testObject.hashVerifier.loadUserProvidedHashes()
@@ -134,7 +134,7 @@ func TestHashVerifierLoadUserProvidedHashesSuccess(t *testing.T) {
 	}
 }
 
-func TestHashVerifierLoadUserProvidedHashesError(t *testing.T) {
+func TestHashVerifier_LoadUserProvidedHashes_Error(t *testing.T) {
 	testObject := setupHashVerifierForHashReaderError()
 
 	err := testObject.hashVerifier.loadUserProvidedHashes()
@@ -143,7 +143,7 @@ func TestHashVerifierLoadUserProvidedHashesError(t *testing.T) {
 	}
 }
 
-func TestHashVerifierVerifyNextPasswordHashIsMatch(t *testing.T) {
+func TestHashVerifier_VerifyNextPasswordHash_IsMatch(t *testing.T) {
 	expected := true
 
 	testObject := setupHashVerifierForSuccess()
@@ -160,7 +160,7 @@ func TestHashVerifier_VerifyNextPassword_HashIsMatch_TrackerCalled(t *testing.T)
 	assertTrackerCalled(t, testObject.mockTracker)
 }
 
-func TestHashVerifierVerifyNextPasswordHashIsNotMatch(t *testing.T) {
+func TestHashVerifier_VerifyNextPasswordHash_IsNotMatch(t *testing.T) {
 	expected := false
 
 	testObject := setupHashVerifierForNoMatch()
@@ -177,7 +177,7 @@ func TestHashVerifier_VerifyNextPassword_HashIsNotMatch_TrackerNotCalled(t *test
 	assertTrackerNotCalled(t, testObject.mockTracker)
 }
 
-func TestHashVerifierGetNextPasswordHashCorrectHash(t *testing.T) {
+func TestHashVerifier_GetNextPasswordHash_CorrectHash(t *testing.T) {
 	testObject := setupHashVerifierForSuccess()
 
 	actual := testObject.hashVerifier.getNextPasswordHash()
@@ -186,7 +186,7 @@ func TestHashVerifierGetNextPasswordHashCorrectHash(t *testing.T) {
 	}
 }
 
-func TestHashVerifierParsePasswordHashCorrectPassword(t *testing.T) {
+func TestHashVerifier_ParsePasswordHash_CorrectPassword(t *testing.T) {
 	testObject := setupHashVerifierForSuccess()
 
 	actual, _ := testObject.hashVerifier.parsePasswordHash(fakePasswordHash)
@@ -195,7 +195,7 @@ func TestHashVerifierParsePasswordHashCorrectPassword(t *testing.T) {
 	}
 }
 
-func TestHashVerifierParsePasswordHashCorrectHash(t *testing.T) {
+func TestHashVerifier_ParsePasswordHash_CorrectHash(t *testing.T) {
 	testObject := setupHashVerifierForSuccess()
 
 	_, actual := testObject.hashVerifier.parsePasswordHash(fakePasswordHash)
@@ -204,7 +204,7 @@ func TestHashVerifierParsePasswordHashCorrectHash(t *testing.T) {
 	}
 }
 
-func TestHashVerifierIsMatchTrue(t *testing.T) {
+func TestHashVerifier_IsMatch_True(t *testing.T) {
 	expected := true
 
 	testObject := setupHashVerifierForSuccess()
@@ -215,7 +215,7 @@ func TestHashVerifierIsMatchTrue(t *testing.T) {
 	}
 }
 
-func TestHashVerifierIsMatchFalse(t *testing.T) {
+func TestHashVerifier_IsMatch_False(t *testing.T) {
 	expected := false
 
 	testObject := setupHashVerifierForNoMatch()
