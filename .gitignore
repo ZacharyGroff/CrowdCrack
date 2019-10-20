@@ -5,6 +5,9 @@ CrowdCrack
 wordlist.txt
 hashlist.txt
 
+# Log file
+crowdcrack_log.txt
+
 # IDE
 .idea/*
 
