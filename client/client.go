@@ -1,7 +1,7 @@
 package client
 
 import (
-	"log"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/requester"
@@ -10,37 +10,44 @@ import (
 )
 
 type Client struct {
-	config *models.ClientConfig
+	config *models.Config
 	encoder encoder.Encoder
+	logger logger.Logger
 	requester requester.Requester
 	submitter submitter.Submitter
 }
 
-func NewClient(p userinput.CmdLineConfigProvider, e *encoder.Hasher, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
-	c := p.GetClientConfig()
-	return Client{c, e, r, s}
+func NewClient(p userinput.CmdLineConfigProvider, e *encoder.Hasher, l *logger.GenericLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
+	c := p.GetConfig()
+	return Client{
+		config:    c,
+		encoder:   e,
+		logger:    l,
+		requester: r,
+		submitter: s,
+	}
 }
 
 func (c Client) Start() {
-	log.Println("Starting Client...")
+	c.logger.LogMessage("Starting Client...")
 	go func() {
 		err := c.requester.Start()
 		if err != nil {
-			log.Println(err)
+			c.logger.LogMessage(err.Error())
 		}
 		c.Stop()
 	}()
 	go func() {
 		err := c.encoder.Start()
 		if err != nil {
-			log.Println(err)
+			c.logger.LogMessage(err.Error())
 		}
 		c.Stop()
 	}()
 	go func() {
 		err := c.submitter.Start()
 		if err != nil {
-			log.Println(err)
+			c.logger.LogMessage(err.Error())
 		}
 		c.Stop()
 	}()
@@ -49,5 +56,5 @@ func (c Client) Start() {
 }
 
 func (c Client) Stop() {
-	log.Println("Stopping Client...")
+	c.logger.LogMessage("Stopping Client...")
 }

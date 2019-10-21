@@ -18,7 +18,7 @@ import (
 )
 
 type PasswordRequester struct {
-	config *models.ClientConfig
+	config *models.Config
 	client apiclient.ApiClient
 	requestQueue queue.RequestQueue
 	supportedHashes map[string]hash.Hash
@@ -26,7 +26,7 @@ type PasswordRequester struct {
 }
 
 func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue) *PasswordRequester {
-	c := p.GetClientConfig()
+	c := p.GetConfig()
 	s := getSupportedHashes()
 	w := getWaiter()
 	return &PasswordRequester{c, cl, r, s, w}

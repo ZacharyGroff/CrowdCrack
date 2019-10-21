@@ -2,8 +2,8 @@ package submitter
 
 import (
 	"fmt"
-	"log"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
@@ -11,16 +11,23 @@ import (
 )
 
 type HashSubmitter struct {
-	config *models.ClientConfig
+	config *models.Config
 	client apiclient.ApiClient
+	logger logger.Logger
 	submissionQueue queue.SubmissionQueue
 	waiter waiter.Waiter
 }
 
-func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, q *queue.HashingSubmissionQueue) *HashSubmitter {
-	c := p.GetClientConfig()
+func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.GenericLogger, s *queue.HashingSubmissionQueue) *HashSubmitter {
+	c := p.GetConfig()
 	w := getWaiter()
-	return &HashSubmitter{c, cl, q, w}
+	return &HashSubmitter{
+		config:          c,
+		client:          cl,
+		logger:          l,
+		submissionQueue: s,
+		waiter:          w,
+	}
 }
 
 func getWaiter() waiter.Sleeper {
@@ -32,7 +39,7 @@ func getWaiter() waiter.Sleeper {
 }
 
 func (h HashSubmitter) Start() error {
-	log.Println("Starting HashSubmitter...")
+	h.logger.LogMessage("Starting HashSubmitter...")
 	for {
 		err := h.processOrSleep()
 		if err != nil {

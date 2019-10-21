@@ -2,26 +2,33 @@ package encoder
 
 import (
 	"fmt"
-	"hash"
-	"io"
-	"log"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
+	"hash"
+	"io"
 )
 
 type Hasher struct {
-	config *models.ClientConfig
+	config *models.Config
+	logger logger.Logger
 	requestQueue queue.RequestQueue
 	submissionQueue queue.SubmissionQueue
 	waiter waiter.Waiter
 }
 
-func NewHasher(p userinput.CmdLineConfigProvider, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
-	c := p.GetClientConfig()
+func NewHasher(p userinput.CmdLineConfigProvider, l *logger.GenericLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
+	c := p.GetConfig()
 	w := getWaiter()
-	return &Hasher{c, r, s, w}
+	return &Hasher{
+		config:          c,
+		logger:          l,
+		requestQueue:    r,
+		submissionQueue: s,
+		waiter:          w,
+	}
 }
 
 func getWaiter() waiter.Waiter {
@@ -33,7 +40,7 @@ func getWaiter() waiter.Waiter {
 }
 
 func (e Hasher) Start() error {
-	log.Println("Starting hasher...")
+	e.logger.LogMessage("Starting hasher...")
 	for {
 		err := e.processOrSleep()
 		if err != nil {
