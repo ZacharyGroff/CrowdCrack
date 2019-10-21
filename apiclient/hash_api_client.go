@@ -11,11 +11,11 @@ import (
 )
 
 type HashApiClient struct {
-	config *models.ClientConfig
+	config *models.Config
 }
 
 func NewHashApiClient(p userinput.CmdLineConfigProvider) *HashApiClient {
-	c := p.GetClientConfig()
+	c := p.GetConfig()
 	return &HashApiClient{c}
 }
 

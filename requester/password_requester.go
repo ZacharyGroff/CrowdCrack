@@ -11,6 +11,7 @@ import (
 	"golang.org/x/crypto/ripemd160"
 	"golang.org/x/crypto/sha3"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
@@ -18,17 +19,17 @@ import (
 )
 
 type PasswordRequester struct {
-	config *models.ClientConfig
+	config *models.Config
 	client apiclient.ApiClient
 	requestQueue queue.RequestQueue
 	supportedHashes map[string]hash.Hash
 	waiter waiter.Waiter
 }
 
-func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue) *PasswordRequester {
-	c := p.GetClientConfig()
+func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue, logger *logger.GenericLogger) *PasswordRequester {
+	c := p.GetConfig()
 	s := getSupportedHashes()
-	w := getWaiter()
+	w := getWaiter(logger)
 	return &PasswordRequester{c, cl, r, s, w}
 }
 
@@ -49,12 +50,12 @@ func getSupportedHashes() map[string]hash.Hash {
 	}
 }
 
-func getWaiter() waiter.Sleeper {
+func getWaiter(logger logger.Logger) waiter.Sleeper {
 	sleepSeconds := 60
 	isLogging := true
 	logMessage := fmt.Sprintf("Request queue full. Password requester sleeping for %d seconds\n", sleepSeconds)
 
-	return waiter.NewSleeper(sleepSeconds, isLogging, logMessage)
+	return waiter.NewSleeper(sleepSeconds, isLogging, logMessage, logger)
 }
 
 func (p PasswordRequester) Start() error {

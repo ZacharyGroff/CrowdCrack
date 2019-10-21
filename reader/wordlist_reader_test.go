@@ -12,7 +12,7 @@ func TestLoadPasswordsNoError(t *testing.T) {
 	passwords := []string{"password1"}
 	setupFile(testPath, passwords)
 
-	config := models.ServerConfig{WordlistPath: testPath}
+	config := models.Config{WordlistPath: testPath}
 	queue := mocks.MockQueue{PutCalls: 0}
 	reader := WordlistReader{config: &config, passwords: &queue}
 
@@ -28,7 +28,7 @@ func TestLoadPasswordsNoError(t *testing.T) {
 func TestLoadPasswordsError(t *testing.T) {
 	testPath := "wordlist_test.txt"
 
-	config := models.ServerConfig{WordlistPath: testPath}
+	config := models.Config{WordlistPath: testPath}
 	queue := mocks.MockQueue{PutCalls: 0}
 	reader := WordlistReader{config: &config, passwords: &queue}
 
@@ -46,7 +46,7 @@ func TestLoadPasswordsPutNoCalls(t *testing.T) {
 	passwords := []string{}
 	setupFile(testPath, passwords)
 
-	config := models.ServerConfig{WordlistPath: testPath}
+	config := models.Config{WordlistPath: testPath}
 	queue := mocks.MockQueue{PutCalls: 0}
 	reader := WordlistReader{config: &config, passwords: &queue}
 
@@ -67,7 +67,7 @@ func TestLoadPasswordsPutMultipleCalls(t *testing.T) {
 	passwords := []string{"password1", "password2"}
 	setupFile(testPath, passwords)
 
-	config := models.ServerConfig{WordlistPath: testPath}
+	config := models.Config{WordlistPath: testPath}
 	queue := mocks.MockQueue{PutCalls: 0}
 	reader := WordlistReader{config: &config, passwords: &queue}
 

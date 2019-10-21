@@ -9,12 +9,12 @@ import (
 )
 
 type WordlistReader struct {
-	config *models.ServerConfig
+	config *models.Config
 	passwords queue.Queue	
 }
 
 func NewWordlistReader(p userinput.CmdLineConfigProvider, q *queue.PasswordQueue) *WordlistReader {
-	c := p.GetServerConfig()
+	c := p.GetConfig()
 	return &WordlistReader{c, q}
 }
 

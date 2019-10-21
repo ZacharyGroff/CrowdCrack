@@ -11,11 +11,11 @@ import (
 
 type HashQueue struct {
 	hashes chan string
-	config models.ServerConfig
+	config models.Config
 }
 
 func NewHashQueue(p userinput.CmdLineConfigProvider) *HashQueue {
-	config := p.GetServerConfig()
+	config := p.GetConfig()
 	hashes := make(chan string, config.HashQueueBuffer)
 	return &HashQueue{hashes, *config}
 }

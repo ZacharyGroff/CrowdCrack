@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"log"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
@@ -12,28 +12,35 @@ import (
 )
 
 type Hasher struct {
-	config *models.ClientConfig
+	config *models.Config
+	logger logger.Logger
 	requestQueue queue.RequestQueue
 	submissionQueue queue.SubmissionQueue
 	waiter waiter.Waiter
 }
 
-func NewHasher(p userinput.CmdLineConfigProvider, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
-	c := p.GetClientConfig()
-	w := getWaiter()
-	return &Hasher{c, r, s, w}
+func NewHasher(p userinput.CmdLineConfigProvider, l *logger.GenericLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
+	c := p.GetConfig()
+	w := getWaiter(l)
+	return &Hasher{
+		config:          c,
+		logger:          l,
+		requestQueue:    r,
+		submissionQueue: s,
+		waiter:          w,
+	}
 }
 
-func getWaiter() waiter.Waiter {
+func getWaiter(logger logger.Logger) waiter.Waiter {
 	sleepDuration := 5
 	isLogging := true
 	logMessage := fmt.Sprintf("No requests in queue. Hasher sleeping for %d seconds", sleepDuration)
 
-	return waiter.NewSleeper(sleepDuration, isLogging, logMessage)
+	return waiter.NewSleeper(sleepDuration, isLogging, logMessage, logger)
 }
 
 func (e Hasher) Start() error {
-	log.Println("Starting hasher...")
+	e.logger.LogMessage("Starting hasher...")
 	for {
 		err := e.processOrSleep()
 		if err != nil {

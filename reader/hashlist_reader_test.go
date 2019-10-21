@@ -15,7 +15,7 @@ func TestGetHashesNoError(t *testing.T) {
 	}
 	setupFile(testPath, hashes)
 
-	config := models.ServerConfig{HashlistPath: testPath}
+	config := models.Config{HashlistPath: testPath}
 	reader := HashlistReader{&config}
 
 	_, err := reader.GetHashes()
@@ -29,7 +29,7 @@ func TestGetHashesNoError(t *testing.T) {
 func TestGetHashesError(t *testing.T) {
 	testPath := "hashlist_test.txt"
 
-	config := models.ServerConfig{HashlistPath: testPath}
+	config := models.Config{HashlistPath: testPath}
 	reader := HashlistReader{&config}
 
 	_, err := reader.GetHashes()
@@ -47,7 +47,7 @@ func TestGetHashesCorrectResults(t *testing.T) {
 	}
 	setupFile(testPath, expected)
 
-	config := models.ServerConfig{HashlistPath: testPath}
+	config := models.Config{HashlistPath: testPath}
 	reader := HashlistReader{&config}
 
 	actual, _ := reader.GetHashes()
