@@ -7,47 +7,103 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
+var testError = errors.New("test error")
+var nilError = error(nil)
+
 type testObject struct {
 	hashSubmitter *HashSubmitter
-	mockSubmissionQueue *mocks.MockSubmissionQueue
 	mockApiClient *mocks.MockApiClient
+	mockLogger *mocks.MockLogger
+	mockSubmissionQueue *mocks.MockSubmissionQueue
 	mockWaiter *mocks.MockWaiter
 }
 
 func setupHashSubmitterForNoError() testObject {
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{}, 1)
 	mockApiClient := mocks.NewMockApiClient(200, 200, 200, "fakeHash", []string{})
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
-	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
+	hashSubmitter := HashSubmitter {
+		config:          nil,
+		client:          &mockApiClient,
+		logger:          &mockLogger,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+	}
 
-	return testObject{&hashSubmitter, &mockSubmissionQueue, &mockApiClient, &mockWaiter}
+	return testObject {
+		hashSubmitter:       &hashSubmitter,
+		mockApiClient:       &mockApiClient,
+		mockLogger:          &mockLogger,
+		mockSubmissionQueue: &mockSubmissionQueue,
+		mockWaiter:          &mockWaiter,
+	}
 }
 
 func setupHashSubmitterForNoErrorEmptySubmissionQueue() testObject {
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{}, 0)
 	mockApiClient := mocks.NewMockApiClient(200, 200, 200, "fakeHash", []string{})
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 0)
 	mockWaiter := mocks.NewMockWaiter()
-	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
+	hashSubmitter := HashSubmitter {
+		config:          nil,
+		client:          &mockApiClient,
+		logger:          &mockLogger,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+	}
 
-	return testObject{&hashSubmitter, &mockSubmissionQueue, &mockApiClient, &mockWaiter}
+	return testObject {
+		hashSubmitter:       &hashSubmitter,
+		mockApiClient:       &mockApiClient,
+		mockLogger:          &mockLogger,
+		mockSubmissionQueue: &mockSubmissionQueue,
+		mockWaiter:          &mockWaiter,
+	}
 }
 
 func setupHashSubmitterForClientError() testObject {
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(error(nil), models.HashSubmission{}, 1)
 	mockApiClient := mocks.NewMockApiClient(500, 500, 500, "fakeHash", []string{})
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
-	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
+	hashSubmitter := HashSubmitter {
+		config:          nil,
+		client:          &mockApiClient,
+		logger:          &mockLogger,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+	}
 
-	return testObject{&hashSubmitter, &mockSubmissionQueue, &mockApiClient, &mockWaiter}
+	return testObject {
+		hashSubmitter:       &hashSubmitter,
+		mockApiClient:       &mockApiClient,
+		mockLogger:          &mockLogger,
+		mockSubmissionQueue: &mockSubmissionQueue,
+		mockWaiter:          &mockWaiter,
+	}
 }
 
 func setupHashSubmitterForSubmissionQueueError() testObject {
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(errors.New("test error"), models.HashSubmission{}, 1)
 	mockApiClient := mocks.NewMockApiClient(200, 0, 0, "fakeHash", []string{})
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(testError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
-	hashSubmitter := HashSubmitter{submissionQueue: &mockSubmissionQueue, client: &mockApiClient, waiter: &mockWaiter}
+	hashSubmitter := HashSubmitter {
+		config:          nil,
+		client:          &mockApiClient,
+		logger:          &mockLogger,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+	}
 
-	return testObject{&hashSubmitter, &mockSubmissionQueue, &mockApiClient, &mockWaiter}
+	return testObject {
+		hashSubmitter:       &hashSubmitter,
+		mockApiClient:       &mockApiClient,
+		mockLogger:          &mockLogger,
+		mockSubmissionQueue: &mockSubmissionQueue,
+		mockWaiter:          &mockWaiter,
+	}
 }
 
 func assertClientSubmitHashesCalled(t *testing.T, testObject testObject) {

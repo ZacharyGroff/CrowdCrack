@@ -32,6 +32,7 @@ func TestGenericLogger_logToFile_Success(t *testing.T) {
 func TestGenericLogger_logToFile_CorrectWrite(t *testing.T) {
 	expected := "test"
 
+	logPath := "test_log.txt"
 	config := models.Config{LogPath: logPath}
 	GenericLogger := GenericLogger{&config}
 	GenericLogger.logToFile(expected)

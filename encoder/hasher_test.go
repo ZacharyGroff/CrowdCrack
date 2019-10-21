@@ -10,7 +10,10 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
+var nilError = error(nil)
+
 type testObject struct {
+	logger *mocks.MockLogger
 	requestQueue *mocks.MockRequestQueue
 	submissionQueue *mocks.MockSubmissionQueue
 	waiter *mocks.MockWaiter
@@ -26,40 +29,76 @@ var hashingRequest = models.HashingRequest {
 }
 
 func setupHasherForSuccess() testObject {
-	queueError := error(nil)
 	hashSubmission := models.HashSubmission{}
-	mockRequestQueue := mocks.NewMockRequestQueue(queueError, hashingRequest, 0)
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(queueError, hashSubmission, 0)
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue, submissionQueue: &mockSubmissionQueue}
+	hasher := Hasher {
+		config:          nil,
+		logger:          &mockLogger,
+		requestQueue:    &mockRequestQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+	}
 
-	return testObject{&mockRequestQueue, &mockSubmissionQueue, &mockWaiter, &hasher}
+	return testObject {
+		logger:          &mockLogger,
+		requestQueue:    &mockRequestQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+		hasher:          &hasher,
+	}
 }
 
 func setupHasherForSubmissionQueueError() testObject {
-	requestQueueError := error(nil)
 	submissionQueueError := errors.New("test error")
 	hashSubmission := models.HashSubmission{}
 
-	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue, submissionQueue: &mockSubmissionQueue}
+	hasher := Hasher {
+		config:          nil,
+		logger:          &mockLogger,
+		requestQueue:    &mockRequestQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+	}
 
-	return testObject{&mockRequestQueue, &mockSubmissionQueue, &mockWaiter, &hasher}
+	return testObject {
+		logger:          &mockLogger,
+		requestQueue:    &mockRequestQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+		hasher:          &hasher,
+	}
 }
 
 func setupHasherForRequestQueueError() testObject {
 	requestQueueError := errors.New("test error")
-	submissionQueueError := error(nil)
 	hashSubmission := models.HashSubmission{}
 
+	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
-	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher{waiter: &mockWaiter, requestQueue: &mockRequestQueue, submissionQueue: &mockSubmissionQueue}
+	hasher := Hasher {
+		config:          nil,
+		logger:          &mockLogger,
+		requestQueue:    &mockRequestQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+	}
 
-	return testObject{&mockRequestQueue, &mockSubmissionQueue, &mockWaiter, &hasher}
+	return testObject {
+		logger:          &mockLogger,
+		requestQueue:    &mockRequestQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+		hasher:          &hasher,
+	}
 }
 
 func TestHasherStartError(t *testing.T) {

@@ -49,7 +49,7 @@ func TestFlushSize(t *testing.T) {
 	testPath := "hash_test.txt"
 	os.Create(testPath)
 
-	config := models.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: false}
+	config := models.Config{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: false}
 	q := HashQueue{hashes: make(chan string, 1), config: config}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
@@ -69,7 +69,7 @@ func TestFlushToFileSuccess(t *testing.T) {
 	f, err := os.Create(testPath)
 	f.Close()
 
-	config := models.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
+	config := models.Config{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
 	q := HashQueue{hashes: make(chan string, 1), config: config}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
@@ -87,7 +87,7 @@ func TestFlushToFileSuccess(t *testing.T) {
 func TestFlushToFileError(t *testing.T) {
 	testPath := "hash_test.txt"
 
-	config := models.ServerConfig{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
+	config := models.Config{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
 	q := HashQueue{hashes: make(chan string, 1), config: config}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
@@ -100,7 +100,7 @@ func TestFlushToFileError(t *testing.T) {
 }
 
 func TestFlushWithoutFileSuccess(t *testing.T) {
-	config := models.ServerConfig{HashQueueBuffer: 1, FlushToFile: false}
+	config := models.Config{HashQueueBuffer: 1, FlushToFile: false}
 	q := HashQueue{hashes: make(chan string, 1), config: config}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
