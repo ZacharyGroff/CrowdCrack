@@ -30,7 +30,7 @@ func (s *GenericLogger) LogMessage(logMessage string) error {
 }
 
 func (s *GenericLogger) logToFile(logMessage string) error {
-	file, err := os.OpenFile(s.config.LogPath, os.O_WRONLY | os.O_CREATE, os.ModePerm)
+	file, err := os.OpenFile(s.config.LogPath, os.O_WRONLY | os.O_CREATE | os.O_APPEND, os.ModePerm)
 	if err != nil {
 		return err
 	}
