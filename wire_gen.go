@@ -26,13 +26,13 @@ import (
 
 func InitializeClient() client.Client {
 	cmdLineConfigProvider := userinput.NewCmdLineConfigProvider()
+	genericLogger := logger.NewGenericLogger(cmdLineConfigProvider)
 	hashingRequestQueue := queue.NewHashingRequestQueue()
 	hashingSubmissionQueue := queue.NewHashingSubmissionQueue()
-	hasher := encoder.NewHasher(cmdLineConfigProvider, hashingRequestQueue, hashingSubmissionQueue)
-	genericLogger := logger.NewGenericLogger(cmdLineConfigProvider)
+	hasher := encoder.NewHasher(cmdLineConfigProvider, genericLogger, hashingRequestQueue, hashingSubmissionQueue)
 	hashApiClient := apiclient.NewHashApiClient(cmdLineConfigProvider)
 	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, hashingRequestQueue)
-	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, hashingSubmissionQueue)
+	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, genericLogger, hashingSubmissionQueue)
 	clientClient := client.NewClient(cmdLineConfigProvider, hasher, genericLogger, passwordRequester, hashSubmitter)
 	return clientClient
 }
