@@ -1,8 +1,8 @@
 package waiter
 
 import (
-	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"time"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 )
 
 type Sleeper struct {
