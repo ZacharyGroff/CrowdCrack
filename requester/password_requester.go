@@ -53,7 +53,7 @@ func getSupportedHashes() map[string]hash.Hash {
 func getWaiter(logger logger.Logger) waiter.Sleeper {
 	sleepSeconds := 60
 	isLogging := true
-	logMessage := fmt.Sprintf("Request queue full. Password requester sleeping for %d seconds\n", sleepSeconds)
+	logMessage := fmt.Sprintf("Request queue full. Password requester sleeping for %d seconds", sleepSeconds)
 
 	return waiter.NewSleeper(sleepSeconds, isLogging, logMessage, logger)
 }
