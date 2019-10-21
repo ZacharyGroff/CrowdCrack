@@ -29,10 +29,11 @@ func InitializeClient() client.Client {
 	hashingRequestQueue := queue.NewHashingRequestQueue()
 	hashingSubmissionQueue := queue.NewHashingSubmissionQueue()
 	hasher := encoder.NewHasher(cmdLineConfigProvider, hashingRequestQueue, hashingSubmissionQueue)
+	genericLogger := logger.NewGenericLogger(cmdLineConfigProvider)
 	hashApiClient := apiclient.NewHashApiClient(cmdLineConfigProvider)
 	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, hashingRequestQueue)
 	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, hashingSubmissionQueue)
-	clientClient := client.NewClient(cmdLineConfigProvider, hasher, passwordRequester, hashSubmitter)
+	clientClient := client.NewClient(cmdLineConfigProvider, hasher, genericLogger, passwordRequester, hashSubmitter)
 	return clientClient
 }
 
@@ -40,13 +41,13 @@ func InitializeServer() server.Server {
 	cmdLineConfigProvider := userinput.NewCmdLineConfigProvider()
 	hashQueue := queue.NewHashQueue(cmdLineConfigProvider)
 	passwordQueue := queue.NewPasswordQueue(cmdLineConfigProvider)
-	serverLogger := logger.NewServerLogger(cmdLineConfigProvider)
+	genericLogger := logger.NewGenericLogger(cmdLineConfigProvider)
 	statsTracker := tracker.NewStatsTracker()
-	hashApi := api.NewHashApi(cmdLineConfigProvider, hashQueue, passwordQueue, serverLogger, statsTracker)
+	hashApi := api.NewHashApi(cmdLineConfigProvider, hashQueue, passwordQueue, genericLogger, statsTracker)
 	wordlistReader := reader.NewWordlistReader(cmdLineConfigProvider, passwordQueue)
-	statsObserver := observer.NewStatsObserver(serverLogger, statsTracker, cmdLineConfigProvider)
+	statsObserver := observer.NewStatsObserver(genericLogger, statsTracker, cmdLineConfigProvider)
 	hashlistReader := reader.NewHashlistReader(cmdLineConfigProvider)
-	hashVerifier := verifier.NewHashVerifier(hashQueue, hashlistReader, serverLogger, statsTracker)
-	serverServer := server.NewServer(hashApi, serverLogger, wordlistReader, statsObserver, hashVerifier)
+	hashVerifier := verifier.NewHashVerifier(hashQueue, hashlistReader, genericLogger, statsTracker)
+	serverServer := server.NewServer(hashApi, genericLogger, wordlistReader, statsObserver, hashVerifier)
 	return serverServer
 }
