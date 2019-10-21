@@ -32,7 +32,7 @@ func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiCl
 
 func getWaiter(logger logger.Logger) waiter.Sleeper {
 	sleepSeconds := 5
-	logMessage := fmt.Sprintf("No submissions in queue. HashSubmitter sleeping for %d seconds\n", sleepSeconds)
+	logMessage := fmt.Sprintf("No submissions in queue. HashSubmitter sleeping for %d seconds", sleepSeconds)
 	isLogging := true
 	
 	return waiter.NewSleeper(sleepSeconds, isLogging, logMessage, logger)
