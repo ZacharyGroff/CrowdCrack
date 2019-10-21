@@ -12,7 +12,7 @@ type Sleeper struct {
 	logMessage string
 }
 
-func NewSleeper(sleepSeconds int, isLogging bool, logMessage string, logger *logger.GenericLogger) Sleeper {
+func NewSleeper(sleepSeconds int, isLogging bool, logMessage string, logger logger.Logger) Sleeper {
 	sleepDuration := time.Duration(sleepSeconds) * time.Second
 	return Sleeper {
 		logger:        logger,

@@ -20,7 +20,7 @@ type HashSubmitter struct {
 
 func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.GenericLogger, s *queue.HashingSubmissionQueue) *HashSubmitter {
 	c := p.GetConfig()
-	w := getWaiter()
+	w := getWaiter(l)
 	return &HashSubmitter{
 		config:          c,
 		client:          cl,
@@ -30,12 +30,12 @@ func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiCl
 	}
 }
 
-func getWaiter() waiter.Sleeper {
+func getWaiter(logger logger.Logger) waiter.Sleeper {
 	sleepSeconds := 5
 	logMessage := fmt.Sprintf("No submissions in queue. HashSubmitter sleeping for %d seconds\n", sleepSeconds)
 	isLogging := true
 	
-	return waiter.NewSleeper(sleepSeconds, isLogging, logMessage)
+	return waiter.NewSleeper(sleepSeconds, isLogging, logMessage, logger)
 }
 
 func (h HashSubmitter) Start() error {
