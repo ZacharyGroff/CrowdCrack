@@ -9,16 +9,18 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
-type ServerLogger struct {
-	config *models.ServerConfig
+type GenericLogger struct {
+	config *models.Config
 }
 
-func NewServerLogger(p userinput.CmdLineConfigProvider) *ServerLogger {
-	c := p.GetServerConfig()
-	return &ServerLogger{c}
+func NewGenericLogger(p userinput.CmdLineConfigProvider) *GenericLogger {
+	c := p.GetConfig()
+	return &GenericLogger{
+		config: c,
+	}
 }
 
-func (s *ServerLogger) LogMessage(logMessage string) error {
+func (s *GenericLogger) LogMessage(logMessage string) error {
 	if s.config.Verbose {
 		log.Println(logMessage)
 	}
@@ -27,7 +29,7 @@ func (s *ServerLogger) LogMessage(logMessage string) error {
 	return err
 }
 
-func (s *ServerLogger) logToFile(logMessage string) error {
+func (s *GenericLogger) logToFile(logMessage string) error {
 	file, err := os.OpenFile(s.config.LogPath, os.O_WRONLY | os.O_CREATE, os.ModePerm)
 	if err != nil {
 		return err
