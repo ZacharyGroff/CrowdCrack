@@ -8,11 +8,11 @@ import (
 )
 
 type HashlistReader struct {
-	config *models.ServerConfig
+	config *models.Config
 }
 
 func NewHashlistReader(p userinput.CmdLineConfigProvider) *HashlistReader {
-	c := p.GetServerConfig()
+	c := p.GetConfig()
 	return &HashlistReader{c}
 }
 

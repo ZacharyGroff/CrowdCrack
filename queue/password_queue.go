@@ -9,11 +9,11 @@ import (
 
 type PasswordQueue struct {
 	passwords chan string
-	config *models.ServerConfig
+	config *models.Config
 }
 
 func NewPasswordQueue(p userinput.CmdLineConfigProvider) *PasswordQueue {
-	config := p.GetServerConfig()
+	config := p.GetConfig()
 	passwords := make(chan string, config.PasswordQueueBuffer)
 	return &PasswordQueue{passwords, config}
 }

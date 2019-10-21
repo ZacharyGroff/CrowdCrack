@@ -5,6 +5,5 @@ import (
 )
 
 type ConfigProvider interface {
-	GetClientConfig() *models.ClientConfig
-	GetServerConfig() *models.ServerConfig
+	GetConfig() *models.Config
 }
