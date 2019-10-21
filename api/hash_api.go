@@ -12,15 +12,15 @@ import (
 )
 
 type HashApi struct {
-	Config *models.ServerConfig
+	Config *models.Config
 	Hashes queue.FlushingQueue
 	Passwords queue.Queue
 	Logger logger.Logger
 	Tracker tracker.Tracker
 }
 
-func NewHashApi(p userinput.CmdLineConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.ServerLogger, t *tracker.StatsTracker) *HashApi {
-	c := p.GetServerConfig()
+func NewHashApi(p userinput.CmdLineConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.GenericLogger, t *tracker.StatsTracker) *HashApi {
+	c := p.GetConfig()
 	return &HashApi{
 		Config:    c,
 		Hashes:    h,

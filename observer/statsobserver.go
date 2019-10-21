@@ -12,13 +12,13 @@ import (
 type StatsObserver struct {
 	logger    logger.Logger
 	tracker   tracker.Tracker
-	config    *models.ServerConfig
+	config    *models.Config
 	startTime time.Time
 	stop      chan bool
 }
 
-func NewStatsObserver(l *logger.ServerLogger, t *tracker.StatsTracker, p userinput.CmdLineConfigProvider) *StatsObserver {
-	c := p.GetServerConfig()
+func NewStatsObserver(l *logger.GenericLogger, t *tracker.StatsTracker, p userinput.CmdLineConfigProvider) *StatsObserver {
+	c := p.GetConfig()
 	start := time.Now()
 	stop := make(chan bool)
 	return &StatsObserver{

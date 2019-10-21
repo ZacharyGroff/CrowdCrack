@@ -17,7 +17,7 @@ type HashVerifier struct {
 	userProvidedHashes map[string]bool
 }
 
-func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader, l *logger.ServerLogger, t *tracker.StatsTracker) *HashVerifier {
+func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader, l *logger.GenericLogger, t *tracker.StatsTracker) *HashVerifier {
 	hashVerifier := HashVerifier {
 		computedHashes: q,
 		hashReader: r,
