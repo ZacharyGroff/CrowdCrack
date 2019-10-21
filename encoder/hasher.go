@@ -2,13 +2,13 @@ package encoder
 
 import (
 	"fmt"
+	"hash"
+	"io"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
-	"hash"
-	"io"
 )
 
 type Hasher struct {
