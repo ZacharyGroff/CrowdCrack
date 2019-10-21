@@ -7,16 +7,17 @@ import (
 )
 
 type CmdLineConfigProvider struct {
-	clientConfig *models.ClientConfig
-	serverConfig *models.ServerConfig
+	config *models.Config
 }
 
 func NewCmdLineConfigProvider() CmdLineConfigProvider {
-	clientConfig, serverConfig := parseCmdLine()
-	return CmdLineConfigProvider{clientConfig, serverConfig}
+	config := parseCmdLine()
+	return CmdLineConfigProvider{
+		config: config,
+	}
 }
 
-func parseCmdLine() (*models.ClientConfig, *models.ServerConfig) {
+func parseCmdLine() *models.Config {
 	supportedHashes := "md4, md5, sha1, sha256, sha512, ripemd160, sha3_224, sha3_256, sha3_384, sha3_512, sha512_224, sha512_256"
 
 	serverAddressPtr := flag.String("saddress", "http://localhost:2725", "address of server to connect to")
@@ -35,28 +36,20 @@ func parseCmdLine() (*models.ClientConfig, *models.ServerConfig) {
 
 	flag.Parse()
 
-	clientConfig := &models.ClientConfig{
-		ServerAddress:            *serverAddressPtr,
-		HashQueueBuffer:          *hashQueueBufferPtr,
-		PasswordQueueBuffer:      *passwordQueueBufferPtr,
-		FlushToFile:              *flushToFilePtr,
-		ComputedHashOverflowPath: *computedHashOverFlowPathPtr,
-	}
-	serverConfig := &models.ServerConfig{
-		WordlistPath:             *wordListPathPtr,
-		HashlistPath:             *hashListPathPtr,
-		LogPath:                  *logPathPtr,
-		LogFrequencyInSeconds:    *logFrequencyInSecondsPtr,
-		HashFunction:             *hashFunctionPtr,
+	return &models.Config {
 		ApiPort:                  uint16(*apiPortPtr),
-		PasswordQueueBuffer:      *passwordQueueBufferPtr,
-		HashQueueBuffer:          *hashQueueBufferPtr,
-		FlushToFile:              *flushToFilePtr,
 		ComputedHashOverflowPath: *computedHashOverFlowPathPtr,
+		FlushToFile:              *flushToFilePtr,
+		HashFunction:             *hashFunctionPtr,
+		HashlistPath:             *hashListPathPtr,
+		HashQueueBuffer:          *hashQueueBufferPtr,
+		LogFrequencyInSeconds:    *logFrequencyInSecondsPtr,
+		LogPath:                  *logPathPtr,
+		PasswordQueueBuffer:      *passwordQueueBufferPtr,
+		ServerAddress:            *serverAddressPtr,
 		Verbose:                  *verbosePtr,
+		WordlistPath:             *wordListPathPtr,
 	}
-
-	return clientConfig, serverConfig
 }
 
 func IsClient(args []string) bool {
@@ -68,10 +61,6 @@ func IsClient(args []string) bool {
 	return false
 }
 
-func (c *CmdLineConfigProvider) GetClientConfig() *models.ClientConfig {
-	return c.clientConfig
-}
-
-func (c *CmdLineConfigProvider) GetServerConfig() *models.ServerConfig {
-	return c.serverConfig
+func (c *CmdLineConfigProvider) GetConfig() *models.Config {
+	return c.config
 }
