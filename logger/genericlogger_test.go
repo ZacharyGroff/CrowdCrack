@@ -2,10 +2,12 @@ package logger
 
 import (
 	"bufio"
+	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
 	"strings"
 	"testing"
-	"github.com/ZacharyGroff/CrowdCrack/models"
+	"time"
 )
 
 func TestGenericLogger_LogMessage_Error(t *testing.T) {
@@ -42,7 +44,7 @@ func TestGenericLogger_logToFile_CorrectWrite(t *testing.T) {
 	line, _, _ := reader.ReadLine()
 
 	actual := string(line)
-	if strings.Compare(expected, actual) != 0 {
+	if !strings.Contains(actual, expected) {
 		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
 	}
 
@@ -55,5 +57,16 @@ func TestGenericLogger_logToFile_Error(t *testing.T) {
 	err := GenericLogger.logToFile("test")
 	if err == nil {
 		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestGenericLogger_getTimeFormattedMessage_CorrectResult(t *testing.T) {
+	testMessage := "testMessage"
+	currentTime := time.Now()
+	expected := fmt.Sprintf("%s: %s", currentTime.Format(time.RFC822), testMessage)
+
+	actual := getTimeFormattedMessage(currentTime, testMessage)
+	if strings.Compare(expected, actual) != 0 {
+		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
 	}
 }
