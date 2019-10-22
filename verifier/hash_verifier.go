@@ -85,6 +85,6 @@ func (v HashVerifier) isMatch(hash string) bool {
 }
 
 func (v HashVerifier) inform(password string, hash string) {
-	logMessage := fmt.Sprintf("Hash Cracked: %s\nResult: %s", hash, password)
+	logMessage := fmt.Sprintf("Hash Cracked: %s Result: %s", hash, password)
 	v.logger.LogMessage(logMessage)
 }
