@@ -3,11 +3,11 @@ package logger
 import (
 	"bufio"
 	"fmt"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
 	"strings"
 	"testing"
 	"time"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 func TestGenericLogger_LogMessage_Error(t *testing.T) {
