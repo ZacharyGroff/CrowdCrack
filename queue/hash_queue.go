@@ -56,7 +56,7 @@ func (q HashQueue) Flush() error {
 }
 
 func (q HashQueue) flushToFile() error {
-	file, err := os.OpenFile(q.config.ComputedHashOverflowPath, os.O_WRONLY, os.ModePerm)
+	file, err := os.OpenFile(q.config.ComputedHashOverflowPath, os.O_WRONLY | os.O_CREATE | os.O_APPEND, os.ModePerm)
 	if err != nil {
 		return err
 	}
