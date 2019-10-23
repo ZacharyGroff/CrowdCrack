@@ -47,8 +47,6 @@ func TestGetHashError(t *testing.T) {
 
 func TestFlushSize(t *testing.T) {
 	testPath := "hash_test.txt"
-	os.Create(testPath)
-
 	config := models.Config{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: false}
 	q := HashQueue{hashes: make(chan string, 1), config: config}
 
@@ -59,25 +57,23 @@ func TestFlushSize(t *testing.T) {
 	expected := 0
 	actual := len(q.hashes)
 	if expected != actual {
-		os.Remove(testPath)
-		t.Errorf("Expected: %x\tActual: %x\n", expected, actual)	
+		t.Errorf("Expected: %x\tActual: %x\n", expected, actual)
 	}
+
+	os.Remove(testPath)
 }
 
 func TestFlushToFileSuccess(t *testing.T) {
 	testPath := "hash_test.txt"
-	f, err := os.Create(testPath)
-	f.Close()
 
 	config := models.Config{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
 	q := HashQueue{hashes: make(chan string, 1), config: config}
 
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
-	err = q.Flush()
+	err := q.Flush()
 	
 	if err != nil {
-		os.Remove(testPath)
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
 
@@ -85,7 +81,7 @@ func TestFlushToFileSuccess(t *testing.T) {
 }
 
 func TestFlushToFileError(t *testing.T) {
-	testPath := "hash_test.txt"
+	testPath := ""
 
 	config := models.Config{ComputedHashOverflowPath: testPath, HashQueueBuffer: 1, FlushToFile: true}
 	q := HashQueue{hashes: make(chan string, 1), config: config}
