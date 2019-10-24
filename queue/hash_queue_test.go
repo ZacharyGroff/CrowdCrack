@@ -108,7 +108,7 @@ func TestHashQueue_FlushToFile_OpenFileError(t *testing.T) {
 	}
 }
 
-func TestHashQueue_Size_ZeroHashes(t *testing.T) {
+func TestHashQueue_Size_Zero(t *testing.T) {
 	expected := 0
 
 	q := HashQueue{hashes: make(chan string, 5)}
@@ -119,7 +119,7 @@ func TestHashQueue_Size_ZeroHashes(t *testing.T) {
 	}
 }
 
-func TestHashQueue_Size_NotZeroHashes(t *testing.T) {
+func TestHashQueue_Size_NotZero(t *testing.T) {
 	expected := 2
 	q := HashQueue{hashes: make(chan string, 5)}
 

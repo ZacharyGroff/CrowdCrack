@@ -101,7 +101,7 @@ func setupHasherForRequestQueueError() testObject {
 	}
 }
 
-func TestHasherStartError(t *testing.T) {
+func TestHasher_Start_Error(t *testing.T) {
 	testObject := setupHasherForSubmissionQueueError()
 
 	err := testObject.hasher.Start()
@@ -111,7 +111,7 @@ func TestHasherStartError(t *testing.T) {
 	}
 }
 
-func TestHasherProcessOrSleepProcessSuccess(t *testing.T) {
+func TestHasher_ProcessOrSleep_Process_Success(t *testing.T) {
 	testObject := setupHasherForSuccess()
 	err := testObject.hasher.processOrSleep()
 	if err != nil {
@@ -119,7 +119,7 @@ func TestHasherProcessOrSleepProcessSuccess(t *testing.T) {
 	}
 }
 
-func TestHasherProcessOrSleepWaiterSleeps(t *testing.T) {
+func TestHasher_ProcessOrSleep_Sleep_Success(t *testing.T) {
 	testObject := setupHasherForRequestQueueError()
 
 	err := testObject.hasher.processOrSleep()
@@ -128,7 +128,7 @@ func TestHasherProcessOrSleepWaiterSleeps(t *testing.T) {
 	}
 }
 
-func TestHasherProcessOrSleepWaiterSleepsWaiterCalled(t *testing.T) {
+func TestHasher_ProcessOrSleep_Sleep_WaiterCalled(t *testing.T) {
 	testObject := setupHasherForRequestQueueError()
 
 	testObject.hasher.processOrSleep()
@@ -140,7 +140,7 @@ func TestHasherProcessOrSleepWaiterSleepsWaiterCalled(t *testing.T) {
 	}
 }
 
-func TestHasherProcessOrSleepError(t *testing.T) {
+func TestHasher_ProcessOrSleep_Error(t *testing.T) {
 	testObject := setupHasherForSubmissionQueueError()
 
 	err := testObject.hasher.processOrSleep()
@@ -149,7 +149,7 @@ func TestHasherProcessOrSleepError(t *testing.T) {
 	}
 }
 
-func TestHasherHandleHashingRequestSuccess(t *testing.T) {
+func TestHasher_HandleHashingRequest_Success(t *testing.T) {
 	testObject := setupHasherForSuccess()
 
 	err := testObject.hasher.handleHashingRequest(hashingRequest)
@@ -158,7 +158,7 @@ func TestHasherHandleHashingRequestSuccess(t *testing.T) {
 	}
 }
 
-func TestHasherHandleHashingRequestHashSubmissionError(t *testing.T) {
+func TestHasher_HandleHashingRequest_HashSubmissionError(t *testing.T) {
 	testObject := setupHasherForSubmissionQueueError()
 
 	err := testObject.hasher.handleHashingRequest(hashingRequest)
@@ -167,7 +167,7 @@ func TestHasherHandleHashingRequestHashSubmissionError(t *testing.T) {
 	}
 }
 
-func TestHasherHandleHashingRequestSubmissionQueueError(t *testing.T) {
+func TestHasher_HandleHashingRequest_SubmissionQueueError(t *testing.T) {
 	testObject := setupHasherForSubmissionQueueError()
 
 	err := testObject.hasher.handleHashingRequest(hashingRequest)
@@ -176,7 +176,7 @@ func TestHasherHandleHashingRequestSubmissionQueueError(t *testing.T) {
 	}
 }
 
-func TestHasherHandleHashingRequestSubmissionQueueErrorPutCalled(t *testing.T) {
+func TestHasher_HandleHashingRequest_SubmissionQueueError_PutCalled(t *testing.T) {
 	testObject := setupHasherForSubmissionQueueError()
 
 	testObject.hasher.handleHashingRequest(hashingRequest)
@@ -188,7 +188,7 @@ func TestHasherHandleHashingRequestSubmissionQueueErrorPutCalled(t *testing.T) {
 	}
 }
 
-func TestHasherGetHashSubmissionCorrectResults(t *testing.T) {
+func TestHasher_GetHashSubmission_CorrectResults(t *testing.T) {
 	expected := models.HashSubmission {
 		HashType: "sha256",
 		Results: []string {
@@ -213,7 +213,7 @@ func TestHasherGetHashSubmissionCorrectResults(t *testing.T) {
 	}
 }
 
-func TestHasherGetPasswordHashesCorrectResults(t *testing.T) {
+func TestHasher_GetPasswordHashes_CorrectResults(t *testing.T) {
 	hashResults := []string {
 		"f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7",
 		"ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
@@ -238,7 +238,7 @@ func TestHasherGetPasswordHashesCorrectResults(t *testing.T) {
 	}
 }
 
-func TestHasherGetPasswordHashCorrectResult(t *testing.T) {
+func TestHasher_GetPasswordHash_CorrectResult(t *testing.T) {
 	hashResult := "f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7"
 	password := "hunter2"
 	hashFunction := sha256.New()

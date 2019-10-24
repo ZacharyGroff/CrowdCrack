@@ -6,7 +6,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
-func TestSizeHashingSubmissionZero(t *testing.T) {
+func TestHashingSubmissionQueue_Size_Zero(t *testing.T) {
 	expected := 0
 	q := NewHashingSubmissionQueue()
 	
@@ -16,7 +16,7 @@ func TestSizeHashingSubmissionZero(t *testing.T) {
 	}
 }
 
-func TestSizeHashingSubmissionNotZero(t *testing.T) {
+func TestHashingSubmissionQueue_Size_NotZero(t *testing.T) {
 	expected := 2
 	submission := models.HashSubmission{}
 	q := NewHashingSubmissionQueue()
@@ -30,7 +30,7 @@ func TestSizeHashingSubmissionNotZero(t *testing.T) {
 }
 
 
-func TestPutHashingSubmissionSuccess(t *testing.T) {
+func TestHashingSubmissionQueue_Put_Success(t *testing.T) {
 	submission := models.HashSubmission{}
 	q := NewHashingSubmissionQueue()
 
@@ -40,7 +40,7 @@ func TestPutHashingSubmissionSuccess(t *testing.T) {
 	}
 }
 
-func TestPutHashingSubmissionError(t *testing.T) {
+func TestHashingSubmissionQueue_Put_Error(t *testing.T) {
 	submission := models.HashSubmission{}
 	q := NewHashingSubmissionQueue()
 
@@ -52,7 +52,7 @@ func TestPutHashingSubmissionError(t *testing.T) {
 	}
 }
 
-func TestGetHashingSubmissionSuccess(t *testing.T) {
+func TestHashingSubmissionQueue_Get_Success(t *testing.T) {
 	expected := models.HashSubmission{"sha256", []string{"result1"}}
 	q := NewHashingSubmissionQueue()
 
@@ -64,7 +64,7 @@ func TestGetHashingSubmissionSuccess(t *testing.T) {
 	}
 }
 
-func TestGetHashingSubmissionError(t *testing.T) {
+func TestHashingSubmissionQueue_Get_Error(t *testing.T) {
 	q := NewHashingSubmissionQueue()
 
 	_, err := q.Get()

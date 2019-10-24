@@ -197,7 +197,7 @@ func assertApiClientGetPasswordsCalled(t *testing.T, testObject testObject) {
 	}
 }
 
-func TestGetSupportedHashesCorrectHashes(t *testing.T) {
+func TestPasswordRequester_GetSupportedHashes_CorrectResults(t *testing.T) {
 	expected := setupSupportedHashes()
 	actual := getSupportedHashes()
 	if !reflect.DeepEqual(expected, actual) {
@@ -205,7 +205,7 @@ func TestGetSupportedHashesCorrectHashes(t *testing.T) {
 	}
 }
 
-func TestStartError(t *testing.T) {
+func TestPasswordRequester_Start_Error(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	err := testObject.passwordRequester.Start()
 	if err == nil {
@@ -213,7 +213,7 @@ func TestStartError(t *testing.T) {
 	}
 }
 
-func TestProcessOrWaitAddRequestToQueueNoError(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Success(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	err := testObject.passwordRequester.processOrSleep()
 	if err != nil {
@@ -221,19 +221,19 @@ func TestProcessOrWaitAddRequestToQueueNoError(t *testing.T) {
 	}
 }
 
-func TestProcessOrWaitAddRequestToQueueNoErrorSizeCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Success_SizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	testObject.passwordRequester.processOrSleep()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
-func TestProcessOrWaitAddRequestToQueueNoErrorWaitNotCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Success_WaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	testObject.passwordRequester.processOrSleep()
 	assertWaiterNotCalled(t, testObject)
 }
 
-func TestProcessOrWaitAddRequestToQueueError(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Error(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	err := testObject.passwordRequester.processOrSleep()
 	if err == nil {
@@ -241,19 +241,19 @@ func TestProcessOrWaitAddRequestToQueueError(t *testing.T) {
 	}
 }
 
-func TestProcessOrWaitAddRequestToQueueErrorSizeCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Error_SizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	testObject.passwordRequester.processOrSleep()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
-func TestProcessOrWaitAddRequestToQueueErrorWaitNotCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Error_WaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	testObject.passwordRequester.processOrSleep()
 	assertWaiterNotCalled(t, testObject)
 }
 
-func TestProcessOrWaitRequestQueueFullNoError(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_RequestQueueFull_Success(t *testing.T) {
 	testObject := setupPasswordRequestForFullRequestQueue()
 	err := testObject.passwordRequester.processOrSleep()
 	if err != nil {
@@ -261,19 +261,19 @@ func TestProcessOrWaitRequestQueueFullNoError(t *testing.T) {
 	}
 }
 
-func TestProcessOrWaitRequestQueueFullSizeCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_RequestQueueFull_SizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForFullRequestQueue()
 	testObject.passwordRequester.processOrSleep()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
-func TestProcessOrWaitRequestQueueFullWaitCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_RequestQueueFull_WaitCalled(t *testing.T) {
 	testObject := setupPasswordRequestForFullRequestQueue()
 	testObject.passwordRequester.processOrSleep()
 	assertWaiterCalled(t, testObject)
 }
 
-func TestAddRequestToQueueNoError(t *testing.T) {
+func TestPasswordRequester_AddRequestToQueue_Success(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	err := testObject.passwordRequester.addRequestToQueue()
 	if err != nil {
@@ -281,13 +281,13 @@ func TestAddRequestToQueueNoError(t *testing.T) {
 	}
 }
 
-func TestAddRequestToQueueNoErrorPutCalled(t *testing.T) {
+func TestPasswordRequester_AddRequestToQueue_Success_PutCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	testObject.passwordRequester.addRequestToQueue()
 	assertRequestQueuePutCalled(t, testObject)
 }
 
-func TestAddRequestToQueueGetHashError(t *testing.T) {
+func TestPasswordRequester_AddRequestToQueue_GetHashError(t *testing.T) {
 	expected := "Unexpected response from api on hash name request with status code: 500\n"
 	testObject := setupPasswordRequestForGetHashNameError()
 	err := testObject.passwordRequester.addRequestToQueue()
@@ -298,13 +298,13 @@ func TestAddRequestToQueueGetHashError(t *testing.T) {
 	}
 }
 
-func TestAddRequestToQueueGetHashErrorPutNotCalled(t *testing.T) {
+func TestPasswordRequester_AddRequestToQueue_GetHashError_PutNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForGetHashNameError()
 	testObject.passwordRequester.addRequestToQueue()
 	assertRequestQueuePutNotCalled(t, testObject)
 }
 
-func TestAddRequestToQueueGetPasswordsError(t *testing.T) {
+func TestPasswordRequester_AddRequestToQueue_GetPasswords_Error(t *testing.T) {
 	expected := "Unexpected response from api on password request with status code: 500\n"
 	testObject := setupPasswordRequestForGetPasswordsError()
 	err := testObject.passwordRequester.addRequestToQueue()
@@ -315,13 +315,13 @@ func TestAddRequestToQueueGetPasswordsError(t *testing.T) {
 	}
 }
 
-func TestAddRequestToQueueGetPasswordsErrorPutNotCalled(t *testing.T) {
+func TestPasswordRequester_AddRequestToQueue_GetPasswordsError_PutNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForGetPasswordsError()
 	testObject.passwordRequester.addRequestToQueue()
 	assertRequestQueuePutNotCalled(t, testObject)
 }
 
-func TestGetHashNoError(t *testing.T) {
+func TestPasswordRequester_GetHash_NoError(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	_, _, err := testObject.passwordRequester.getHash()
 	if err != nil {
@@ -329,7 +329,7 @@ func TestGetHashNoError(t *testing.T) {
 	}
 }
 
-func TestGetHashRequestHashNameError(t *testing.T) {
+func TestPasswordRequester_GetHash_RequestHashNameError(t *testing.T) {
 	expected := "Unexpected response from api on hash name request with status code: 500\n"
 	testObject := setupPasswordRequestForGetHashNameError()
 	_, _, err := testObject.passwordRequester.getHash()
@@ -340,7 +340,7 @@ func TestGetHashRequestHashNameError(t *testing.T) {
 	}
 }
 
-func TestGetHashGetHashFunctionError(t *testing.T) {
+func TestPasswordRequester_GetHash_GetHashFunctionError(t *testing.T) {
 	expected := "Current hash: sha256 is unsupported\n"
 	testObject := setupPasswordRequestFoNoSupportedHashes()
 	_, _, err := testObject.passwordRequester.getHash()
@@ -351,7 +351,7 @@ func TestGetHashGetHashFunctionError(t *testing.T) {
 	}
 }
 
-func TestGetHashFunctionNoError(t *testing.T) {
+func TestPasswordRequester_GetHashFunction_Success(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	_, err := testObject.passwordRequester.getHashFunction(expectedHashName)
 	if err != nil {
@@ -359,7 +359,7 @@ func TestGetHashFunctionNoError(t *testing.T) {
 	}
 }
 
-func TestGetHashFunctionCorrectHash(t *testing.T) {
+func TestPasswordRequester_GetHashFunction_CorrectResults(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	actual, _ := testObject.passwordRequester.getHashFunction(expectedHashName)
 	if !reflect.DeepEqual(expectedHash, actual) {
@@ -367,7 +367,7 @@ func TestGetHashFunctionCorrectHash(t *testing.T) {
 	}
 }
 
-func TestGetHashFunctionError(t *testing.T) {
+func TestPasswordRequester_GetHashFunction_Error(t *testing.T) {
 	testObject := setupPasswordRequestFoNoSupportedHashes()
 	_, err := testObject.passwordRequester.getHashFunction(expectedHashName)
 	if err == nil {
@@ -375,7 +375,7 @@ func TestGetHashFunctionError(t *testing.T) {
 	}
 }
 
-func TestRequestHashNameNoError(t *testing.T) {
+func TestPasswordRequester_RequestHashName_Success(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	_, err := testObject.passwordRequester.requestHashName()
 	if err != nil {
@@ -383,13 +383,13 @@ func TestRequestHashNameNoError(t *testing.T) {
 	}
 }
 
-func TestRequestHashClientCalled(t *testing.T) {
+func TestPasswordRequester_RequestHash_Success_ClientCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	testObject.passwordRequester.requestHashName()
 	assertApiClientGetHashNameCalled(t, testObject)
 }
 
-func TestRequestHashNameCorrectHashName(t *testing.T) {
+func TestPasswordRequester_RequestHashName_CorrectHashName(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	actual, _ := testObject.passwordRequester.requestHashName()
 	if strings.Compare(expectedHashName, actual) != 0 {
@@ -397,7 +397,7 @@ func TestRequestHashNameCorrectHashName(t *testing.T) {
 	}
 }
 
-func TestRequestHashNameError(t *testing.T) {
+func TestPasswordRequester_RequestHashName_Error(t *testing.T) {
 	testObject := setupPasswordRequestForGetHashNameError()
 	_, err := testObject.passwordRequester.requestHashName()
 	if err == nil {
@@ -405,7 +405,7 @@ func TestRequestHashNameError(t *testing.T) {
 	}
 }
 
-func TestGetPasswordsNoError(t *testing.T) {
+func TestPasswordRequester_GetPasswords_Success(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	_, err := testObject.passwordRequester.getPasswords()
 	if err != nil {
@@ -413,13 +413,13 @@ func TestGetPasswordsNoError(t *testing.T) {
 	}
 }
 
-func TestGetPasswordsClientCalled(t *testing.T) {
+func TestPasswordRequester_GetPasswords_Success_ClientCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	testObject.passwordRequester.getPasswords()
 	assertApiClientGetPasswordsCalled(t, testObject)
 }
 
-func TestGetPasswordsCorrectPasswords(t *testing.T) {
+func TestPasswordRequester_GetPasswords_CorrectResults(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	actual, _ := testObject.passwordRequester.getPasswords()
 	if !reflect.DeepEqual(expectedPasswords, actual) {
@@ -427,7 +427,7 @@ func TestGetPasswordsCorrectPasswords(t *testing.T) {
 	}
 }
 
-func TestGetPasswordsError(t *testing.T) {
+func TestPasswordRequester_GetPasswords_Error(t *testing.T) {
 	testObject := setupPasswordRequestForGetPasswordsError()
 	_, err := testObject.passwordRequester.getPasswords()
 	if err == nil {

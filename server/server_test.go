@@ -127,13 +127,13 @@ func recoverAndAssertError(t *testing.T, testObject testObject) {
 	assertError(t, testObject)
 }
 
-func TestServerStartNoError(t *testing.T) {
+func TestServer_Start_Success(t *testing.T) {
 	testObject := setupServerForNoError()
 	testObject.server.Start()
 	assertNoError(t, testObject)
 }
 
-func TestServerStartLoadPasswordsError(t *testing.T) {
+func TestServer_Start_LoadPasswords_Error(t *testing.T) {
 	testObject := setupServerForPasswordReaderError()
 	defer recoverAndAssertError(t, testObject)
 	testObject.server.Start()
