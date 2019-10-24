@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestPutPasswordSuccess(t *testing.T) {
+func TestPasswordQueue_Put_Success(t *testing.T) {
 	q := PasswordQueue{passwords: make(chan string, 1)}
 	password := "hunter2"
 	err := q.Put(password)
@@ -13,7 +13,7 @@ func TestPutPasswordSuccess(t *testing.T) {
 	}
 }
 
-func TestPutPasswordError(t *testing.T) {
+func TestPasswordQueue_Put_Error(t *testing.T) {
 	q := PasswordQueue{passwords: make(chan string, 0)}
 	password := "hunter2"
 	err := q.Put(password)
@@ -22,7 +22,7 @@ func TestPutPasswordError(t *testing.T) {
 	}
 }
 
-func TestGetPasswordSuccess(t *testing.T) {
+func TestPasswordQueue_Get_Success(t *testing.T) {
 	expected := "hunter2"
 	q := PasswordQueue{passwords: make(chan string, 1)}
 	q.Put(expected)
@@ -33,7 +33,7 @@ func TestGetPasswordSuccess(t *testing.T) {
 	}
 }
 
-func TestGetPasswordError(t *testing.T) {
+func TestPasswordQueue_Get_Error(t *testing.T) {
 	q := PasswordQueue{passwords: make(chan string, 0)}
 
 	_, err := q.Get()
@@ -42,7 +42,7 @@ func TestGetPasswordError(t *testing.T) {
 	}
 }
 
-func TestSizeZeroPasswords(t *testing.T) {
+func TestPasswordQueue_Size_Zero(t *testing.T) {
 	expected := 0
 
 	q := PasswordQueue{passwords: make(chan string, 5)}
@@ -53,7 +53,7 @@ func TestSizeZeroPasswords(t *testing.T) {
 	}
 }
 
-func TestSizeNotZeroPasswords(t *testing.T) {
+func TestPasswordQueue_Size_NotZero(t *testing.T) {
 	expected := 2
 
 	q := PasswordQueue{passwords: make(chan string, 5)}

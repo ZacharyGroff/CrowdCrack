@@ -6,7 +6,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
-func TestGetHashesNoError(t *testing.T) {
+func TestHashlistReader_GetHashes_Success(t *testing.T) {
 	testPath := "hashlist_test.txt"
 	hashes := []string{
 		"f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7",
@@ -26,7 +26,7 @@ func TestGetHashesNoError(t *testing.T) {
 	os.Remove(testPath)
 }
 
-func TestGetHashesError(t *testing.T) {
+func TestHashlistReader_GetHashes_Error(t *testing.T) {
 	testPath := "hashlist_test.txt"
 
 	config := models.Config{HashlistPath: testPath}
@@ -38,7 +38,7 @@ func TestGetHashesError(t *testing.T) {
 	}
 }
 
-func TestGetHashesCorrectResults(t *testing.T) {
+func TestHashlistReader_GetHashes_CorrectResults(t *testing.T) {
 	testPath := "hashlist_test.txt"
 	expected := []string{
 		"f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7",

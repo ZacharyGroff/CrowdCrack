@@ -7,7 +7,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
-func TestSizeHashingRequestZero(t *testing.T) {
+func TestHashingRequestQueue_Size_Zero(t *testing.T) {
 	expected := 0
 	q := NewHashingRequestQueue()
 	
@@ -17,7 +17,7 @@ func TestSizeHashingRequestZero(t *testing.T) {
 	}
 }
 
-func TestSizeHashingRequestNotZero(t *testing.T) {
+func TestHashingRequestQueue_Size_NotZero(t *testing.T) {
 	expected := 2
 	request := models.HashingRequest{sha256.New(), "sha256", []string{"password1"}}
 	q := NewHashingRequestQueue()
@@ -30,7 +30,7 @@ func TestSizeHashingRequestNotZero(t *testing.T) {
 	}
 }
 
-func TestPutHashingRequestSuccess(t *testing.T) {
+func TestHashingRequestQueue_Put_Success(t *testing.T) {
 	request := models.HashingRequest{sha256.New(), "sha256", []string{"password1"}}
 	q := NewHashingRequestQueue()
 
@@ -40,7 +40,7 @@ func TestPutHashingRequestSuccess(t *testing.T) {
 	}
 }
 
-func TestPutHashingRequestError(t *testing.T) {
+func TestHashingRequestQueue_Put_Error(t *testing.T) {
 	request := models.HashingRequest{sha256.New(), "sha256", []string{"password1"}}
 	q := NewHashingRequestQueue()
 
@@ -52,7 +52,7 @@ func TestPutHashingRequestError(t *testing.T) {
 	}
 }
 
-func TestGetHashingRequestSuccess(t *testing.T) {
+func TestHashingRequestQueue_Get_Success(t *testing.T) {
 	expected := models.HashingRequest{sha256.New(), "sha256", []string{"password1"}}
 	q := NewHashingRequestQueue()
 
@@ -64,7 +64,7 @@ func TestGetHashingRequestSuccess(t *testing.T) {
 	}
 }
 
-func TestGetHashingRequestError(t *testing.T) {
+func TestHashingRequestQueue_Get_Error(t *testing.T) {
 	q := NewHashingRequestQueue()
 	
 	_, err := q.Get()

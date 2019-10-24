@@ -7,7 +7,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
-func TestLoadPasswordsNoError(t *testing.T) {
+func TestWordlistReader_LoadPasswords_Success(t *testing.T) {
 	testPath := "wordlist_test.txt"
 	passwords := []string{"password1"}
 	setupFile(testPath, passwords)
@@ -25,7 +25,7 @@ func TestLoadPasswordsNoError(t *testing.T) {
 	os.Remove(testPath)
 }
 
-func TestLoadPasswordsError(t *testing.T) {
+func TestWordlistReader_LoadPasswords_Error(t *testing.T) {
 	testPath := "wordlist_test.txt"
 
 	config := models.Config{WordlistPath: testPath}
@@ -60,7 +60,7 @@ func TestLoadPasswordsPutNoCalls(t *testing.T) {
 	os.Remove(testPath)
 }
 
-func TestLoadPasswordsPutMultipleCalls(t *testing.T) {
+func TestWordlistReader_LoadPasswords_MultiplePutCalls(t *testing.T) {
 	expected := uint64(2)
 
 	testPath := "wordlist_test.txt"

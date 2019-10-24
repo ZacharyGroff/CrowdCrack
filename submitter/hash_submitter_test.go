@@ -154,7 +154,7 @@ func assertWaiterWaitNotCalled(t *testing.T, testObject testObject) {
 	}
 }
 
-func TestStartError(t *testing.T) {
+func TestHashSubmitter_Start_Error(t *testing.T) {
 	testObject := setupHashSubmitterForClientError()
 	err := testObject.hashSubmitter.Start()
 	if err == nil {
@@ -162,7 +162,7 @@ func TestStartError(t *testing.T) {
 	}
 }
 
-func TestProcessOrSleepSuccess(t *testing.T) {
+func TestHashSubmitter_ProcessOrSleep_Success(t *testing.T) {
 	testObject := setupHashSubmitterForNoError()
 	err := testObject.hashSubmitter.processOrSleep()
 	if err != nil {
@@ -170,19 +170,19 @@ func TestProcessOrSleepSuccess(t *testing.T) {
 	}
 }
 
-func TestProcessOrSleepSuccessCorrectSizeCalls(t *testing.T) {
+func TestHashSubmitter_ProcessOrSleep_Success_CorrectSizeCalls(t *testing.T) {
 	testObject := setupHashSubmitterForNoError()
 	testObject.hashSubmitter.processOrSleep()
 	assertSubmissionQueueSizeCalled(t, testObject)
 }
 
-func TestProcessOrSleepSuccessCorrectWaiterCalls(t *testing.T) {
+func TestHashSubmitter_ProcessOrSleep_Success_CorrectWaiterCalls(t *testing.T) {
 	testObject := setupHashSubmitterForNoError()
 	testObject.hashSubmitter.processOrSleep()
 	assertWaiterWaitNotCalled(t, testObject)
 }
 
-func TestProcessOrSleepEmptySubmissionQueueSuccess(t *testing.T) {
+func TestHashSubmitter_ProcessOrSleep_EmptySubmissionQueue_Success(t *testing.T) {
 	testObject := setupHashSubmitterForNoErrorEmptySubmissionQueue()
 	err := testObject.hashSubmitter.processOrSleep()
 	if err != nil {
@@ -190,19 +190,19 @@ func TestProcessOrSleepEmptySubmissionQueueSuccess(t *testing.T) {
 	}
 }
 
-func TestProcessOrSleepEmptySubmissionQueueSuccessCorrectSizeCalls(t *testing.T) {
+func TestHashSubmitter_ProcessOrSleep_EmptySubmissionQueue_Success_CorrectSizeCalls(t *testing.T) {
 	testObject := setupHashSubmitterForNoErrorEmptySubmissionQueue()
 	testObject.hashSubmitter.processOrSleep()
 	assertSubmissionQueueSizeCalled(t, testObject)
 }
 
-func TestProcessOrSleepEmptySubmissionQueueSuccessCorrectWaiterCalls(t *testing.T) {
+func TestHashSubmitter_ProcessOrSleep_EmptySubmissionQueue_Success_CorrectWaiterCalls(t *testing.T) {
 	testObject := setupHashSubmitterForNoErrorEmptySubmissionQueue()
 	testObject.hashSubmitter.processOrSleep()
 	assertWaiterWaitCalled(t, testObject)
 }
 
-func TestProcessOrSleepProcessSubmissionError(t *testing.T) {
+func TestHashSubmitter_ProcessOrSleep_ProcessSubmissionError(t *testing.T) {
 	testObject := setupHashSubmitterForClientError()
 	err := testObject.hashSubmitter.processOrSleep()
 	if err == nil {
@@ -210,19 +210,19 @@ func TestProcessOrSleepProcessSubmissionError(t *testing.T) {
 	}
 }
 
-func TestProcessOrSleepProcessSubmissionErrorCorrectSizeCalls(t *testing.T) {
+func TestHashSubmitter_ProcessOrSleep_ProcessSubmissionError_CorrectSizeCalls(t *testing.T) {
 	testObject := setupHashSubmitterForClientError()
 	testObject.hashSubmitter.processOrSleep()
 	assertSubmissionQueueSizeCalled(t, testObject)
 }
 
-func TestProcessOrSleepProcessSubmissionErrorCorrectWaiterCalls(t *testing.T) {
+func TestHashSubmitter_ProcessOrSleep_ProcessSubmissionError_CorrectWaiterCalls(t *testing.T) {
 	testObject := setupHashSubmitterForClientError()
 	testObject.hashSubmitter.processOrSleep()
 	assertWaiterWaitNotCalled(t, testObject)
 }
 
-func TestProcessSubmissionSuccess(t *testing.T) {
+func TestHashSubmitter_ProcessSubmission_Success(t *testing.T) {
 	testObject := setupHashSubmitterForNoError()
 
 	err := testObject.hashSubmitter.processSubmission()
@@ -231,19 +231,19 @@ func TestProcessSubmissionSuccess(t *testing.T) {
 	}
 }
 
-func TestProcessSubmissionSuccessCorrectSubmissionQueueCalls(t *testing.T) {
+func TestHashSubmitter_ProcessSubmission_Success_CorrectSubmissionQueueCalls(t *testing.T) {
 	testObject := setupHashSubmitterForNoError()
 	testObject.hashSubmitter.processSubmission()
 	assertSubmissionQueueGetCalled(t, testObject)
 }
 
-func TestProcessSubmissionSuccessCorrectClientCalls(t *testing.T) {
+func TestHashSubmitter_ProcessSubmission_Success_CorrectClientCalls(t *testing.T) {
 	testObject := setupHashSubmitterForNoError()
 	testObject.hashSubmitter.processSubmission()
 	assertClientSubmitHashesCalled(t, testObject)
 }
 
-func TestProcessSubmissionClientBadStatusCodeReturned(t *testing.T) {
+func TestHashSubmitter_ProcessSubmission_Error_BadStatusCodeReturnedFromClient(t *testing.T) {
 	testObject := setupHashSubmitterForClientError()
 
 	err := testObject.hashSubmitter.processSubmission()
@@ -252,19 +252,19 @@ func TestProcessSubmissionClientBadStatusCodeReturned(t *testing.T) {
 	}
 }
 
-func TestProcessSubmissionClientBadStatusCodeReturnedCorrectSubmissionQueueCalls(t *testing.T) {
+func TestHashSubmitter_ProcessSubmission_BadStatusCodeReturnedFromClient_CorrectSubmissionQueueCalls(t *testing.T) {
 	testObject := setupHashSubmitterForClientError()
 	testObject.hashSubmitter.processSubmission()
 	assertSubmissionQueueGetCalled(t, testObject)
 }
 
-func TestProcessSubmissionClientBadStatusCodeReturnedCorrectClientCalls(t *testing.T) {
+func TestHashSubmitter_ProcessSubmission_BadStatusCodeReturnedFromClient_CorrectClientCalls(t *testing.T) {
 	testObject := setupHashSubmitterForClientError()
 	testObject.hashSubmitter.processSubmission()
 	assertClientSubmitHashesCalled(t, testObject)
 }
 
-func TestProcessSubmissionSubmissionQueueErrorReturned(t *testing.T) {
+func TestHashSubmitter_ProcessSubmission_SubmissionQueue_Error(t *testing.T) {
 	testObject := setupHashSubmitterForSubmissionQueueError()
 
 	err := testObject.hashSubmitter.processSubmission()
@@ -273,13 +273,13 @@ func TestProcessSubmissionSubmissionQueueErrorReturned(t *testing.T) {
 	}
 }
 
-func TestProcessSubmissionSubmissionQueueErrorCorrectSubmissionQueueCalls(t *testing.T) {
+func TestHashSubmitter_ProcessSubmission_SubmissionQueueError_CorrectSubmissionQueueCalls(t *testing.T) {
 	testObject := setupHashSubmitterForSubmissionQueueError()
 	testObject.hashSubmitter.processSubmission()
 	assertSubmissionQueueGetCalled(t, testObject)
 }
 
-func TestProcessSubmissionSubmissionQueueErrorCorrectClientCalls(t *testing.T) {
+func TestHashSubmitter_ProcessSubmission_SubmissionQueueError_CorrectClientCalls(t *testing.T) {
 	testObject := setupHashSubmitterForSubmissionQueueError()
 	testObject.hashSubmitter.processSubmission()
 	assertClientSubmitHashesNotCalled(t, testObject)
