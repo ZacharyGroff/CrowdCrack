@@ -215,7 +215,7 @@ func TestStartError(t *testing.T) {
 
 func TestProcessOrWaitAddRequestToQueueNoError(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	err := testObject.passwordRequester.processOrWait()
+	err := testObject.passwordRequester.processOrSleep()
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
@@ -223,19 +223,19 @@ func TestProcessOrWaitAddRequestToQueueNoError(t *testing.T) {
 
 func TestProcessOrWaitAddRequestToQueueNoErrorSizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	testObject.passwordRequester.processOrWait()
+	testObject.passwordRequester.processOrSleep()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
 func TestProcessOrWaitAddRequestToQueueNoErrorWaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	testObject.passwordRequester.processOrWait()
+	testObject.passwordRequester.processOrSleep()
 	assertWaiterNotCalled(t, testObject)
 }
 
 func TestProcessOrWaitAddRequestToQueueError(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
-	err := testObject.passwordRequester.processOrWait()
+	err := testObject.passwordRequester.processOrSleep()
 	if err == nil {
 		t.Error("Expected error but nil returned")
 	}
@@ -243,19 +243,19 @@ func TestProcessOrWaitAddRequestToQueueError(t *testing.T) {
 
 func TestProcessOrWaitAddRequestToQueueErrorSizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
-	testObject.passwordRequester.processOrWait()
+	testObject.passwordRequester.processOrSleep()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
 func TestProcessOrWaitAddRequestToQueueErrorWaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
-	testObject.passwordRequester.processOrWait()
+	testObject.passwordRequester.processOrSleep()
 	assertWaiterNotCalled(t, testObject)
 }
 
 func TestProcessOrWaitRequestQueueFullNoError(t *testing.T) {
 	testObject := setupPasswordRequestForFullRequestQueue()
-	err := testObject.passwordRequester.processOrWait()
+	err := testObject.passwordRequester.processOrSleep()
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
@@ -263,13 +263,13 @@ func TestProcessOrWaitRequestQueueFullNoError(t *testing.T) {
 
 func TestProcessOrWaitRequestQueueFullSizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForFullRequestQueue()
-	testObject.passwordRequester.processOrWait()
+	testObject.passwordRequester.processOrSleep()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
 func TestProcessOrWaitRequestQueueFullWaitCalled(t *testing.T) {
 	testObject := setupPasswordRequestForFullRequestQueue()
-	testObject.passwordRequester.processOrWait()
+	testObject.passwordRequester.processOrSleep()
 	assertWaiterCalled(t, testObject)
 }
 

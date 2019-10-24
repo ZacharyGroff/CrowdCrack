@@ -60,14 +60,14 @@ func getWaiter(logger logger.Logger) waiter.Sleeper {
 
 func (p PasswordRequester) Start() error {
 	for {
-		err := p.processOrWait()
+		err := p.processOrSleep()
 		if err != nil {
 			return err
 		}
 	}
 }
 
-func (p PasswordRequester) processOrWait() error {
+func (p PasswordRequester) processOrSleep() error {
 	if p.requestQueue.Size() < 2 {
 		err := p.addRequestToQueue()
 		if err != nil {
