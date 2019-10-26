@@ -91,10 +91,17 @@ func (p PasswordRequester) addRequestToQueue() error {
 		return err
 	}
 
-	hashingRequest := models.HashingRequest{hash, hashName, passwords}
-	err = p.requestQueue.Put(hashingRequest)
+	if len(passwords) < 1 {
+		p.waiter.Wait()
+	} else {
+		hashingRequest := models.HashingRequest{hash, hashName, passwords}
+		err = p.requestQueue.Put(hashingRequest)
+		if err != nil {
+			return err
+		}
+	}
 
-	return err
+	return nil
 }
 
 func (p PasswordRequester) getHash() (hash.Hash, string, error) {
