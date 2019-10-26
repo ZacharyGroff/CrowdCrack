@@ -27,6 +27,7 @@ var expectedPasswords = []string {
 	"hunter2",
 	"password123",
 }
+var emptyPasswords []string
 var expectedHashName = "sha256"
 var expectedHash = sha256.New()
 var successCode = 200
@@ -46,6 +47,10 @@ func setupApiClientForGetHashNameError() mocks.MockApiClient {
 
 func setupApiClientForGetPasswordsError() mocks.MockApiClient {
 	return mocks.NewMockApiClient(successCode, errorCode, successCode, expectedHashName, expectedPasswords)
+}
+
+func setupApiClientForNoPasswordsReturned() mocks.MockApiClient {
+	return mocks.NewMockApiClient(successCode, successCode, successCode, expectedHashName, emptyPasswords)
 }
 
 func setupRequestQueueForSuccess() mocks.MockRequestQueue {
@@ -135,6 +140,16 @@ func setupPasswordRequestFoNoSupportedHashes() testObject {
 	apiClient := setupApiClientForSuccess()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupNoSupportedHashes()
+	waiter := mocks.NewMockWaiter()
+	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+
+	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+}
+
+func setupPasswordRequestFoNoPasswordsReturned() testObject {
+	apiClient := setupApiClientForNoPasswordsReturned()
+	requestQueue := setupRequestQueueForSuccess()
+	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
@@ -287,6 +302,12 @@ func TestPasswordRequester_AddRequestToQueue_Success_PutCalled(t *testing.T) {
 	assertRequestQueuePutCalled(t, testObject)
 }
 
+func TestPasswordRequester_AddRequestToQueue_Success_WaitNotCalled(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	testObject.passwordRequester.addRequestToQueue()
+	assertWaiterNotCalled(t, testObject)
+}
+
 func TestPasswordRequester_AddRequestToQueue_GetHashError(t *testing.T) {
 	expected := "Unexpected response from api on hash name request with status code: 500\n"
 	testObject := setupPasswordRequestForGetHashNameError()
@@ -302,6 +323,12 @@ func TestPasswordRequester_AddRequestToQueue_GetHashError_PutNotCalled(t *testin
 	testObject := setupPasswordRequestForGetHashNameError()
 	testObject.passwordRequester.addRequestToQueue()
 	assertRequestQueuePutNotCalled(t, testObject)
+}
+
+func TestPasswordRequester_AddRequestToQueue_GetHashError_WaitNotCalled(t *testing.T) {
+	testObject := setupPasswordRequestForGetHashNameError()
+	testObject.passwordRequester.addRequestToQueue()
+	assertWaiterNotCalled(t, testObject)
 }
 
 func TestPasswordRequester_AddRequestToQueue_GetPasswords_Error(t *testing.T) {
@@ -321,7 +348,25 @@ func TestPasswordRequester_AddRequestToQueue_GetPasswordsError_PutNotCalled(t *t
 	assertRequestQueuePutNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_GetHash_NoError(t *testing.T) {
+func TestPasswordRequester_AddRequestToQueue_GetPasswordsError_WaitNotCalled(t *testing.T) {
+	testObject := setupPasswordRequestForGetPasswordsError()
+	testObject.passwordRequester.addRequestToQueue()
+	assertWaiterNotCalled(t, testObject)
+}
+
+func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_Success(t *testing.T) {
+	testObject := setupPasswordRequestFoNoPasswordsReturned()
+	testObject.passwordRequester.addRequestToQueue()
+	assertWaiterCalled(t, testObject)
+}
+
+func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_PutNotCalled(t *testing.T) {
+	testObject := setupPasswordRequestFoNoPasswordsReturned()
+	testObject.passwordRequester.addRequestToQueue()
+	assertRequestQueuePutNotCalled(t, testObject)
+}
+
+func TestPasswordRequester_GetHash_Success(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	_, _, err := testObject.passwordRequester.getHash()
 	if err != nil {

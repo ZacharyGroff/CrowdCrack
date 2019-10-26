@@ -91,7 +91,6 @@ func (p PasswordRequester) addRequestToQueue() error {
 		return err
 	}
 
-
 	if len(passwords) < 1 {
 		p.waiter.Wait()
 	} else {
