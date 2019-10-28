@@ -2,13 +2,13 @@ package requester
 
 import (
 	"fmt"
+	"hash"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
-	"hash"
 )
 
 type PasswordRequester struct {
