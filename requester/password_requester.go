@@ -21,13 +21,9 @@ type PasswordRequester struct {
 
 func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue, logger *logger.GenericLogger) *PasswordRequester {
 	c := p.GetConfig()
-	s := getSupportedHashes()
+	s := models.GetSupportedHashFunctions()
 	w := getWaiter(logger)
 	return &PasswordRequester{c, cl, r, s, w}
-}
-
-func getSupportedHashes() map[string]hash.Hash {
-	return models.GetSupportedHashFunctions()
 }
 
 func getWaiter(logger logger.Logger) waiter.Sleeper {
