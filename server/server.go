@@ -33,7 +33,7 @@ func (s Server) Start() {
 		panic(err)
 	}
 
-	go s.Verifier.Verify()
+	go s.Verifier.Start()
 	go s.Observer.Start()
 
 	s.Api.HandleRequests()

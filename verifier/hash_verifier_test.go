@@ -115,6 +115,18 @@ func assertTrackerNotCalled(t *testing.T, m *mocks.MockTracker) {
 	}
 }
 
+func recoverAndAssertError(t *testing.T) {
+	if r := recover(); r == nil {
+		t.Error("Expected error but nil returned.")
+	}
+}
+
+func TestHashVerifier_Start_Error(t *testing.T) {
+	testObject := setupHashVerifierForHashReaderError()
+	defer recoverAndAssertError(t)
+	testObject.hashVerifier.Start()
+}
+
 func TestHashVerifier_LoadUserProvidedHashes_CorrectHashes(t *testing.T) {
 	testObject := setupHashVerifierForSuccess()
 	testObject.hashVerifier.loadUserProvidedHashes()

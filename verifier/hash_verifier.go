@@ -18,22 +18,20 @@ type HashVerifier struct {
 }
 
 func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader, l *logger.GenericLogger, t *tracker.StatsTracker) *HashVerifier {
-	hashVerifier := HashVerifier {
+	return &HashVerifier {
 		computedHashes: q,
 		hashReader: r,
 		logger : l,
 		tracker: t,
 	}
+}
 
-	err := hashVerifier.loadUserProvidedHashes()
+func (v HashVerifier) Start() {
+	err := v.loadUserProvidedHashes()
 	if err != nil {
 		panic(err)
 	}
 
-	return &hashVerifier
-}
-
-func (v HashVerifier) Verify() {
 	for {
 		v.verifyNextPasswordHash()
 	}
