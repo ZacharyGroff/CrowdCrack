@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"runtime"
 	"time"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type Sleeper struct {
@@ -14,10 +14,11 @@ type Sleeper struct {
 	isLogging bool
 }
 
-func NewSleeper(config *models.Config, logger logger.Logger) Sleeper {
+func NewSleeper(u userinput.CmdLineConfigProvider, l logger.Logger) Sleeper {
+	config := u.GetConfig()
 	sleepDuration := time.Duration(60) * time.Second
 	return Sleeper {
-		logger:        logger,
+		logger:        l,
 		sleepDuration: sleepDuration,
 		isLogging:     config.Verbose,
 	}
