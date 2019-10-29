@@ -20,6 +20,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/verifier"
+	"github.com/ZacharyGroff/CrowdCrack/waiter"
 )
 
 // Injectors from wire.go:
@@ -29,10 +30,11 @@ func InitializeClient() client.Client {
 	genericLogger := logger.NewGenericLogger(cmdLineConfigProvider)
 	hashingRequestQueue := queue.NewHashingRequestQueue()
 	hashingSubmissionQueue := queue.NewHashingSubmissionQueue()
-	hasher := encoder.NewHasher(cmdLineConfigProvider, genericLogger, hashingRequestQueue, hashingSubmissionQueue)
+	sleeper := waiter.NewSleeper(cmdLineConfigProvider, genericLogger)
+	hasher := encoder.NewHasher(cmdLineConfigProvider, genericLogger, hashingRequestQueue, hashingSubmissionQueue, sleeper)
 	hashApiClient := apiclient.NewHashApiClient(cmdLineConfigProvider)
-	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, hashingRequestQueue, genericLogger)
-	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, genericLogger, hashingSubmissionQueue)
+	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, hashingRequestQueue, genericLogger, sleeper)
+	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, genericLogger, hashingSubmissionQueue, sleeper)
 	clientClient := client.NewClient(cmdLineConfigProvider, hasher, genericLogger, passwordRequester, hashSubmitter)
 	return clientClient
 }

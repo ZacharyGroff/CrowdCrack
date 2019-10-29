@@ -18,10 +18,11 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/submitter"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/verifier"
+	"github.com/ZacharyGroff/CrowdCrack/waiter"
 )
 
 func InitializeClient() client.Client {
-	wire.Build(client.NewClient, encoder.NewHasher, requester.NewPasswordRequester, submitter.NewHashSubmitter, apiclient.NewHashApiClient, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, logger.NewGenericLogger, userinput.NewCmdLineConfigProvider)
+	wire.Build(client.NewClient, encoder.NewHasher, requester.NewPasswordRequester, submitter.NewHashSubmitter, apiclient.NewHashApiClient, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, waiter.NewSleeper, logger.NewGenericLogger, userinput.NewCmdLineConfigProvider)
 	return client.Client{}
 }
 
