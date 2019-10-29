@@ -3,6 +3,7 @@ package waiter
 import (
 	"fmt"
 	"runtime"
+	"strings"
 	"time"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
@@ -14,7 +15,7 @@ type Sleeper struct {
 	isLogging bool
 }
 
-func NewSleeper(u userinput.CmdLineConfigProvider, l logger.Logger) Sleeper {
+func NewSleeper(u userinput.CmdLineConfigProvider, l *logger.GenericLogger) Sleeper {
 	config := u.GetConfig()
 	sleepDuration := time.Duration(60) * time.Second
 	return Sleeper {
@@ -33,8 +34,15 @@ func (s Sleeper) Wait() {
 }
 
 func (s Sleeper) getLogMessage() string {
-	pc, _, _, _ := runtime.Caller(1)
+	caller := s.getCaller()
+	return fmt.Sprintf("%s sleeping for %d seconds", caller, s.sleepDuration / time.Second)
+}
+
+func (s Sleeper) getCaller() string {
+	pc, _, _, _ := runtime.Caller(3)
 	details := runtime.FuncForPC(pc)
-	return fmt.Sprintf("%s sleeping for %d seconds", details.Name(), s.sleepDuration / time.Second)
+	directories := strings.Split(details.Name(), "/")
+
+	return directories[len(directories)-1]
 }
 
