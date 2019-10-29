@@ -19,24 +19,14 @@ type Hasher struct {
 	waiter waiter.Waiter
 }
 
-func NewHasher(p userinput.CmdLineConfigProvider, l *logger.GenericLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue) *Hasher {
-	c := p.GetConfig()
-	w := getWaiter(l)
+func NewHasher(p userinput.CmdLineConfigProvider, l *logger.GenericLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *Hasher {
 	return &Hasher{
-		config:          c,
+		config:          p.GetConfig(),
 		logger:          l,
 		requestQueue:    r,
 		submissionQueue: s,
 		waiter:          w,
 	}
-}
-
-func getWaiter(logger logger.Logger) waiter.Waiter {
-	sleepDuration := 5
-	isLogging := true
-	logMessage := fmt.Sprintf("No requests in queue. Hasher sleeping for %d seconds", sleepDuration)
-
-	return waiter.NewSleeper(sleepDuration, isLogging, logMessage, logger)
 }
 
 func (e Hasher) Start() error {
