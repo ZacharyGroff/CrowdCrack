@@ -18,24 +18,14 @@ type HashSubmitter struct {
 	waiter waiter.Waiter
 }
 
-func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.GenericLogger, s *queue.HashingSubmissionQueue) *HashSubmitter {
-	c := p.GetConfig()
-	w := getWaiter(l)
+func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.GenericLogger, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *HashSubmitter {
 	return &HashSubmitter{
-		config:          c,
+		config:          p.GetConfig(),
 		client:          cl,
 		logger:          l,
 		submissionQueue: s,
 		waiter:          w,
 	}
-}
-
-func getWaiter(logger logger.Logger) waiter.Sleeper {
-	sleepSeconds := 5
-	logMessage := fmt.Sprintf("No submissions in queue. HashSubmitter sleeping for %d seconds", sleepSeconds)
-	isLogging := true
-	
-	return waiter.NewSleeper(sleepSeconds, isLogging, logMessage, logger)
 }
 
 func (h HashSubmitter) Start() error {

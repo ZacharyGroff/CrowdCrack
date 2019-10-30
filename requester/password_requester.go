@@ -19,19 +19,14 @@ type PasswordRequester struct {
 	waiter waiter.Waiter
 }
 
-func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue, logger *logger.GenericLogger) *PasswordRequester {
-	c := p.GetConfig()
-	s := models.GetSupportedHashFunctions()
-	w := getWaiter(logger)
-	return &PasswordRequester{c, cl, r, s, w}
-}
-
-func getWaiter(logger logger.Logger) waiter.Sleeper {
-	sleepSeconds := 60
-	isLogging := true
-	logMessage := fmt.Sprintf("Password requester sleeping for %d seconds", sleepSeconds)
-
-	return waiter.NewSleeper(sleepSeconds, isLogging, logMessage, logger)
+func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue, l *logger.GenericLogger, w waiter.Sleeper) *PasswordRequester {
+	return &PasswordRequester{
+		config:          p.GetConfig(),
+		client:          cl,
+		requestQueue:    r,
+		supportedHashes: models.GetSupportedHashFunctions(),
+		waiter:          w,
+	}
 }
 
 func (p PasswordRequester) Start() error {
