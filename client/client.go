@@ -1,6 +1,7 @@
 package client
 
 import (
+	"sync"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
 	"github.com/ZacharyGroff/CrowdCrack/models"
@@ -30,29 +31,36 @@ func NewClient(p userinput.CmdLineConfigProvider, e *encoder.Hasher, l *logger.G
 
 func (c Client) Start() {
 	c.logger.LogMessage("Starting Client...")
+
+	var wg sync.WaitGroup
+	wg.Add(3)
+
 	go func() {
 		err := c.requester.Start()
 		if err != nil {
 			c.logger.LogMessage(err.Error())
 		}
-		c.Stop()
+		c.logger.LogMessage("Requester Done!")
+		wg.Done()
 	}()
 	go func() {
 		err := c.encoder.Start()
 		if err != nil {
 			c.logger.LogMessage(err.Error())
 		}
-		c.Stop()
+		c.logger.LogMessage("Encoder Done!")
+		wg.Done()
 	}()
 	go func() {
 		err := c.submitter.Start()
 		if err != nil {
 			c.logger.LogMessage(err.Error())
 		}
-		c.Stop()
+		c.logger.LogMessage("Submitter Done!")
+		wg.Done()
 	}()
 
-	for {}
+	wg.Wait()
 }
 
 func (c Client) Stop() {
