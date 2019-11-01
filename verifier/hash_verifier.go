@@ -75,6 +75,7 @@ func (v HashVerifier) parsePasswordHash(passwordHash string) (string, string) {
 }
 
 func (v HashVerifier) isMatch(hash string) bool {
+	v.tracker.TrackHashMatchAttempt()
 	if v.userProvidedHashes[hash] {
 		return true
 	}
