@@ -51,7 +51,7 @@ func (s *StatsObserver) Stop() {
 func (s *StatsObserver) logStats() {
 	s.logPasswordStats()
 	s.logHashesComputedStats()
-	s.logHashesCrackedStats()
+	s.logVerifierStats()
 }
 
 func (s *StatsObserver) logPasswordStats() {
@@ -64,7 +64,9 @@ func (s *StatsObserver) logHashesComputedStats() {
 	s.logHashesComputedPerMinute()
 }
 
-func (s *StatsObserver) logHashesCrackedStats() {
+func (s *StatsObserver) logVerifierStats() {
+	s.logHashMatchAttemptsTotal()
+	s.logHashMatchAttemptsPerMinute()
 	s.logHashesCrackedTotal()
 	s.logHashesCrackedPerMinute()
 }
@@ -78,6 +80,12 @@ func (s *StatsObserver) logPasswordsSentTotal() {
 func (s *StatsObserver) logHashesComputedTotal() {
 	hashesComputed := s.tracker.GetHashesComputed()
 	logMessage := fmt.Sprintf("%d hashes computed in total.", hashesComputed)
+	s.logger.LogMessage(logMessage)
+}
+
+func (s *StatsObserver) logHashMatchAttemptsTotal() {
+	hashMatchAttempts := s.tracker.GetHashMatchAttempts()
+	logMessage := fmt.Sprintf("%d hash match attempts in total.", hashMatchAttempts)
 	s.logger.LogMessage(logMessage)
 }
 
@@ -98,6 +106,13 @@ func (s *StatsObserver) logHashesComputedPerMinute() {
 	hashesComputed := s.tracker.GetHashesComputed()
 	hashesComputedPerMinute := s.getActionsPerMinute(hashesComputed)
 	logMessage := fmt.Sprintf("%f hashes computed per minute.", hashesComputedPerMinute)
+	s.logger.LogMessage(logMessage)
+}
+
+func (s *StatsObserver) logHashMatchAttemptsPerMinute() {
+	hashMatchAttempts := s.tracker.GetHashMatchAttempts()
+	hashMatchAttemptsPerMinute := s.getActionsPerMinute(hashMatchAttempts)
+	logMessage := fmt.Sprintf("%f hash match attempts per minute.", hashMatchAttemptsPerMinute)
 	s.logger.LogMessage(logMessage)
 }
 

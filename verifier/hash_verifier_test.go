@@ -91,14 +91,6 @@ func setupHashVerifierForHashReaderError() testObject {
 	}
 }
 
-func assertTrackerCalled(t *testing.T, m *mocks.MockTracker) {
-	expected := uint64(1)
-	actual := m.TrackHashesCrackedCalls
-	if expected != actual {
-		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
-	}
-}
-
 func assertLoggerCalled(t *testing.T, m *mocks.MockLogger) {
 	expected := uint64(1)
 	actual := m.LogMessageCalls
@@ -107,9 +99,25 @@ func assertLoggerCalled(t *testing.T, m *mocks.MockLogger) {
 	}
 }
 
-func assertTrackerNotCalled(t *testing.T, m *mocks.MockTracker) {
+func assertTrackerTrackHashesCrackedCalled(t *testing.T, m *mocks.MockTracker) {
+	expected := uint64(1)
+	actual := m.TrackHashesCrackedCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertTrackerTrackHashesCrackedNotCalled(t *testing.T, m *mocks.MockTracker) {
 	expected := uint64(0)
 	actual := m.TrackHashesCrackedCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertTrackerTrackHashMatchAttemptCalled(t *testing.T, m *mocks.MockTracker) {
+	expected := uint64(1)
+	actual := m.TrackHashMatchAttemptCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
@@ -169,7 +177,7 @@ func TestHashVerifier_VerifyNextPasswordHash_IsMatch(t *testing.T) {
 func TestHashVerifier_VerifyNextPassword_HashIsMatch_TrackerCalled(t *testing.T) {
 	testObject := setupHashVerifierForSuccess()
 	testObject.hashVerifier.verifyNextPasswordHash()
-	assertTrackerCalled(t, testObject.mockTracker)
+	assertTrackerTrackHashesCrackedCalled(t, testObject.mockTracker)
 }
 
 func TestHashVerifier_VerifyNextPasswordHash_IsNotMatch(t *testing.T) {
@@ -186,7 +194,7 @@ func TestHashVerifier_VerifyNextPasswordHash_IsNotMatch(t *testing.T) {
 func TestHashVerifier_VerifyNextPassword_HashIsNotMatch_TrackerNotCalled(t *testing.T) {
 	testObject := setupHashVerifierForNoMatch()
 	testObject.hashVerifier.verifyNextPasswordHash()
-	assertTrackerNotCalled(t, testObject.mockTracker)
+	assertTrackerTrackHashesCrackedNotCalled(t, testObject.mockTracker)
 }
 
 func TestHashVerifier_GetNextPasswordHash_CorrectHash(t *testing.T) {
@@ -227,6 +235,12 @@ func TestHashVerifier_IsMatch_True(t *testing.T) {
 	}
 }
 
+func TestHashVerifier_IsMatch_True_TrackerCalled(t *testing.T) {
+	testObject := setupHashVerifierForSuccess()
+	testObject.hashVerifier.isMatch(fakeHash)
+	assertTrackerTrackHashMatchAttemptCalled(t, testObject.mockTracker)
+}
+
 func TestHashVerifier_IsMatch_False(t *testing.T) {
 	expected := false
 
@@ -236,6 +250,12 @@ func TestHashVerifier_IsMatch_False(t *testing.T) {
 	if expected != actual {
 		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
+}
+
+func TestHashVerifier_IsMatch_False_TrackerCalled(t *testing.T) {
+	testObject := setupHashVerifierForNoMatch()
+	testObject.hashVerifier.isMatch(fakeHash)
+	assertTrackerTrackHashMatchAttemptCalled(t, testObject.mockTracker)
 }
 
 func TestHashVerifier_Inform_LoggerCalled(t *testing.T) {
