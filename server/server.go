@@ -16,7 +16,7 @@ type Server struct {
 	Verifier verifier.Verifier
 }
 
-func NewServer(a *api.HashApi, l *logger.GenericLogger, r *reader.WordlistReader, o *observer.StatsObserver, v *verifier.HashVerifier) Server {
+func NewServer(a *api.HashApi, l *logger.ConcurrentLogger, r *reader.WordlistReader, o *observer.StatsObserver, v *verifier.HashVerifier) Server {
 	return Server{
 		Api:      a,
 		Logger:   l,

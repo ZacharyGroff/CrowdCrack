@@ -19,7 +19,7 @@ type HashApi struct {
 	Tracker tracker.Tracker
 }
 
-func NewHashApi(p userinput.CmdLineConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.GenericLogger, t *tracker.StatsTracker) *HashApi {
+func NewHashApi(p userinput.CmdLineConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.ConcurrentLogger, t *tracker.StatsTracker) *HashApi {
 	c := p.GetConfig()
 	return &HashApi{
 		Config:    c,

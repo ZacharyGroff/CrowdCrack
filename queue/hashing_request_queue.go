@@ -11,7 +11,7 @@ type HashingRequestQueue struct {
 }
 
 func NewHashingRequestQueue() *HashingRequestQueue {
-	r := make(chan models.HashingRequest, 2)
+	r := make(chan models.HashingRequest, 10)
 	return &HashingRequestQueue{r}
 }
 

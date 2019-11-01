@@ -11,7 +11,7 @@ type HashingSubmissionQueue struct {
 }
 
 func NewHashingSubmissionQueue() *HashingSubmissionQueue{
-	s := make(chan models.HashSubmission, 2)
+	s := make(chan models.HashSubmission, 100)
 	return &HashingSubmissionQueue{s}
 }
 

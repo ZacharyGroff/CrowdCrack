@@ -10,20 +10,20 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
-func TestGenericLogger_LogMessage_Error(t *testing.T) {
+func TestConcurrentLogger_LogMessage_Error(t *testing.T) {
 	config := models.Config{LogPath: ""}
-	GenericLogger := GenericLogger{&config}
-	err := GenericLogger.LogMessage("test")
+	ConcurrentLogger := ConcurrentLogger{config: &config}
+	err := ConcurrentLogger.LogMessage("test")
 	if err == nil {
 		t.Error("Expected error but nil returned")
 	}
 }
 
-func TestGenericLogger_logToFile_Success(t *testing.T) {
+func TestConcurrentLogger_logToFile_Success(t *testing.T) {
 	logPath := "test_log.txt"
 	config := models.Config{LogPath: logPath}
-	GenericLogger := GenericLogger{&config}
-	err := GenericLogger.logToFile("test")
+	ConcurrentLogger := ConcurrentLogger{config: &config}
+	err := ConcurrentLogger.logToFile("test")
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
@@ -31,13 +31,13 @@ func TestGenericLogger_logToFile_Success(t *testing.T) {
 	os.Remove(logPath)
 }
 
-func TestGenericLogger_logToFile_CorrectWrite(t *testing.T) {
+func TestConcurrentLogger_logToFile_CorrectWrite(t *testing.T) {
 	expected := "test"
 
 	logPath := "test_log.txt"
 	config := models.Config{LogPath: logPath}
-	GenericLogger := GenericLogger{&config}
-	GenericLogger.logToFile(expected)
+	ConcurrentLogger := ConcurrentLogger{config: &config}
+	ConcurrentLogger.logToFile(expected)
 
 	f, _ := os.Open(logPath)
 	reader := bufio.NewReader(f)
@@ -51,16 +51,16 @@ func TestGenericLogger_logToFile_CorrectWrite(t *testing.T) {
 	os.Remove(logPath)
 }
 
-func TestGenericLogger_logToFile_Error(t *testing.T) {
+func TestConcurrentLogger_logToFile_Error(t *testing.T) {
 	config := models.Config{LogPath: ""}
-	GenericLogger := GenericLogger{&config}
-	err := GenericLogger.logToFile("test")
+	ConcurrentLogger := ConcurrentLogger{config: &config}
+	err := ConcurrentLogger.logToFile("test")
 	if err == nil {
 		t.Error("Expected error but nil returned")
 	}
 }
 
-func TestGenericLogger_getTimeFormattedMessage_CorrectResult(t *testing.T) {
+func TestConcurrentLogger_getTimeFormattedMessage_CorrectResult(t *testing.T) {
 	testMessage := "testMessage"
 	currentTime := time.Now()
 	expected := fmt.Sprintf("%s: %s", currentTime.Format(time.RFC822), testMessage)

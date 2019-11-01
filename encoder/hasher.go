@@ -19,7 +19,7 @@ type Hasher struct {
 	waiter waiter.Waiter
 }
 
-func NewHasher(p userinput.CmdLineConfigProvider, l *logger.GenericLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *Hasher {
+func NewHasher(p userinput.CmdLineConfigProvider, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *Hasher {
 	return &Hasher{
 		config:          p.GetConfig(),
 		logger:          l,
@@ -66,7 +66,6 @@ func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error
 
 func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) models.HashSubmission {
 	passwordHashes := getPasswordHashes(hashingRequest.Hash, hashingRequest.Passwords)
-
 	return models.HashSubmission{hashingRequest.HashName, passwordHashes}
 }
 

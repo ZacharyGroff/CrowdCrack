@@ -18,7 +18,7 @@ type HashSubmitter struct {
 	waiter waiter.Waiter
 }
 
-func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.GenericLogger, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *HashSubmitter {
+func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *HashSubmitter {
 	return &HashSubmitter{
 		config:          p.GetConfig(),
 		client:          cl,
