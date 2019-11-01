@@ -29,7 +29,7 @@ func (s *StatsTracker) TrackHashesCracked(hashesCracked uint64) {
 }
 
 func (s *StatsTracker) TrackHashMatchAttempt() {
-	s.hashesCracked++
+	s.hashMatchAttempts++
 }
 
 func (s *StatsTracker) GetPasswordsSent() uint64 {
@@ -45,5 +45,5 @@ func (s *StatsTracker) GetHashesCracked() uint64 {
 }
 
 func (s *StatsTracker) GetHashMatchAttempts() uint64 {
-	return s.hashesCracked
+	return s.hashMatchAttempts
 }

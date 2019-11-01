@@ -47,7 +47,7 @@ func TestStatsTracker_TrackHashMatchAttempt_CorrectValue(t *testing.T) {
 	statsTracker := NewStatsTracker()
 	statsTracker.TrackHashMatchAttempt()
 
-	actual := statsTracker.hashesCracked
+	actual := statsTracker.hashMatchAttempts
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
@@ -102,9 +102,10 @@ func TestStatsTracker_GetHashMatchAttempts_CorrectValue(t *testing.T) {
 	expected := uint64(42)
 
 	statsTracker := StatsTracker{
-		passwordsSent:  0,
-		hashesComputed: 0,
-		hashesCracked:  expected,
+		passwordsSent:     0,
+		hashesComputed:    0,
+		hashesCracked:     0,
+		hashMatchAttempts: expected,
 	}
 
 	actual := statsTracker.GetHashMatchAttempts()
