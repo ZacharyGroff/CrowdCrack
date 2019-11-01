@@ -22,11 +22,11 @@ import (
 )
 
 func InitializeClient() client.Client {
-	wire.Build(client.NewClient, encoder.NewHasher, requester.NewPasswordRequester, submitter.NewHashSubmitter, apiclient.NewHashApiClient, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, waiter.NewSleeper, logger.NewGenericLogger, userinput.NewCmdLineConfigProvider)
+	wire.Build(client.NewClient, encoder.NewHasher, requester.NewPasswordRequester, submitter.NewHashSubmitter, apiclient.NewHashApiClient, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, waiter.NewSleeper, logger.NewConcurrentLogger, userinput.NewCmdLineConfigProvider)
 	return client.Client{}
 }
 
 func InitializeServer() server.Server {
-	wire.Build(server.NewServer, api.NewHashApi, verifier.NewHashVerifier, reader.NewHashlistReader, reader.NewWordlistReader, queue.NewPasswordQueue, queue.NewHashQueue, observer.NewStatsObserver, logger.NewGenericLogger, tracker.NewStatsTracker, userinput.NewCmdLineConfigProvider)
+	wire.Build(server.NewServer, api.NewHashApi, verifier.NewHashVerifier, reader.NewHashlistReader, reader.NewWordlistReader, queue.NewPasswordQueue, queue.NewHashQueue, observer.NewStatsObserver, logger.NewConcurrentLogger, tracker.NewStatsTracker, userinput.NewCmdLineConfigProvider)
 	return server.Server{}
 }

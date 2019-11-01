@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"hash"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
@@ -19,7 +18,7 @@ type PasswordRequester struct {
 	waiter waiter.Waiter
 }
 
-func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue, l *logger.GenericLogger, w waiter.Sleeper) *PasswordRequester {
+func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue, w waiter.Sleeper) *PasswordRequester {
 	return &PasswordRequester{
 		config:          p.GetConfig(),
 		client:          cl,
@@ -39,7 +38,7 @@ func (p PasswordRequester) Start() error {
 }
 
 func (p PasswordRequester) processOrSleep() error {
-	if p.requestQueue.Size() < 2 {
+	if p.requestQueue.Size() < 10 {
 		err := p.addRequestToQueue()
 		if err != nil {
 			return err
@@ -110,7 +109,7 @@ func (p PasswordRequester) requestHashName() (string, error) {
 }
 
 func (p PasswordRequester) getPasswords() ([]string, error) {
-	numPasswords := 1000
+	numPasswords := 100000
 
 	statusCode, passwords := p.client.GetPasswords(numPasswords)
 	if statusCode != 200 {

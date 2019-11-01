@@ -15,9 +15,9 @@ type Sleeper struct {
 	isLogging bool
 }
 
-func NewSleeper(u userinput.CmdLineConfigProvider, l *logger.GenericLogger) Sleeper {
+func NewSleeper(u userinput.CmdLineConfigProvider, l *logger.ConcurrentLogger) Sleeper {
 	config := u.GetConfig()
-	sleepDuration := time.Duration(60) * time.Second
+	sleepDuration := time.Duration(5) * time.Second
 	return Sleeper {
 		logger:        l,
 		sleepDuration: sleepDuration,

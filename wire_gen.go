@@ -27,15 +27,15 @@ import (
 
 func InitializeClient() client.Client {
 	cmdLineConfigProvider := userinput.NewCmdLineConfigProvider()
-	genericLogger := logger.NewGenericLogger(cmdLineConfigProvider)
+	concurrentLogger := logger.NewConcurrentLogger(cmdLineConfigProvider)
 	hashingRequestQueue := queue.NewHashingRequestQueue()
 	hashingSubmissionQueue := queue.NewHashingSubmissionQueue()
-	sleeper := waiter.NewSleeper(cmdLineConfigProvider, genericLogger)
-	hasher := encoder.NewHasher(cmdLineConfigProvider, genericLogger, hashingRequestQueue, hashingSubmissionQueue, sleeper)
+	sleeper := waiter.NewSleeper(cmdLineConfigProvider, concurrentLogger)
+	hasher := encoder.NewHasher(cmdLineConfigProvider, concurrentLogger, hashingRequestQueue, hashingSubmissionQueue, sleeper)
 	hashApiClient := apiclient.NewHashApiClient(cmdLineConfigProvider)
-	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, hashingRequestQueue, genericLogger, sleeper)
-	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, genericLogger, hashingSubmissionQueue, sleeper)
-	clientClient := client.NewClient(cmdLineConfigProvider, hasher, genericLogger, passwordRequester, hashSubmitter)
+	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, hashingRequestQueue, sleeper)
+	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, concurrentLogger, hashingSubmissionQueue, sleeper)
+	clientClient := client.NewClient(cmdLineConfigProvider, hasher, concurrentLogger, passwordRequester, hashSubmitter)
 	return clientClient
 }
 
@@ -43,13 +43,13 @@ func InitializeServer() server.Server {
 	cmdLineConfigProvider := userinput.NewCmdLineConfigProvider()
 	hashQueue := queue.NewHashQueue(cmdLineConfigProvider)
 	passwordQueue := queue.NewPasswordQueue(cmdLineConfigProvider)
-	genericLogger := logger.NewGenericLogger(cmdLineConfigProvider)
+	concurrentLogger := logger.NewConcurrentLogger(cmdLineConfigProvider)
 	statsTracker := tracker.NewStatsTracker()
-	hashApi := api.NewHashApi(cmdLineConfigProvider, hashQueue, passwordQueue, genericLogger, statsTracker)
+	hashApi := api.NewHashApi(cmdLineConfigProvider, hashQueue, passwordQueue, concurrentLogger, statsTracker)
 	wordlistReader := reader.NewWordlistReader(cmdLineConfigProvider, passwordQueue)
-	statsObserver := observer.NewStatsObserver(genericLogger, statsTracker, cmdLineConfigProvider)
+	statsObserver := observer.NewStatsObserver(concurrentLogger, statsTracker, cmdLineConfigProvider)
 	hashlistReader := reader.NewHashlistReader(cmdLineConfigProvider)
-	hashVerifier := verifier.NewHashVerifier(hashQueue, hashlistReader, genericLogger, statsTracker)
-	serverServer := server.NewServer(hashApi, genericLogger, wordlistReader, statsObserver, hashVerifier)
+	hashVerifier := verifier.NewHashVerifier(hashQueue, hashlistReader, concurrentLogger, statsTracker)
+	serverServer := server.NewServer(hashApi, concurrentLogger, wordlistReader, statsObserver, hashVerifier)
 	return serverServer
 }
