@@ -44,8 +44,10 @@ func TestHashingRequestQueue_Put_Error(t *testing.T) {
 	request := models.HashingRequest{sha256.New(), "sha256", []string{"password1"}}
 	q := NewHashingRequestQueue()
 
-	q.Put(request)
-	q.Put(request)
+	for i := 0; i < 10; i++ {
+		q.Put(request)
+	}
+
 	err := q.Put(request)
 	if err == nil {
 		t.Error("Expected error but nil returned.")

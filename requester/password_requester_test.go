@@ -56,7 +56,7 @@ func setupRequestQueueForSuccess() mocks.MockRequestQueue {
 func setupRequestQueueFull() mocks.MockRequestQueue {
 	err := error(nil)
 	hashingRequest := models.HashingRequest{}
-	return mocks.NewMockRequestQueue(err, hashingRequest, 2)
+	return mocks.NewMockRequestQueue(err, hashingRequest, 10)
 }
 
 func setupSupportedHashes() map[string]hash.Hash {

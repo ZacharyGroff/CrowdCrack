@@ -44,9 +44,11 @@ func TestHashingSubmissionQueue_Put_Error(t *testing.T) {
 	submission := models.HashSubmission{}
 	q := NewHashingSubmissionQueue()
 
-	q.Put(submission)	
-	q.Put(submission)	
-	err := q.Put(submission)	
+	for i := 0; i < 100; i++ {
+		q.Put(submission)
+	}
+
+	err := q.Put(submission)
 	if err == nil {
 		t.Error("Expected error but nil returned.")
 	}
