@@ -5,23 +5,28 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"time"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
-type GenericLogger struct {
+type ConcurrentLogger struct {
 	config *models.Config
+	mux sync.Mutex
 }
 
-func NewGenericLogger(p userinput.CmdLineConfigProvider) *GenericLogger {
+func NewConcurrentLogger(p userinput.CmdLineConfigProvider) *ConcurrentLogger {
 	c := p.GetConfig()
-	return &GenericLogger{
+	return &ConcurrentLogger{
 		config: c,
 	}
 }
 
-func (s *GenericLogger) LogMessage(logMessage string) error {
+func (s *ConcurrentLogger) LogMessage(logMessage string) error {
+	s.mux.Lock()
+	defer s.mux.Unlock()
+
 	if s.config.Verbose {
 		log.Println(logMessage)
 	}
@@ -30,7 +35,7 @@ func (s *GenericLogger) LogMessage(logMessage string) error {
 	return err
 }
 
-func (s *GenericLogger) logToFile(logMessage string) error {
+func (s *ConcurrentLogger) logToFile(logMessage string) error {
 	timeFormattedMessage := getTimeFormattedMessage(time.Now(), logMessage)
 	file, err := os.OpenFile(s.config.LogPath, os.O_WRONLY | os.O_CREATE | os.O_APPEND, os.ModePerm)
 	if err != nil {

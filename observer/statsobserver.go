@@ -17,7 +17,7 @@ type StatsObserver struct {
 	stop      chan bool
 }
 
-func NewStatsObserver(l *logger.GenericLogger, t *tracker.StatsTracker, p userinput.CmdLineConfigProvider) *StatsObserver {
+func NewStatsObserver(l *logger.ConcurrentLogger, t *tracker.StatsTracker, p userinput.CmdLineConfigProvider) *StatsObserver {
 	c := p.GetConfig()
 	start := time.Now()
 	stop := make(chan bool)

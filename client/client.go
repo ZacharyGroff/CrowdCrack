@@ -18,7 +18,7 @@ type Client struct {
 	submitter submitter.Submitter
 }
 
-func NewClient(p userinput.CmdLineConfigProvider, e *encoder.Hasher, l *logger.GenericLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
+func NewClient(p userinput.CmdLineConfigProvider, e *encoder.Hasher, l *logger.ConcurrentLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
 	c := p.GetConfig()
 	return Client{
 		config:    c,
