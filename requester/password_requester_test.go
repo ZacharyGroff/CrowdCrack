@@ -1,13 +1,13 @@
 package requester
 
 import (
-	"crypto/sha256"
-	"github.com/ZacharyGroff/CrowdCrack/mocks"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 	"hash"
 	"reflect"
 	"strings"
 	"testing"
+	"crypto/sha256"
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 type testObject struct {
