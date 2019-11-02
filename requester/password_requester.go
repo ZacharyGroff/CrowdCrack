@@ -109,9 +109,7 @@ func (p PasswordRequester) requestHashName() (string, error) {
 }
 
 func (p PasswordRequester) getPasswords() ([]string, error) {
-	numPasswords := 100000
-
-	statusCode, passwords := p.client.GetPasswords(numPasswords)
+	statusCode, passwords := p.client.GetPasswords(int(p.config.PasswordRequestSize))
 	if statusCode != 200 {
 		err := fmt.Errorf("Unexpected response from api on password request with status code: %d\n", statusCode)
 		return passwords, err
