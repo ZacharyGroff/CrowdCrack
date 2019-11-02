@@ -10,6 +10,7 @@ type Config struct {
 	LogPath                  string
 	LogFrequencyInSeconds    uint64
 	PasswordQueueBuffer      uint64
+	PasswordRequestSize      uint64
 	ServerAddress            string
 	Verbose                  bool
 	WordlistPath             string

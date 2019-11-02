@@ -20,18 +20,19 @@ func NewCmdLineConfigProvider() CmdLineConfigProvider {
 func parseCmdLine() *models.Config {
 	supportedHashes := "md4, md5, sha1, sha256, sha512, ripemd160, sha3_224, sha3_256, sha3_384, sha3_512, sha512_224, sha512_256"
 
-	serverAddressPtr := flag.String("saddress", "http://localhost:2725", "address of server to connect to")
-	hashQueueBufferPtr := flag.Uint64("hash-buffer", 10000, "buffer size for hash queue")
-	passwordQueueBufferPtr := flag.Uint64("password-buffer", 10000, "buffer size for password queue")
-	flushToFilePtr := flag.Bool("flush", true, "flush computed hashes to file if hash buffer becomes full")
-	computedHashOverFlowPathPtr := flag.String("overflow-path", "output/computed_hash_overflow.txt", "path to file to flush computed hashes to")
-	wordListPathPtr := flag.String("wordlist-path", "wordlist.txt", "path to wordlist file")
-	hashListPathPtr := flag.String("hashlist-path", "hashlist.txt", "path to file containing hashes to crack")
-	logPathPtr := flag.String("log-path", "crowdcrack_log.txt", "path to log file")
-	logFrequencyInSecondsPtr := flag.Uint64("log-frequency", 60, "time interval for logging stats")
-	hashFunctionPtr := flag.String("hash", "sha256", fmt.Sprintf("name of hash to use - currently supported: %s", supportedHashes))
 	apiPortPtr := flag.Uint("port", 2725, "port to expose for api")
+	computedHashOverFlowPathPtr := flag.String("overflow-path", "output/computed_hash_overflow.txt", "path to file to flush computed hashes to")
+	flushToFilePtr := flag.Bool("flush", true, "flush computed hashes to file if hash buffer becomes full")
+	hashFunctionPtr := flag.String("hash", "sha256", fmt.Sprintf("name of hash to use - currently supported: %s", supportedHashes))
+	hashListPathPtr := flag.String("hashlist-path", "hashlist.txt", "path to file containing hashes to crack")
+	hashQueueBufferPtr := flag.Uint64("hash-buffer", 10000, "buffer size for hash queue")
+	logFrequencyInSecondsPtr := flag.Uint64("log-frequency", 60, "time interval for logging stats")
+	logPathPtr := flag.String("log-path", "crowdcrack_log.txt", "path to log file")
+	passwordQueueBufferPtr := flag.Uint64("password-buffer", 10000, "buffer size for password queue")
+	passwordRequestSizePtr := flag.Uint64("request-size", 100000, "number of passwords to request per request")
+	serverAddressPtr := flag.String("saddress", "http://localhost:2725", "address of server to connect to")
 	verbosePtr := flag.Bool("verbose", true, "print log messages to console")
+	wordListPathPtr := flag.String("wordlist-path", "wordlist.txt", "path to wordlist file")
 	flag.Bool("client", false, "placeholder to allow checking of client arg in main")
 
 	flag.Parse()
@@ -46,6 +47,7 @@ func parseCmdLine() *models.Config {
 		LogFrequencyInSeconds:    *logFrequencyInSecondsPtr,
 		LogPath:                  *logPathPtr,
 		PasswordQueueBuffer:      *passwordQueueBufferPtr,
+		PasswordRequestSize:      *passwordRequestSizePtr,
 		ServerAddress:            *serverAddressPtr,
 		Verbose:                  *verbosePtr,
 		WordlistPath:             *wordListPathPtr,

@@ -67,72 +67,85 @@ func setupNoSupportedHashes() map[string]hash.Hash {
 	return map[string]hash.Hash {}
 }
 
+func setupConfig() models.Config {
+	return models.Config {
+		PasswordRequestSize: 1,
+	}
+}
+
 func setupPasswordRequestForSuccess() testObject {
 	apiClient := setupApiClientForSuccess()
+	config := setupConfig()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
 
 func setupPasswordRequestForApiClientError() testObject {
 	apiClient := setupApiClientForError()
+	config := setupConfig()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
 
 func setupPasswordRequestForGetHashNameError() testObject {
 	apiClient := setupApiClientForGetHashNameError()
+	config := setupConfig()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
 
 func setupPasswordRequestForGetPasswordsError() testObject {
 	apiClient := setupApiClientForGetPasswordsError()
+	config := setupConfig()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
 
 func setupPasswordRequestForFullRequestQueue() testObject {
 	apiClient := setupApiClientForSuccess()
+	config := setupConfig()
 	requestQueue := setupRequestQueueFull()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
 
 func setupPasswordRequestFoNoSupportedHashes() testObject {
 	apiClient := setupApiClientForSuccess()
+	config := setupConfig()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupNoSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
 
 func setupPasswordRequestFoNoPasswordsReturned() testObject {
 	apiClient := setupApiClientForNoPasswordsReturned()
+	config := setupConfig()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
-	passwordRequester := PasswordRequester{client: &apiClient, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
+	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
 	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
 }
