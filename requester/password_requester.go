@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hash"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
@@ -13,15 +14,17 @@ import (
 type PasswordRequester struct {
 	config *models.Config
 	client apiclient.ApiClient
+	logger logger.Logger
 	requestQueue queue.RequestQueue
 	supportedHashes map[string]hash.Hash
 	waiter waiter.Waiter
 }
 
-func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, r *queue.HashingRequestQueue, w waiter.Sleeper) *PasswordRequester {
+func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, w waiter.Sleeper) *PasswordRequester {
 	return &PasswordRequester{
 		config:          p.GetConfig(),
 		client:          cl,
+		logger:          l,
 		requestQueue:    r,
 		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          w,
@@ -29,6 +32,7 @@ func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashA
 }
 
 func (p PasswordRequester) Start() error {
+	p.logger.LogMessage("Starting password requester")
 	for {
 		err := p.processOrSleep()
 		if err != nil {
@@ -62,6 +66,7 @@ func (p PasswordRequester) addRequestToQueue() error {
 	}
 
 	if len(passwords) < 1 {
+		p.logger.LogMessage("Requester received a response with zero passwords contained.")
 		p.waiter.Wait()
 	} else {
 		hashingRequest := models.HashingRequest{hash, hashName, passwords}
