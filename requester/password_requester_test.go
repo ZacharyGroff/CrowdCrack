@@ -1,18 +1,19 @@
 package requester
 
 import (
+	"crypto/sha256"
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"hash"
 	"reflect"
 	"strings"
 	"testing"
-	"crypto/sha256"
-	"github.com/ZacharyGroff/CrowdCrack/mocks"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 type testObject struct {
 	passwordRequester *PasswordRequester
 	apiClient *mocks.MockApiClient
+	logger *mocks.MockLogger
 	requestQueue *mocks.MockRequestQueue
 	waiter *mocks.MockWaiter
 }
@@ -26,6 +27,7 @@ var expectedHashName = "sha256"
 var expectedHash = sha256.New()
 var successCode = 200
 var errorCode = 500
+var nilError error
 
 func setupApiClientForSuccess() mocks.MockApiClient {
 	return mocks.NewMockApiClient(successCode, successCode, successCode, expectedHashName, expectedPasswords)
@@ -48,15 +50,13 @@ func setupApiClientForNoPasswordsReturned() mocks.MockApiClient {
 }
 
 func setupRequestQueueForSuccess() mocks.MockRequestQueue {
-	err := error(nil)
 	hashingRequest := models.HashingRequest{}
-	return mocks.NewMockRequestQueue(err, hashingRequest, 0)
+	return mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
 }
 
 func setupRequestQueueFull() mocks.MockRequestQueue {
-	err := error(nil)
 	hashingRequest := models.HashingRequest{}
-	return mocks.NewMockRequestQueue(err, hashingRequest, 10)
+	return mocks.NewMockRequestQueue(nilError, hashingRequest, 10)
 }
 
 func setupSupportedHashes() map[string]hash.Hash {
@@ -73,81 +73,134 @@ func setupConfig() models.Config {
 	}
 }
 
+func setupLogger() mocks.MockLogger {
+	return mocks.NewMockLogger(nilError)
+}
+
 func setupPasswordRequestForSuccess() testObject {
 	apiClient := setupApiClientForSuccess()
 	config := setupConfig()
+	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
-	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+	return testObject {
+		passwordRequester: &passwordRequester,
+		apiClient:         &apiClient,
+		logger:            &logger,
+		requestQueue:      &requestQueue,
+		waiter:            &waiter,
+	}
 }
 
 func setupPasswordRequestForApiClientError() testObject {
 	apiClient := setupApiClientForError()
 	config := setupConfig()
+	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
-	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+	return testObject {
+		passwordRequester: &passwordRequester,
+		apiClient:         &apiClient,
+		logger:            &logger,
+		requestQueue:      &requestQueue,
+		waiter:            &waiter,
+	}
 }
 
 func setupPasswordRequestForGetHashNameError() testObject {
 	apiClient := setupApiClientForGetHashNameError()
 	config := setupConfig()
+	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
-	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+	return testObject {
+		passwordRequester: &passwordRequester,
+		apiClient:         &apiClient,
+		logger:            &logger,
+		requestQueue:      &requestQueue,
+		waiter:            &waiter,
+	}
 }
 
 func setupPasswordRequestForGetPasswordsError() testObject {
 	apiClient := setupApiClientForGetPasswordsError()
 	config := setupConfig()
+	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
-	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+	return testObject {
+		passwordRequester: &passwordRequester,
+		apiClient:         &apiClient,
+		logger:            &logger,
+		requestQueue:      &requestQueue,
+		waiter:            &waiter,
+	}
 }
 
 func setupPasswordRequestForFullRequestQueue() testObject {
 	apiClient := setupApiClientForSuccess()
 	config := setupConfig()
+	logger := setupLogger()
 	requestQueue := setupRequestQueueFull()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
-	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+	return testObject {
+		passwordRequester: &passwordRequester,
+		apiClient:         &apiClient,
+		logger:            &logger,
+		requestQueue:      &requestQueue,
+		waiter:            &waiter,
+	}
 }
 
 func setupPasswordRequestFoNoSupportedHashes() testObject {
 	apiClient := setupApiClientForSuccess()
 	config := setupConfig()
+	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupNoSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
-	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+	return testObject {
+		passwordRequester: &passwordRequester,
+		apiClient:         &apiClient,
+		logger:            &logger,
+		requestQueue:      &requestQueue,
+		waiter:            &waiter,
+	}
 }
 
 func setupPasswordRequestFoNoPasswordsReturned() testObject {
 	apiClient := setupApiClientForNoPasswordsReturned()
 	config := setupConfig()
+	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{client: &apiClient, config: &config, requestQueue: &requestQueue, supportedHashes: supportedHashes, waiter: &waiter}
 
-	return testObject{&passwordRequester, &apiClient, &requestQueue, &waiter}
+	return testObject {
+		passwordRequester: &passwordRequester,
+		apiClient:         &apiClient,
+		logger:            &logger,
+		requestQueue:      &requestQueue,
+		waiter:            &waiter,
+	}
 }
 
 func assertRequestQueueSizeCalled(t *testing.T, testObject testObject) {
@@ -206,12 +259,26 @@ func assertApiClientGetPasswordsCalled(t *testing.T, testObject testObject) {
 	}
 }
 
+func assertLoggerCalled(t *testing.T, testObject testObject) {
+	expected := uint64(1)
+	actual := testObject.logger.LogMessageCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
 func TestPasswordRequester_Start_Error(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	err := testObject.passwordRequester.Start()
 	if err == nil {
 		t.Error("Expected error but nil returned")
 	}
+}
+
+func TestPasswordRequester_Start_Error_LoggerCalled(t *testing.T) {
+	testObject := setupPasswordRequestForApiClientError()
+	testObject.passwordRequester.Start()
+	assertLoggerCalled(t, testObject)
 }
 
 func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Success(t *testing.T) {
@@ -342,8 +409,22 @@ func TestPasswordRequester_AddRequestToQueue_GetPasswordsError_WaitNotCalled(t *
 
 func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_Success(t *testing.T) {
 	testObject := setupPasswordRequestFoNoPasswordsReturned()
+	err := testObject.passwordRequester.addRequestToQueue()
+	if err != nil {
+		t.Errorf("Unexpected error returned: %s\n", err.Error())
+	}
+}
+
+func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_WaitCalled(t *testing.T) {
+	testObject := setupPasswordRequestFoNoPasswordsReturned()
 	testObject.passwordRequester.addRequestToQueue()
 	assertWaiterCalled(t, testObject)
+}
+
+func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_LoggerCalled(t *testing.T) {
+	testObject := setupPasswordRequestFoNoPasswordsReturned()
+	testObject.passwordRequester.addRequestToQueue()
+	assertLoggerCalled(t, testObject)
 }
 
 func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_PutNotCalled(t *testing.T) {
