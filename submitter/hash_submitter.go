@@ -57,9 +57,19 @@ func (h HashSubmitter) processSubmission() error {
 		return err
 	}
 
+	if h.config.Verbose {
+		numResults := len(hashSubmission.Results)
+		logMessage := fmt.Sprintf("Submitter has received hash submission with hash type: %s and %d results", hashSubmission.HashType, numResults)
+		h.logger.LogMessage(logMessage)
+	}
+
 	statusCode := h.client.SubmitHashes(hashSubmission)
 	if statusCode != 200 {
 		return fmt.Errorf("Unexpected response from api on hash submission with status code: %d\n", statusCode)
+	}
+
+	if h.config.Verbose {
+		h.logger.LogMessage("Submitter has successfully submitted")
 	}
 
 	return nil

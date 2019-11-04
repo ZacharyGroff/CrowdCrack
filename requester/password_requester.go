@@ -64,11 +64,16 @@ func (p PasswordRequester) addRequestToQueue() error {
 	if err != nil {
 		return err
 	}
+	numPasswords := len(passwords)
 
-	if len(passwords) < 1 {
+	if numPasswords < 1 {
 		p.logger.LogMessage("Requester received a response with zero passwords contained.")
 		p.waiter.Wait()
 	} else {
+		if p.config.Verbose {
+			logMessage := fmt.Sprintf("Requester has created hashing request with hash name: %s and %d passwords", hashName, numPasswords)
+			p.logger.LogMessage(logMessage)
+		}
 		hashingRequest := models.HashingRequest{hash, hashName, passwords}
 		err = p.requestQueue.Put(hashingRequest)
 		if err != nil {
