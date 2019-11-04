@@ -46,6 +46,9 @@ func (a HashApi) HandleRequests() {
 }
 
 func (a HashApi) getHashName(w http.ResponseWriter, r *http.Request) {
+	if a.Config.Verbose {
+		a.Logger.LogMessage("API received a request for current hash name.")
+	}
 	json.NewEncoder(w).Encode(a.Config.HashFunction)
 }
 
@@ -66,6 +69,10 @@ func (a HashApi) retrieveHashes(w http.ResponseWriter, r *http.Request) {
 
 	numHashesComputed := uint64(len(hashSubmission.Results))
 	a.Tracker.TrackHashesComputed(numHashesComputed)
+	if a.Config.Verbose {
+		logMessage := fmt.Sprintf("API received a hash submission containing %d computed hashes", numHashesComputed)
+		a.Logger.LogMessage(logMessage)
+	}
 }
 
 func (a HashApi) sendPasswords(w http.ResponseWriter, r *http.Request) {
@@ -86,6 +93,10 @@ func (a HashApi) sendPasswords(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(passwords)
 
 	a.Tracker.TrackPasswordsSent(numPasswords)
+	if a.Config.Verbose {
+		logMessage := fmt.Sprintf("API received a request for %d passwords", numPasswords)
+		a.Logger.LogMessage(logMessage)
+	}
 }
 
 func (a HashApi) getPasswords(n uint64) []string {
