@@ -67,9 +67,17 @@ func setupNoSupportedHashes() map[string]hash.Hash {
 	return map[string]hash.Hash {}
 }
 
-func setupConfig() models.Config {
+func setupVerboseConfig() models.Config {
 	return models.Config {
 		PasswordRequestSize: 1,
+		Verbose:             true,
+	}
+}
+
+func setupNonVerboseConfig() models.Config {
+	return models.Config{
+		PasswordRequestSize: 1,
+		Verbose:             false,
 	}
 }
 
@@ -79,7 +87,32 @@ func setupLogger() mocks.MockLogger {
 
 func setupPasswordRequestForSuccess() testObject {
 	apiClient := setupApiClientForSuccess()
-	config := setupConfig()
+	config := setupVerboseConfig()
+	logger := setupLogger()
+	requestQueue := setupRequestQueueForSuccess()
+	supportedHashes := setupSupportedHashes()
+	waiter := mocks.NewMockWaiter()
+	passwordRequester := PasswordRequester{
+		config:          &config,
+		client:          &apiClient,
+		logger:          &logger,
+		requestQueue:    &requestQueue,
+		supportedHashes: supportedHashes,
+		waiter:          &waiter,
+	}
+
+	return testObject {
+		passwordRequester: &passwordRequester,
+		apiClient:         &apiClient,
+		logger:            &logger,
+		requestQueue:      &requestQueue,
+		waiter:            &waiter,
+	}
+}
+
+func setupPasswordRequestForSuccessNonVerbose() testObject {
+	apiClient := setupApiClientForSuccess()
+	config := setupNonVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
@@ -104,7 +137,7 @@ func setupPasswordRequestForSuccess() testObject {
 
 func setupPasswordRequestForApiClientError() testObject {
 	apiClient := setupApiClientForError()
-	config := setupConfig()
+	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
@@ -129,7 +162,7 @@ func setupPasswordRequestForApiClientError() testObject {
 
 func setupPasswordRequestForGetHashNameError() testObject {
 	apiClient := setupApiClientForGetHashNameError()
-	config := setupConfig()
+	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
@@ -154,7 +187,7 @@ func setupPasswordRequestForGetHashNameError() testObject {
 
 func setupPasswordRequestForGetPasswordsError() testObject {
 	apiClient := setupApiClientForGetPasswordsError()
-	config := setupConfig()
+	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
@@ -179,7 +212,7 @@ func setupPasswordRequestForGetPasswordsError() testObject {
 
 func setupPasswordRequestForFullRequestQueue() testObject {
 	apiClient := setupApiClientForSuccess()
-	config := setupConfig()
+	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueFull()
 	supportedHashes := setupSupportedHashes()
@@ -204,7 +237,7 @@ func setupPasswordRequestForFullRequestQueue() testObject {
 
 func setupPasswordRequestFoNoSupportedHashes() testObject {
 	apiClient := setupApiClientForSuccess()
-	config := setupConfig()
+	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupNoSupportedHashes()
@@ -229,7 +262,7 @@ func setupPasswordRequestFoNoSupportedHashes() testObject {
 
 func setupPasswordRequestFoNoPasswordsReturned() testObject {
 	apiClient := setupApiClientForNoPasswordsReturned()
-	config := setupConfig()
+	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
@@ -308,8 +341,16 @@ func assertApiClientGetPasswordsCalled(t *testing.T, testObject testObject) {
 	}
 }
 
-func assertLoggerCalled(t *testing.T, testObject testObject) {
+func assertLoggerCalledOnce(t *testing.T, testObject testObject) {
 	expected := uint64(1)
+	actual := testObject.logger.LogMessageCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertLoggerNotCalled(t *testing.T, testObject testObject) {
+	expected := uint64(0)
 	actual := testObject.logger.LogMessageCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
@@ -327,7 +368,7 @@ func TestPasswordRequester_Start_Error(t *testing.T) {
 func TestPasswordRequester_Start_Error_LoggerCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	testObject.passwordRequester.Start()
-	assertLoggerCalled(t, testObject)
+	assertLoggerCalledOnce(t, testObject)
 }
 
 func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Success(t *testing.T) {
@@ -410,6 +451,18 @@ func TestPasswordRequester_AddRequestToQueue_Success_WaitNotCalled(t *testing.T)
 	assertWaiterNotCalled(t, testObject)
 }
 
+func TestPasswordRequester_AddRequestToQueue_Success_Verbose_LoggerCalledOnce(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	testObject.passwordRequester.addRequestToQueue()
+	assertLoggerCalledOnce(t, testObject)
+}
+
+func TestPasswordRequester_AddRequestToQueue_Success_NonVerbose_LoggerNotCalled(t *testing.T) {
+	testObject := setupPasswordRequestForSuccessNonVerbose()
+	testObject.passwordRequester.addRequestToQueue()
+	assertLoggerNotCalled(t, testObject)
+}
+
 func TestPasswordRequester_AddRequestToQueue_GetHashError(t *testing.T) {
 	expected := "Unexpected response from api on hash name request with status code: 500\n"
 	testObject := setupPasswordRequestForGetHashNameError()
@@ -473,7 +526,7 @@ func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_Wa
 func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_LoggerCalled(t *testing.T) {
 	testObject := setupPasswordRequestFoNoPasswordsReturned()
 	testObject.passwordRequester.addRequestToQueue()
-	assertLoggerCalled(t, testObject)
+	assertLoggerCalledOnce(t, testObject)
 }
 
 func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_PutNotCalled(t *testing.T) {

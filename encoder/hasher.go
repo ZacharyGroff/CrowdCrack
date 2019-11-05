@@ -55,6 +55,11 @@ func (e Hasher) processOrSleep() error {
 
 func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error {
 	hashSubmission := e.getHashSubmission(hashingRequest)
+	if e.config.Verbose {
+		numResults := len(hashSubmission.Results)
+		logMessage := fmt.Sprintf("Hasher has created hash submission with hash type: %s and %d results", hashSubmission.HashType, numResults)
+		e.logger.LogMessage(logMessage)
+	}
 
 	err := e.submissionQueue.Put(hashSubmission)
 	for err != nil {
