@@ -11,6 +11,8 @@ import (
 )
 
 var nilError = error(nil)
+var verboseConfig = models.Config{Verbose: true}
+var nonVerboseConfig = models.Config{Verbose: false}
 
 type testObject struct {
 	logger *mocks.MockLogger
@@ -35,7 +37,30 @@ func setupHasherForSuccess() testObject {
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher {
-		config:          nil,
+		config:          &verboseConfig,
+		logger:          &mockLogger,
+		requestQueue:    &mockRequestQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+	}
+
+	return testObject {
+		logger:          &mockLogger,
+		requestQueue:    &mockRequestQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+		hasher:          &hasher,
+	}
+}
+
+func setupHasherForSuccessNonVerbose() testObject {
+	hashSubmission := models.HashSubmission{}
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
+	mockWaiter := mocks.MockWaiter{0}
+	hasher := Hasher {
+		config:          &nonVerboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -60,7 +85,7 @@ func setupHasherForSubmissionQueueError() testObject {
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher {
-		config:          nil,
+		config:          &verboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -85,7 +110,7 @@ func setupHasherForRequestQueueError() testObject {
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher {
-		config:          nil,
+		config:          &verboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -98,6 +123,24 @@ func setupHasherForRequestQueueError() testObject {
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 		hasher:          &hasher,
+	}
+}
+
+func assertLoggerCalled(t *testing.T, testObject testObject) {
+	expected := uint64(1)
+
+	actual := testObject.logger.LogMessageCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertLoggerNotCalled(t *testing.T, testObject testObject) {
+	expected := uint64(0)
+
+	actual := testObject.logger.LogMessageCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
 }
 
@@ -156,6 +199,18 @@ func TestHasher_HandleHashingRequest_Success(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
+}
+
+func TestHasher_HandleHashingRequest_Success_LoggerCalled(t *testing.T) {
+	testObject := setupHasherForSuccess()
+	testObject.hasher.handleHashingRequest(hashingRequest)
+	assertLoggerCalled(t, testObject)
+}
+
+func TestHasher_HandleHashingRequest_Success_LoggerNotCalled(t *testing.T) {
+	testObject := setupHasherForSuccessNonVerbose()
+	testObject.hasher.handleHashingRequest(hashingRequest)
+	assertLoggerNotCalled(t, testObject)
 }
 
 func TestHasher_HandleHashingRequest_HashSubmissionError(t *testing.T) {
