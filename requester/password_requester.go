@@ -34,14 +34,14 @@ func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashA
 func (p PasswordRequester) Start() error {
 	p.logger.LogMessage("Starting password requester")
 	for {
-		err := p.processOrSleep()
+		err := p.processOrWait()
 		if err != nil {
 			return err
 		}
 	}
 }
 
-func (p PasswordRequester) processOrSleep() error {
+func (p PasswordRequester) processOrWait() error {
 	if p.requestQueue.Size() < 10 {
 		err := p.process()
 		if err != nil {
@@ -76,12 +76,18 @@ func (p PasswordRequester) process() error {
 
 func (p PasswordRequester) addRequestToQueue(hashingRequest models.HashingRequest) error {
 	if p.config.Verbose {
-		numPasswords := len(hashingRequest.Passwords)
-		logMessage := fmt.Sprintf("Requester has created hashing request with hash name: %s and %d passwords", hashingRequest.HashName, numPasswords)
-		p.logger.LogMessage(logMessage)
+		p.logRequestCreated(hashingRequest)
 	}
+
 	err := p.requestQueue.Put(hashingRequest)
+
 	return err
+}
+
+func (p PasswordRequester) logRequestCreated(hashingRequest models.HashingRequest) {
+	numPasswords := len(hashingRequest.Passwords)
+	logMessage := fmt.Sprintf("Requester has created hashing request with hash name: %s and %d passwords", hashingRequest.HashName, numPasswords)
+	p.logger.LogMessage(logMessage)
 }
 
 func (p PasswordRequester) getHashingRequest() (models.HashingRequest, error) {

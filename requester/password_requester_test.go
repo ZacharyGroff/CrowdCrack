@@ -371,63 +371,63 @@ func TestPasswordRequester_Start_Error_LoggerCalled(t *testing.T) {
 	assertLoggerCalledOnce(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_Process_Success(t *testing.T) {
+func TestPasswordRequester_ProcessOrWait_Process_Success(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	err := testObject.passwordRequester.processOrSleep()
+	err := testObject.passwordRequester.processOrWait()
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
 }
 
-func TestPasswordRequester_ProcessOrSleep_Process_Success_SizeCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrWait_Process_Success_SizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	testObject.passwordRequester.processOrSleep()
+	testObject.passwordRequester.processOrWait()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_Process_Success_WaitNotCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrWait_Process_Success_WaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	testObject.passwordRequester.processOrSleep()
+	testObject.passwordRequester.processOrWait()
 	assertWaiterNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_Process_Error(t *testing.T) {
+func TestPasswordRequester_ProcessOrWait_Process_Error(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
-	err := testObject.passwordRequester.processOrSleep()
+	err := testObject.passwordRequester.processOrWait()
 	if err == nil {
 		t.Error("Expected error but nil returned")
 	}
 }
 
-func TestPasswordRequester_ProcessOrSleep_Process_Error_SizeCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrWait_Process_Error_SizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
-	testObject.passwordRequester.processOrSleep()
+	testObject.passwordRequester.processOrWait()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_Process_Error_WaitNotCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrWait_Process_Error_WaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
-	testObject.passwordRequester.processOrSleep()
+	testObject.passwordRequester.processOrWait()
 	assertWaiterNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_RequestQueueFull_Success(t *testing.T) {
+func TestPasswordRequester_ProcessOrWait_RequestQueueFull_Success(t *testing.T) {
 	testObject := setupPasswordRequestForFullRequestQueue()
-	err := testObject.passwordRequester.processOrSleep()
+	err := testObject.passwordRequester.processOrWait()
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
 }
 
-func TestPasswordRequester_ProcessOrSleep_RequestQueueFull_SizeCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrWait_RequestQueueFull_SizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForFullRequestQueue()
-	testObject.passwordRequester.processOrSleep()
+	testObject.passwordRequester.processOrWait()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_RequestQueueFull_WaitCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrWait_RequestQueueFull_WaitCalled(t *testing.T) {
 	testObject := setupPasswordRequestForFullRequestQueue()
-	testObject.passwordRequester.processOrSleep()
+	testObject.passwordRequester.processOrWait()
 	assertWaiterCalled(t, testObject)
 }
 
