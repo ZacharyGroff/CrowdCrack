@@ -371,7 +371,7 @@ func TestPasswordRequester_Start_Error_LoggerCalled(t *testing.T) {
 	assertLoggerCalledOnce(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Success(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_Process_Success(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	err := testObject.passwordRequester.processOrSleep()
 	if err != nil {
@@ -379,19 +379,19 @@ func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Success(t *testing.T
 	}
 }
 
-func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Success_SizeCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_Process_Success_SizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	testObject.passwordRequester.processOrSleep()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Success_WaitNotCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_Process_Success_WaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
 	testObject.passwordRequester.processOrSleep()
 	assertWaiterNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Error(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_Process_Error(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	err := testObject.passwordRequester.processOrSleep()
 	if err == nil {
@@ -399,13 +399,13 @@ func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Error(t *testing.T) 
 	}
 }
 
-func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Error_SizeCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_Process_Error_SizeCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	testObject.passwordRequester.processOrSleep()
 	assertRequestQueueSizeCalled(t, testObject)
 }
 
-func TestPasswordRequester_ProcessOrSleep_AddRequestToQueue_Error_WaitNotCalled(t *testing.T) {
+func TestPasswordRequester_ProcessOrSleep_Process_Error_WaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	testObject.passwordRequester.processOrSleep()
 	assertWaiterNotCalled(t, testObject)
@@ -431,42 +431,42 @@ func TestPasswordRequester_ProcessOrSleep_RequestQueueFull_WaitCalled(t *testing
 	assertWaiterCalled(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_Success(t *testing.T) {
+func TestPasswordRequester_Process_Success(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	err := testObject.passwordRequester.addRequestToQueue()
+	err := testObject.passwordRequester.process()
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
 }
 
-func TestPasswordRequester_AddRequestToQueue_Success_PutCalled(t *testing.T) {
+func TestPasswordRequester_Process_Success_PutCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertRequestQueuePutCalled(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_Success_WaitNotCalled(t *testing.T) {
+func TestPasswordRequester_Process_Success_WaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertWaiterNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_Success_Verbose_LoggerCalledOnce(t *testing.T) {
+func TestPasswordRequester_Process_Success_Verbose_LoggerCalledOnce(t *testing.T) {
 	testObject := setupPasswordRequestForSuccess()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertLoggerCalledOnce(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_Success_NonVerbose_LoggerNotCalled(t *testing.T) {
+func TestPasswordRequester_Process_Success_NonVerbose_LoggerNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForSuccessNonVerbose()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertLoggerNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetHashError(t *testing.T) {
+func TestPasswordRequester_Process_GetHashError(t *testing.T) {
 	expected := "Unexpected response from api on hash name request with status code: 500\n"
 	testObject := setupPasswordRequestForGetHashNameError()
-	err := testObject.passwordRequester.addRequestToQueue()
+	err := testObject.passwordRequester.process()
 
 	actual := err.Error()
 	if strings.Compare(expected, actual) != 0 {
@@ -474,22 +474,22 @@ func TestPasswordRequester_AddRequestToQueue_GetHashError(t *testing.T) {
 	}
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetHashError_PutNotCalled(t *testing.T) {
+func TestPasswordRequester_Process_GetHashError_PutNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForGetHashNameError()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertRequestQueuePutNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetHashError_WaitNotCalled(t *testing.T) {
+func TestPasswordRequester_Process_GetHashError_WaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForGetHashNameError()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertWaiterNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetPasswords_Error(t *testing.T) {
+func TestPasswordRequester_Process_GetPasswords_Error(t *testing.T) {
 	expected := "Unexpected response from api on password request with status code: 500\n"
 	testObject := setupPasswordRequestForGetPasswordsError()
-	err := testObject.passwordRequester.addRequestToQueue()
+	err := testObject.passwordRequester.process()
 
 	actual := err.Error()
 	if strings.Compare(expected, actual) != 0 {
@@ -497,41 +497,41 @@ func TestPasswordRequester_AddRequestToQueue_GetPasswords_Error(t *testing.T) {
 	}
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetPasswordsError_PutNotCalled(t *testing.T) {
+func TestPasswordRequester_Process_GetPasswordsError_PutNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForGetPasswordsError()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertRequestQueuePutNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetPasswordsError_WaitNotCalled(t *testing.T) {
+func TestPasswordRequester_Process_GetPasswordsError_WaitNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestForGetPasswordsError()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertWaiterNotCalled(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_Success(t *testing.T) {
+func TestPasswordRequester_Process_GetPasswords_NoPasswordsReturned_Success(t *testing.T) {
 	testObject := setupPasswordRequestFoNoPasswordsReturned()
-	err := testObject.passwordRequester.addRequestToQueue()
+	err := testObject.passwordRequester.process()
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_WaitCalled(t *testing.T) {
+func TestPasswordRequester_Process_GetPasswords_NoPasswordsReturned_WaitCalled(t *testing.T) {
 	testObject := setupPasswordRequestFoNoPasswordsReturned()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertWaiterCalled(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_LoggerCalled(t *testing.T) {
+func TestPasswordRequester_Process_GetPasswords_NoPasswordsReturned_LoggerCalled(t *testing.T) {
 	testObject := setupPasswordRequestFoNoPasswordsReturned()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertLoggerCalledOnce(t, testObject)
 }
 
-func TestPasswordRequester_AddRequestToQueue_GetPasswords_NoPasswordsReturned_PutNotCalled(t *testing.T) {
+func TestPasswordRequester_Process_GetPasswords_NoPasswordsReturned_PutNotCalled(t *testing.T) {
 	testObject := setupPasswordRequestFoNoPasswordsReturned()
-	testObject.passwordRequester.addRequestToQueue()
+	testObject.passwordRequester.process()
 	assertRequestQueuePutNotCalled(t, testObject)
 }
 
