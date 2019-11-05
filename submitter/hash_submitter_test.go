@@ -9,6 +9,8 @@ import (
 
 var testError = errors.New("test error")
 var nilError = error(nil)
+var verboseConfig = models.Config{Verbose: true}
+var nonVerboseConfig = models.Config{Verbose: false}
 
 type testObject struct {
 	hashSubmitter *HashSubmitter
@@ -24,7 +26,7 @@ func setupHashSubmitterForNoError() testObject {
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter {
-		config:          nil,
+		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
 		submissionQueue: &mockSubmissionQueue,
@@ -46,7 +48,7 @@ func setupHashSubmitterForNoErrorEmptySubmissionQueue() testObject {
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 0)
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter {
-		config:          nil,
+		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
 		submissionQueue: &mockSubmissionQueue,
@@ -68,7 +70,7 @@ func setupHashSubmitterForClientError() testObject {
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter {
-		config:          nil,
+		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
 		submissionQueue: &mockSubmissionQueue,
@@ -90,7 +92,7 @@ func setupHashSubmitterForSubmissionQueueError() testObject {
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(testError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter {
-		config:          nil,
+		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
 		submissionQueue: &mockSubmissionQueue,
@@ -149,6 +151,30 @@ func assertClientSubmitHashesNotCalled(t *testing.T, testObject testObject) {
 func assertWaiterWaitNotCalled(t *testing.T, testObject testObject) {
 	expected := uint64(0)
 	actual := testObject.mockWaiter.WaitCalls
+	if expected != actual {
+		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertLoggerCalledOnce(t *testing.T, testObject testObject) {
+	expected := uint64(1)
+	actual := testObject.mockLogger.LogMessageCalls
+	if expected != actual {
+		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertLoggerCalledNTimes(t *testing.T, testObject testObject, n uint64) {
+	expected := uint64(n)
+	actual := testObject.mockLogger.LogMessageCalls
+	if expected != actual {
+		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertLoggerNotCalled(t *testing.T, testObject testObject) {
+	expected := uint64(0)
+	actual := testObject.mockLogger.LogMessageCalls
 	if expected != actual {
 		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
 	}
@@ -243,6 +269,12 @@ func TestHashSubmitter_ProcessSubmission_Success_CorrectClientCalls(t *testing.T
 	assertClientSubmitHashesCalled(t, testObject)
 }
 
+func TestHashSubmitter_ProcessSubmission_Success_LoggerCalledTwice(t *testing.T) {
+	testObject := setupHashSubmitterForNoError()
+	testObject.hashSubmitter.processSubmission()
+	assertLoggerCalledNTimes(t, testObject, 2)
+}
+
 func TestHashSubmitter_ProcessSubmission_Error_BadStatusCodeReturnedFromClient(t *testing.T) {
 	testObject := setupHashSubmitterForClientError()
 
@@ -264,6 +296,12 @@ func TestHashSubmitter_ProcessSubmission_BadStatusCodeReturnedFromClient_Correct
 	assertClientSubmitHashesCalled(t, testObject)
 }
 
+func TestHashSubmitter_ProcessSubmission_BadStatusCodeReturnedFromClient_LoggerCalledOnce(t *testing.T) {
+	testObject := setupHashSubmitterForClientError()
+	testObject.hashSubmitter.processSubmission()
+	assertLoggerCalledOnce(t, testObject)
+}
+
 func TestHashSubmitter_ProcessSubmission_SubmissionQueue_Error(t *testing.T) {
 	testObject := setupHashSubmitterForSubmissionQueueError()
 
@@ -283,4 +321,10 @@ func TestHashSubmitter_ProcessSubmission_SubmissionQueueError_CorrectClientCalls
 	testObject := setupHashSubmitterForSubmissionQueueError()
 	testObject.hashSubmitter.processSubmission()
 	assertClientSubmitHashesNotCalled(t, testObject)
+}
+
+func TestHashSubmitter_ProcessSubmission_SubmissionQueueError_LoggerNotCalled(t *testing.T) {
+	testObject := setupHashSubmitterForSubmissionQueueError()
+	testObject.hashSubmitter.processSubmission()
+	assertLoggerNotCalled(t, testObject)
 }
