@@ -55,26 +55,20 @@ func (p PasswordRequester) processOrSleep() error {
 }
 
 func (p PasswordRequester) addRequestToQueue() error {
-	hash, hashName, err := p.getHash()
+	hashingRequest, err := p.getHashingRequest()
 	if err != nil {
 		return err
 	}
-
-	passwords, err := p.getPasswords()
-	if err != nil {
-		return err
-	}
-	numPasswords := len(passwords)
+	numPasswords := len(hashingRequest.Passwords)
 
 	if numPasswords < 1 {
 		p.logger.LogMessage("Requester received a response with zero passwords contained.")
 		p.waiter.Wait()
 	} else {
 		if p.config.Verbose {
-			logMessage := fmt.Sprintf("Requester has created hashing request with hash name: %s and %d passwords", hashName, numPasswords)
+			logMessage := fmt.Sprintf("Requester has created hashing request with hash name: %s and %d passwords", hashingRequest.HashName, numPasswords)
 			p.logger.LogMessage(logMessage)
 		}
-		hashingRequest := models.HashingRequest{hash, hashName, passwords}
 		err = p.requestQueue.Put(hashingRequest)
 		if err != nil {
 			return err
@@ -82,6 +76,24 @@ func (p PasswordRequester) addRequestToQueue() error {
 	}
 
 	return nil
+}
+
+func (p PasswordRequester) getHashingRequest() (models.HashingRequest, error) {
+	var hashingRequest models.HashingRequest
+
+	hash, hashName, err := p.getHash()
+	if err != nil {
+		return hashingRequest, err
+	}
+
+	passwords, err := p.getPasswords()
+	if err != nil {
+		return hashingRequest, err
+	}
+
+	hashingRequest = models.HashingRequest{hash, hashName, passwords}
+
+	return hashingRequest, nil
 }
 
 func (p PasswordRequester) getHash() (hash.Hash, string, error) {
