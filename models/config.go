@@ -12,6 +12,7 @@ type Config struct {
 	PasswordQueueBuffer      uint64
 	PasswordRequestSize      uint64
 	ServerAddress            string
+	Threads                  uint16
 	Verbose                  bool
 	WordlistPath             string
 }

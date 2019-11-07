@@ -31,6 +31,7 @@ func parseCmdLine() *models.Config {
 	passwordQueueBufferPtr := flag.Uint64("password-buffer", 10000, "buffer size for password queue")
 	passwordRequestSizePtr := flag.Uint64("request-size", 100000, "number of passwords to request per request")
 	serverAddressPtr := flag.String("saddress", "http://localhost:2725", "address of server to connect to")
+	threadsPtr := flag.Uint("threads", 3, "number of threads to be made available")
 	verbosePtr := flag.Bool("verbose", true, "print log messages to console")
 	wordListPathPtr := flag.String("wordlist-path", "wordlist.txt", "path to wordlist file")
 	flag.Bool("client", false, "placeholder to allow checking of client arg in main")
@@ -49,6 +50,7 @@ func parseCmdLine() *models.Config {
 		PasswordQueueBuffer:      *passwordQueueBufferPtr,
 		PasswordRequestSize:      *passwordRequestSizePtr,
 		ServerAddress:            *serverAddressPtr,
+		Threads:                  uint16(*threadsPtr),
 		Verbose:                  *verbosePtr,
 		WordlistPath:             *wordListPathPtr,
 	}
