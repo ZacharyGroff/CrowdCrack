@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"sync"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
@@ -12,55 +13,71 @@ import (
 
 type Client struct {
 	config *models.Config
-	encoder encoder.Encoder
+	encoderFactory encoder.EncoderFactory
 	logger logger.Logger
 	requester requester.Requester
 	submitter submitter.Submitter
 }
 
-func NewClient(p userinput.CmdLineConfigProvider, e *encoder.Hasher, l *logger.ConcurrentLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
+func NewClient(p userinput.CmdLineConfigProvider, e *encoder.HasherFactory, l *logger.ConcurrentLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
 	c := p.GetConfig()
 	return Client{
-		config:    c,
-		encoder:   e,
-		logger:    l,
-		requester: r,
-		submitter: s,
+		config:           c,
+		encoderFactory:   e,
+		logger:           l,
+		requester:        r,
+		submitter:        s,
 	}
 }
 
 func (c Client) Start() {
 	c.logger.LogMessage("Starting Client...")
 
+	availableThreads := int(c.config.Threads)
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(availableThreads)
 
-	go func() {
-		err := c.requester.Start()
-		if err != nil {
-			c.logger.LogMessage(err.Error())
-		}
-		c.logger.LogMessage("Requester Done!")
-		wg.Done()
-	}()
-	go func() {
-		err := c.encoder.Start()
-		if err != nil {
-			c.logger.LogMessage(err.Error())
-		}
-		c.logger.LogMessage("Encoder Done!")
-		wg.Done()
-	}()
-	go func() {
-		err := c.submitter.Start()
-		if err != nil {
-			c.logger.LogMessage(err.Error())
-		}
-		c.logger.LogMessage("Submitter Done!")
-		wg.Done()
-	}()
+	go c.startRequester(&wg)
+	go c.startEncoders(&wg)
+	go c.startSubmitter(&wg)
 
 	wg.Wait()
+}
+
+func (c Client) startRequester(wg *sync.WaitGroup) {
+	err := c.requester.Start()
+	if err != nil {
+		c.logger.LogMessage(err.Error())
+	}
+	c.logger.LogMessage("Requester Done!")
+	wg.Done()
+}
+
+func (c Client) startEncoders(wg *sync.WaitGroup) {
+	var encoderNum uint16
+	for encoderNum = 0; encoderNum < c.config.Threads; encoderNum++ {
+		c.startEncoder(encoderNum, wg)
+	}
+}
+
+func (c Client) startEncoder(encoderNum uint16, wg *sync.WaitGroup) {
+	encoder := c.encoderFactory.GetNewEncoder()
+	err := encoder.Start()
+	if err != nil {
+		c.logger.LogMessage(err.Error())
+	}
+	logMessage := fmt.Sprintf("Encoder #%d Done!", encoderNum)
+	c.logger.LogMessage(logMessage)
+	wg.Done()
+}
+
+func (c Client) startSubmitter(wg *sync.WaitGroup) {
+	err := c.submitter.Start()
+	if err != nil {
+		c.logger.LogMessage(err.Error())
+	}
+	c.logger.LogMessage("Submitter Done!")
+	wg.Done()
 }
 
 func (c Client) Stop() {

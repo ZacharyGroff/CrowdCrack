@@ -31,11 +31,11 @@ func InitializeClient() client.Client {
 	hashingRequestQueue := queue.NewHashingRequestQueue()
 	hashingSubmissionQueue := queue.NewHashingSubmissionQueue()
 	sleeper := waiter.NewSleeper(cmdLineConfigProvider, concurrentLogger)
-	hasher := encoder.NewHasher(cmdLineConfigProvider, concurrentLogger, hashingRequestQueue, hashingSubmissionQueue, sleeper)
+	hasherFactory := encoder.NewHasherFactory(cmdLineConfigProvider, concurrentLogger, hashingRequestQueue, hashingSubmissionQueue, sleeper)
 	hashApiClient := apiclient.NewHashApiClient(cmdLineConfigProvider)
 	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, concurrentLogger, hashingRequestQueue, sleeper)
 	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, concurrentLogger, hashingSubmissionQueue, sleeper)
-	clientClient := client.NewClient(cmdLineConfigProvider, hasher, concurrentLogger, passwordRequester, hashSubmitter)
+	clientClient := client.NewClient(cmdLineConfigProvider, hasherFactory, concurrentLogger, passwordRequester, hashSubmitter)
 	return clientClient
 }
 
