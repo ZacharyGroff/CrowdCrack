@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"sync"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
@@ -32,11 +33,12 @@ func NewClient(p userinput.CmdLineConfigProvider, e *encoder.HasherFactory, l *l
 func (c Client) Start() {
 	c.logger.LogMessage("Starting Client...")
 
+	availableThreads := int(c.config.Threads)
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(availableThreads)
 
 	go c.startRequester(&wg)
-	go c.startEncoder(&wg)
+	go c.startEncoders(&wg)
 	go c.startSubmitter(&wg)
 
 	wg.Wait()
@@ -51,13 +53,21 @@ func (c Client) startRequester(wg *sync.WaitGroup) {
 	wg.Done()
 }
 
-func (c Client) startEncoder(wg *sync.WaitGroup) {
+func (c Client) startEncoders(wg *sync.WaitGroup) {
+	var encoderNum uint16
+	for encoderNum = 0; encoderNum < c.config.Threads; encoderNum++ {
+		c.startEncoder(encoderNum, wg)
+	}
+}
+
+func (c Client) startEncoder(encoderNum uint16, wg *sync.WaitGroup) {
 	encoder := c.encoderFactory.GetNewEncoder()
 	err := encoder.Start()
 	if err != nil {
 		c.logger.LogMessage(err.Error())
 	}
-	c.logger.LogMessage("Encoder Done!")
+	logMessage := fmt.Sprintf("Encoder #%d Done!", encoderNum)
+	c.logger.LogMessage(logMessage)
 	wg.Done()
 }
 
