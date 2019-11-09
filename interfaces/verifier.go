@@ -1,4 +1,4 @@
-package verifier
+package interfaces
 
 type Verifier interface {
 	Start()

@@ -2,18 +2,19 @@ package verifier
 
 import (
 	"fmt"
-	"strings"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
 	"github.com/ZacharyGroff/CrowdCrack/tracker"
+	"strings"
 )
 
 type HashVerifier struct {
-	computedHashes queue.FlushingQueue
-	hashReader reader.HashReader
-	logger logger.Logger
-	tracker tracker.Tracker
+	computedHashes     interfaces.FlushingQueue
+	hashReader         interfaces.HashReader
+	logger             interfaces.Logger
+	tracker            interfaces.Tracker
 	userProvidedHashes map[string]bool
 }
 

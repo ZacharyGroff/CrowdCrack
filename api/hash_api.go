@@ -1,22 +1,23 @@
 package api
 
 import (
-	"fmt"
 	"encoding/json"
-	"net/http"
+	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
+	"net/http"
 )
 
 type HashApi struct {
-	Config *models.Config
-	Hashes queue.FlushingQueue
-	Passwords queue.Queue
-	Logger logger.Logger
-	Tracker tracker.Tracker
+	Config    *models.Config
+	Hashes    interfaces.FlushingQueue
+	Passwords interfaces.Queue
+	Logger    interfaces.Logger
+	Tracker   interfaces.Tracker
 }
 
 func NewHashApi(p userinput.CmdLineConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.ConcurrentLogger, t *tracker.StatsTracker) *HashApi {

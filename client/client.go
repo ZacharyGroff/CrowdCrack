@@ -2,21 +2,22 @@ package client
 
 import (
 	"fmt"
-	"sync"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
+	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/requester"
 	"github.com/ZacharyGroff/CrowdCrack/submitter"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
+	"sync"
 )
 
 type Client struct {
-	config *models.Config
-	encoderFactory encoder.EncoderFactory
-	logger logger.Logger
-	requester requester.Requester
-	submitter submitter.Submitter
+	config         *models.Config
+	encoderFactory interfaces.EncoderFactory
+	logger         interfaces.Logger
+	requester      interfaces.Requester
+	submitter      interfaces.Submitter
 }
 
 func NewClient(p userinput.CmdLineConfigProvider, e *encoder.HasherFactory, l *logger.ConcurrentLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {

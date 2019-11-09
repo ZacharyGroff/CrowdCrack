@@ -1,4 +1,4 @@
-package api
+package interfaces
 
 type Api interface {
 	HandleRequests()

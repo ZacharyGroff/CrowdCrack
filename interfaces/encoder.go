@@ -1,4 +1,4 @@
-package encoder
+package interfaces
 
 type Encoder interface {
 	Start() error
