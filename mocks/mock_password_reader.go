@@ -5,8 +5,8 @@ import (
 )
 
 type MockPasswordReader struct {
-    LoadPasswordsCalls uint64
-    isErrorCall bool
+	LoadPasswordsCalls uint64
+	isErrorCall        bool
 }
 
 func NewMockPasswordReader(isErrorCall bool) MockPasswordReader {
@@ -14,10 +14,10 @@ func NewMockPasswordReader(isErrorCall bool) MockPasswordReader {
 }
 
 func (m *MockPasswordReader) LoadPasswords() error {
-    m.LoadPasswordsCalls++
-    if m.isErrorCall {
-        return errors.New("test error")
-    }
+	m.LoadPasswordsCalls++
+	if m.isErrorCall {
+		return errors.New("test error")
+	}
 
-    return nil
+	return nil
 }

@@ -1,15 +1,15 @@
 package mocks
 
 type MockTracker struct {
-	TrackPasswordsSentCalls uint64
-	TrackHashesComputedCalls uint64
-	TrackHashesCrackedCalls uint64
+	TrackPasswordsSentCalls    uint64
+	TrackHashesComputedCalls   uint64
+	TrackHashesCrackedCalls    uint64
 	TrackHashMatchAttemptCalls uint64
-	GetPasswordsSentCalls uint64
-	GetHashesComputedCalls uint64
-	GetHashesCrackedCalls uint64
-	GetHashMatchAttemptsCalls uint64
-	uint64ToReturn uint64
+	GetPasswordsSentCalls      uint64
+	GetHashesComputedCalls     uint64
+	GetHashesCrackedCalls      uint64
+	GetHashMatchAttemptsCalls  uint64
+	uint64ToReturn             uint64
 }
 
 func NewMockTracker(u uint64) MockTracker {

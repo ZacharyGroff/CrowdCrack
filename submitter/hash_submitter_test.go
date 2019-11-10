@@ -2,9 +2,9 @@ package submitter
 
 import (
 	"errors"
-	"testing"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"testing"
 )
 
 var testError = errors.New("test error")
@@ -13,11 +13,11 @@ var verboseConfig = models.Config{Verbose: true}
 var nonVerboseConfig = models.Config{Verbose: false}
 
 type testObject struct {
-	hashSubmitter *HashSubmitter
-	mockApiClient *mocks.MockApiClient
-	mockLogger *mocks.MockLogger
+	hashSubmitter       *HashSubmitter
+	mockApiClient       *mocks.MockApiClient
+	mockLogger          *mocks.MockLogger
 	mockSubmissionQueue *mocks.MockSubmissionQueue
-	mockWaiter *mocks.MockWaiter
+	mockWaiter          *mocks.MockWaiter
 }
 
 func setupHashSubmitterForNoError() testObject {
@@ -25,7 +25,7 @@ func setupHashSubmitterForNoError() testObject {
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
-	hashSubmitter := HashSubmitter {
+	hashSubmitter := HashSubmitter{
 		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
@@ -33,7 +33,7 @@ func setupHashSubmitterForNoError() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject {
+	return testObject{
 		hashSubmitter:       &hashSubmitter,
 		mockApiClient:       &mockApiClient,
 		mockLogger:          &mockLogger,
@@ -47,7 +47,7 @@ func setupHashSubmitterForNoErrorEmptySubmissionQueue() testObject {
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 0)
 	mockWaiter := mocks.NewMockWaiter()
-	hashSubmitter := HashSubmitter {
+	hashSubmitter := HashSubmitter{
 		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
@@ -55,7 +55,7 @@ func setupHashSubmitterForNoErrorEmptySubmissionQueue() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject {
+	return testObject{
 		hashSubmitter:       &hashSubmitter,
 		mockApiClient:       &mockApiClient,
 		mockLogger:          &mockLogger,
@@ -69,7 +69,7 @@ func setupHashSubmitterForClientError() testObject {
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
-	hashSubmitter := HashSubmitter {
+	hashSubmitter := HashSubmitter{
 		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
@@ -77,7 +77,7 @@ func setupHashSubmitterForClientError() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject {
+	return testObject{
 		hashSubmitter:       &hashSubmitter,
 		mockApiClient:       &mockApiClient,
 		mockLogger:          &mockLogger,
@@ -91,7 +91,7 @@ func setupHashSubmitterForSubmissionQueueError() testObject {
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(testError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
-	hashSubmitter := HashSubmitter {
+	hashSubmitter := HashSubmitter{
 		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
@@ -99,7 +99,7 @@ func setupHashSubmitterForSubmissionQueueError() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject {
+	return testObject{
 		hashSubmitter:       &hashSubmitter,
 		mockApiClient:       &mockApiClient,
 		mockLogger:          &mockLogger,

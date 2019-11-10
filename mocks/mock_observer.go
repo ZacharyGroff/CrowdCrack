@@ -2,7 +2,7 @@ package mocks
 
 type MockObserver struct {
 	StartCalls uint64
-	StopCalls uint64
+	StopCalls  uint64
 }
 
 func NewMockObserver() MockObserver {

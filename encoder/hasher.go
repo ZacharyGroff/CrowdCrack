@@ -50,7 +50,7 @@ func (e Hasher) processOrSleep() error {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 

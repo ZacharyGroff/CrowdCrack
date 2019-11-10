@@ -18,7 +18,7 @@ type HasherFactory struct {
 }
 
 func NewHasherFactory(p userinput.CmdLineConfigProvider, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *HasherFactory {
-	return &HasherFactory {
+	return &HasherFactory{
 		config:          p.GetConfig(),
 		logger:          l,
 		requestQueue:    r,
@@ -28,7 +28,7 @@ func NewHasherFactory(p userinput.CmdLineConfigProvider, l *logger.ConcurrentLog
 }
 
 func (h *HasherFactory) GetNewEncoder() interfaces.Encoder {
-	return &Hasher {
+	return &Hasher{
 		config:          h.config,
 		logger:          h.logger,
 		requestQueue:    h.requestQueue,

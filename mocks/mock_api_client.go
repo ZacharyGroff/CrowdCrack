@@ -5,14 +5,14 @@ import (
 )
 
 type MockApiClient struct {
-	GetHashNameCalls uint64
-	GetPasswordsCalls uint64
-	SubmitHashesCalls uint64
-	getHashNameStatusCodeToReturn int
+	GetHashNameCalls               uint64
+	GetPasswordsCalls              uint64
+	SubmitHashesCalls              uint64
+	getHashNameStatusCodeToReturn  int
 	getPasswordsStatusCodeToReturn int
 	submitHashesStatusCodeToReturn int
-	hashNameToReturn string
-	passwordsToReturn []string
+	hashNameToReturn               string
+	passwordsToReturn              []string
 }
 
 func NewMockApiClient(getHashNameStatusCodeToReturn int, getPasswordsStatusCodeToReturn int, submitHashesStatusCodeToReturn int, hashNameToReturn string, passwordsToReturn []string) MockApiClient {
@@ -33,4 +33,3 @@ func (m *MockApiClient) SubmitHashes(models.HashSubmission) int {
 	m.SubmitHashesCalls++
 	return m.submitHashesStatusCodeToReturn
 }
-

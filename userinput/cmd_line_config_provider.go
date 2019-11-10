@@ -38,7 +38,7 @@ func parseCmdLine() *models.Config {
 
 	flag.Parse()
 
-	return &models.Config {
+	return &models.Config{
 		ApiPort:                  uint16(*apiPortPtr),
 		ComputedHashOverflowPath: *computedHashOverFlowPathPtr,
 		FlushToFile:              *flushToFilePtr,

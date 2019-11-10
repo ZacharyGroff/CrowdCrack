@@ -1,24 +1,24 @@
 package requester
 
 import (
+	"crypto/sha256"
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"hash"
 	"reflect"
 	"strings"
 	"testing"
-	"crypto/sha256"
-	"github.com/ZacharyGroff/CrowdCrack/mocks"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 type testObject struct {
 	passwordRequester *PasswordRequester
-	apiClient *mocks.MockApiClient
-	logger *mocks.MockLogger
-	requestQueue *mocks.MockRequestQueue
-	waiter *mocks.MockWaiter
+	apiClient         *mocks.MockApiClient
+	logger            *mocks.MockLogger
+	requestQueue      *mocks.MockRequestQueue
+	waiter            *mocks.MockWaiter
 }
 
-var expectedPasswords = []string {
+var expectedPasswords = []string{
 	"hunter2",
 	"password123",
 }
@@ -64,11 +64,11 @@ func setupSupportedHashes() map[string]hash.Hash {
 }
 
 func setupNoSupportedHashes() map[string]hash.Hash {
-	return map[string]hash.Hash {}
+	return map[string]hash.Hash{}
 }
 
 func setupVerboseConfig() models.Config {
-	return models.Config {
+	return models.Config{
 		PasswordRequestSize: 1,
 		Verbose:             true,
 	}
@@ -101,7 +101,7 @@ func setupPasswordRequestForSuccess() testObject {
 		waiter:          &waiter,
 	}
 
-	return testObject {
+	return testObject{
 		passwordRequester: &passwordRequester,
 		apiClient:         &apiClient,
 		logger:            &logger,
@@ -126,7 +126,7 @@ func setupPasswordRequestForSuccessNonVerbose() testObject {
 		waiter:          &waiter,
 	}
 
-	return testObject {
+	return testObject{
 		passwordRequester: &passwordRequester,
 		apiClient:         &apiClient,
 		logger:            &logger,
@@ -151,7 +151,7 @@ func setupPasswordRequestForApiClientError() testObject {
 		waiter:          &waiter,
 	}
 
-	return testObject {
+	return testObject{
 		passwordRequester: &passwordRequester,
 		apiClient:         &apiClient,
 		logger:            &logger,
@@ -176,7 +176,7 @@ func setupPasswordRequestForGetHashNameError() testObject {
 		waiter:          &waiter,
 	}
 
-	return testObject {
+	return testObject{
 		passwordRequester: &passwordRequester,
 		apiClient:         &apiClient,
 		logger:            &logger,
@@ -201,7 +201,7 @@ func setupPasswordRequestForGetPasswordsError() testObject {
 		waiter:          &waiter,
 	}
 
-	return testObject {
+	return testObject{
 		passwordRequester: &passwordRequester,
 		apiClient:         &apiClient,
 		logger:            &logger,
@@ -226,7 +226,7 @@ func setupPasswordRequestForFullRequestQueue() testObject {
 		waiter:          &waiter,
 	}
 
-	return testObject {
+	return testObject{
 		passwordRequester: &passwordRequester,
 		apiClient:         &apiClient,
 		logger:            &logger,
@@ -251,7 +251,7 @@ func setupPasswordRequestFoNoSupportedHashes() testObject {
 		waiter:          &waiter,
 	}
 
-	return testObject {
+	return testObject{
 		passwordRequester: &passwordRequester,
 		apiClient:         &apiClient,
 		logger:            &logger,
@@ -276,7 +276,7 @@ func setupPasswordRequestFoNoPasswordsReturned() testObject {
 		waiter:          &waiter,
 	}
 
-	return testObject {
+	return testObject{
 		passwordRequester: &passwordRequester,
 		apiClient:         &apiClient,
 		logger:            &logger,

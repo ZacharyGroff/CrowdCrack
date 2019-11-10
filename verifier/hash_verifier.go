@@ -19,11 +19,11 @@ type HashVerifier struct {
 }
 
 func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader, l *logger.ConcurrentLogger, t *tracker.StatsTracker) *HashVerifier {
-	return &HashVerifier {
+	return &HashVerifier{
 		computedHashes: q,
-		hashReader: r,
-		logger : l,
-		tracker: t,
+		hashReader:     r,
+		logger:         l,
+		tracker:        t,
 	}
 }
 
@@ -67,7 +67,7 @@ func (v HashVerifier) getNextPasswordHash() string {
 		if err == nil {
 			return hash
 		}
-	}	
+	}
 }
 
 func (v HashVerifier) parsePasswordHash(passwordHash string) (string, string) {

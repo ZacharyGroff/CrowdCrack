@@ -35,9 +35,9 @@ func (s *StatsObserver) Start() {
 	ticker := time.NewTicker(time.Duration(s.config.LogFrequencyInSeconds) * time.Second)
 	for {
 		select {
-		case <- ticker.C:
+		case <-ticker.C:
 			s.logStats()
-		case <- s.stop:
+		case <-s.stop:
 			ticker.Stop()
 			return
 		}

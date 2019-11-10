@@ -2,9 +2,9 @@ package reader
 
 import (
 	"bufio"
-	"os"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
+	"os"
 )
 
 type HashlistReader struct {
@@ -36,6 +36,6 @@ func (h HashlistReader) GetHashes() (map[string]bool, error) {
 	if err := scanner.Err(); err != nil {
 		return hashes, err
 	}
-	
+
 	return hashes, nil
 }

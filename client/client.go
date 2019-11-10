@@ -23,11 +23,11 @@ type Client struct {
 func NewClient(p userinput.CmdLineConfigProvider, e *encoder.HasherFactory, l *logger.ConcurrentLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
 	c := p.GetConfig()
 	return Client{
-		config:           c,
-		encoderFactory:   e,
-		logger:           l,
-		requester:        r,
-		submitter:        s,
+		config:         c,
+		encoderFactory: e,
+		logger:         l,
+		requester:      r,
+		submitter:      s,
 	}
 }
 

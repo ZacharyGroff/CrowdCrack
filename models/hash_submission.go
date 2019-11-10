@@ -1,6 +1,6 @@
 package models
 
 type HashSubmission struct {
-	HashType string `json:"hashType"`
-	Results []string `json:"results"`
+	HashType string   `json:"hashType"`
+	Results  []string `json:"results"`
 }

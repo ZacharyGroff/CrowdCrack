@@ -1,9 +1,9 @@
 package tracker
 
 type StatsTracker struct {
-	passwordsSent uint64
-	hashesComputed uint64
-	hashesCracked uint64
+	passwordsSent     uint64
+	hashesComputed    uint64
+	hashesCracked     uint64
 	hashMatchAttempts uint64
 }
 

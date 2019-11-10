@@ -2,12 +2,12 @@ package apiclient
 
 import (
 	"bytes"
-	"strconv"
-	"strings"
 	"encoding/json"
-	"net/http"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
+	"net/http"
+	"strconv"
+	"strings"
 )
 
 type HashApiClient struct {

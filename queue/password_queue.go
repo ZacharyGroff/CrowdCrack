@@ -9,7 +9,7 @@ import (
 
 type PasswordQueue struct {
 	passwords chan string
-	config *models.Config
+	config    *models.Config
 }
 
 func NewPasswordQueue(p userinput.CmdLineConfigProvider) *PasswordQueue {
@@ -25,7 +25,7 @@ func (q PasswordQueue) Size() int {
 func (q PasswordQueue) Get() (string, error) {
 	for {
 		select {
-		case password := <- q.passwords:
+		case password := <-q.passwords:
 			return password, nil
 		default:
 			err := errors.New("No passwords in queue.")
