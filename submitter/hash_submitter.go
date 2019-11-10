@@ -3,6 +3,7 @@ package submitter
 import (
 	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
@@ -11,11 +12,11 @@ import (
 )
 
 type HashSubmitter struct {
-	config *models.Config
-	client apiclient.ApiClient
-	logger logger.Logger
-	submissionQueue queue.SubmissionQueue
-	waiter waiter.Waiter
+	config          *models.Config
+	client          interfaces.ApiClient
+	logger          interfaces.Logger
+	submissionQueue interfaces.SubmissionQueue
+	waiter          interfaces.Waiter
 }
 
 func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *HashSubmitter {

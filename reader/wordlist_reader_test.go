@@ -1,10 +1,10 @@
 package reader
 
 import (
-	"os"
-	"testing"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"os"
+	"testing"
 )
 
 func TestWordlistReader_LoadPasswords_Success(t *testing.T) {
@@ -17,11 +17,11 @@ func TestWordlistReader_LoadPasswords_Success(t *testing.T) {
 	reader := WordlistReader{config: &config, passwords: &queue}
 
 	err := reader.LoadPasswords()
-	
+
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
-	
+
 	os.Remove(testPath)
 }
 
@@ -33,7 +33,7 @@ func TestWordlistReader_LoadPasswords_Error(t *testing.T) {
 	reader := WordlistReader{config: &config, passwords: &queue}
 
 	err := reader.LoadPasswords()
-	
+
 	if err == nil {
 		t.Error("Expected error but nil returned")
 	}
@@ -51,7 +51,7 @@ func TestLoadPasswordsPutNoCalls(t *testing.T) {
 	reader := WordlistReader{config: &config, passwords: &queue}
 
 	reader.LoadPasswords()
-	
+
 	actual := queue.PutCalls
 	if actual != expected {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
@@ -72,7 +72,7 @@ func TestWordlistReader_LoadPasswords_MultiplePutCalls(t *testing.T) {
 	reader := WordlistReader{config: &config, passwords: &queue}
 
 	reader.LoadPasswords()
-	
+
 	actual := queue.PutCalls
 	if actual != expected {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)

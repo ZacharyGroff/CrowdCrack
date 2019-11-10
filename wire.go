@@ -3,7 +3,6 @@
 package main
 
 import (
-	"github.com/google/wire"
 	"github.com/ZacharyGroff/CrowdCrack/api"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/client"
@@ -14,11 +13,12 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/reader"
 	"github.com/ZacharyGroff/CrowdCrack/requester"
 	"github.com/ZacharyGroff/CrowdCrack/server"
-	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/submitter"
+	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/verifier"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
+	"github.com/google/wire"
 )
 
 func InitializeClient() client.Client {

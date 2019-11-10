@@ -2,22 +2,23 @@ package requester
 
 import (
 	"fmt"
-	"hash"
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
+	"hash"
 )
 
 type PasswordRequester struct {
-	config *models.Config
-	client apiclient.ApiClient
-	logger logger.Logger
-	requestQueue queue.RequestQueue
+	config          *models.Config
+	client          interfaces.ApiClient
+	logger          interfaces.Logger
+	requestQueue    interfaces.RequestQueue
 	supportedHashes map[string]hash.Hash
-	waiter waiter.Waiter
+	waiter          interfaces.Waiter
 }
 
 func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, w waiter.Sleeper) *PasswordRequester {

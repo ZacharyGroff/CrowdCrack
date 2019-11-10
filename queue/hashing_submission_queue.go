@@ -10,7 +10,7 @@ type HashingSubmissionQueue struct {
 	submissions chan models.HashSubmission
 }
 
-func NewHashingSubmissionQueue() *HashingSubmissionQueue{
+func NewHashingSubmissionQueue() *HashingSubmissionQueue {
 	s := make(chan models.HashSubmission, 100)
 	return &HashingSubmissionQueue{s}
 }
@@ -21,8 +21,8 @@ func (q HashingSubmissionQueue) Size() int {
 
 func (q HashingSubmissionQueue) Get() (models.HashSubmission, error) {
 	for {
-		select{
-		case submission := <- q.submissions:
+		select {
+		case submission := <-q.submissions:
 			return submission, nil
 		default:
 			err := errors.New("No submissions in queue.")

@@ -5,12 +5,12 @@ import (
 )
 
 type MockSubmissionQueue struct {
-	GetCalls uint64
-	PutCalls uint64
-	SizeCalls uint64
-	errorToReturn error
+	GetCalls               uint64
+	PutCalls               uint64
+	SizeCalls              uint64
+	errorToReturn          error
 	hashSubmissionToReturn models.HashSubmission
-	sizeToReturn int
+	sizeToReturn           int
 }
 
 func NewMockSubmissionQueue(e error, h models.HashSubmission, s int) MockSubmissionQueue {

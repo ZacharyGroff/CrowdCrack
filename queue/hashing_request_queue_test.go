@@ -1,16 +1,16 @@
 package queue
 
 import (
-	"reflect"
-	"testing"
 	"crypto/sha256"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"reflect"
+	"testing"
 )
 
 func TestHashingRequestQueue_Size_Zero(t *testing.T) {
 	expected := 0
 	q := NewHashingRequestQueue()
-	
+
 	actual := q.Size()
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
@@ -23,7 +23,7 @@ func TestHashingRequestQueue_Size_NotZero(t *testing.T) {
 	q := NewHashingRequestQueue()
 	q.Put(request)
 	q.Put(request)
-	
+
 	actual := q.Size()
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
@@ -68,7 +68,7 @@ func TestHashingRequestQueue_Get_Success(t *testing.T) {
 
 func TestHashingRequestQueue_Get_Error(t *testing.T) {
 	q := NewHashingRequestQueue()
-	
+
 	_, err := q.Get()
 	if err == nil {
 		t.Error("Expected error but nil returned")

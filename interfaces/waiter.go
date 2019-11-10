@@ -1,4 +1,4 @@
-package waiter
+package interfaces
 
 type Waiter interface {
 	Wait()

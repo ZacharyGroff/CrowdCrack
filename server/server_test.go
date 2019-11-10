@@ -1,18 +1,18 @@
 package server
 
 import (
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"testing"
 	"time"
-	"github.com/ZacharyGroff/CrowdCrack/mocks"
 )
 
 type testObject struct {
-	server *Server
-	mockApi *mocks.MockApi
-	mockLogger *mocks.MockLogger
+	server             *Server
+	mockApi            *mocks.MockApi
+	mockLogger         *mocks.MockLogger
 	mockPasswordReader *mocks.MockPasswordReader
-	mockObserver *mocks.MockObserver
-	mockVerifier *mocks.MockVerifier	
+	mockObserver       *mocks.MockObserver
+	mockVerifier       *mocks.MockVerifier
 }
 
 func setupServerForNoError() testObject {
@@ -23,7 +23,7 @@ func setupServerForNoError() testObject {
 	mockVerifier := mocks.MockVerifier{0}
 
 	server := Server{&mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
-	
+
 	return testObject{&server, &mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
 }
 
@@ -40,7 +40,7 @@ func setupServerForPasswordReaderError() testObject {
 
 func assertLoadPasswordsCalled(t *testing.T, p *mocks.MockPasswordReader) {
 	expected := uint64(1)
-	actual := p.LoadPasswordsCalls 
+	actual := p.LoadPasswordsCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}

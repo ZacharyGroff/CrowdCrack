@@ -1,15 +1,15 @@
 package queue
 
 import (
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"reflect"
 	"testing"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 func TestHashingSubmissionQueue_Size_Zero(t *testing.T) {
 	expected := 0
 	q := NewHashingSubmissionQueue()
-	
+
 	actual := q.Size()
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
@@ -22,13 +22,12 @@ func TestHashingSubmissionQueue_Size_NotZero(t *testing.T) {
 	q := NewHashingSubmissionQueue()
 	q.Put(submission)
 	q.Put(submission)
-	
+
 	actual := q.Size()
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
 }
-
 
 func TestHashingSubmissionQueue_Put_Success(t *testing.T) {
 	submission := models.HashSubmission{}

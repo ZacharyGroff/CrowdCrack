@@ -1,8 +1,8 @@
 package main
 
 import (
-	"os"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
+	"os"
 )
 
 func main() {

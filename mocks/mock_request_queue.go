@@ -5,12 +5,12 @@ import (
 )
 
 type MockRequestQueue struct {
-	GetCalls uint64
-	PutCalls uint64
-	SizeCalls uint64
-	errorToReturn error
+	GetCalls               uint64
+	PutCalls               uint64
+	SizeCalls              uint64
+	errorToReturn          error
 	hashingRequestToReturn models.HashingRequest
-	intToReturn int
+	intToReturn            int
 }
 
 func NewMockRequestQueue(e error, h models.HashingRequest, i int) MockRequestQueue {

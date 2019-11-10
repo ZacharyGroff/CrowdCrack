@@ -1,4 +1,4 @@
-package userinput
+package interfaces
 
 import (
 	"github.com/ZacharyGroff/CrowdCrack/models"

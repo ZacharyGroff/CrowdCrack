@@ -2,16 +2,17 @@ package observer
 
 import (
 	"fmt"
-	"time"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
+	"time"
 )
 
 type StatsObserver struct {
-	logger    logger.Logger
-	tracker   tracker.Tracker
+	logger    interfaces.Logger
+	tracker   interfaces.Tracker
 	config    *models.Config
 	startTime time.Time
 	stop      chan bool
@@ -34,9 +35,9 @@ func (s *StatsObserver) Start() {
 	ticker := time.NewTicker(time.Duration(s.config.LogFrequencyInSeconds) * time.Second)
 	for {
 		select {
-		case <- ticker.C:
+		case <-ticker.C:
 			s.logStats()
-		case <- s.stop:
+		case <-s.stop:
 			ticker.Stop()
 			return
 		}

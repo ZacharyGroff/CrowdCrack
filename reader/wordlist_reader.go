@@ -2,15 +2,16 @@ package reader
 
 import (
 	"bufio"
-	"os"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
+	"os"
 )
 
 type WordlistReader struct {
-	config *models.Config
-	passwords queue.Queue	
+	config    *models.Config
+	passwords interfaces.Queue
 }
 
 func NewWordlistReader(p userinput.CmdLineConfigProvider, q *queue.PasswordQueue) *WordlistReader {
@@ -37,6 +38,6 @@ func (w WordlistReader) LoadPasswords() error {
 	if err := scanner.Err(); err != nil {
 		return err
 	}
-	
+
 	return nil
 }

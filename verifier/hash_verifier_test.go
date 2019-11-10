@@ -2,13 +2,13 @@ package verifier
 
 import (
 	"errors"
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"reflect"
 	"strings"
 	"testing"
-	"github.com/ZacharyGroff/CrowdCrack/mocks"
 )
 
-var hashMap = map[string]bool {
+var hashMap = map[string]bool{
 	fakeHash: true,
 }
 var fakePassword = "fakePassword"
@@ -18,11 +18,11 @@ var testError = errors.New("test error")
 var nilError error
 
 type testObject struct {
-	hashVerifier *HashVerifier
+	hashVerifier      *HashVerifier
 	mockFlushingQueue *mocks.MockFlushingQueue
-	mockHashReader *mocks.MockHashReader
-	mockLogger *mocks.MockLogger
-	mockTracker *mocks.MockTracker
+	mockHashReader    *mocks.MockHashReader
+	mockLogger        *mocks.MockLogger
+	mockTracker       *mocks.MockTracker
 }
 
 func setupHashVerifierForSuccess() testObject {
@@ -38,7 +38,7 @@ func setupHashVerifierForSuccess() testObject {
 		userProvidedHashes: hashMap,
 	}
 
-	return testObject {
+	return testObject{
 		hashVerifier:      &hashVerifier,
 		mockFlushingQueue: &mockFlushingQueue,
 		mockHashReader:    &mockHashReader,
@@ -60,7 +60,7 @@ func setupHashVerifierForNoMatch() testObject {
 		userProvidedHashes: nil,
 	}
 
-	return testObject {
+	return testObject{
 		hashVerifier:      &hashVerifier,
 		mockFlushingQueue: &mockFlushingQueue,
 		mockHashReader:    &mockHashReader,
@@ -82,7 +82,7 @@ func setupHashVerifierForHashReaderError() testObject {
 		userProvidedHashes: nil,
 	}
 
-	return testObject {
+	return testObject{
 		hashVerifier:      &hashVerifier,
 		mockFlushingQueue: &mockFlushingQueue,
 		mockHashReader:    &mockHashReader,

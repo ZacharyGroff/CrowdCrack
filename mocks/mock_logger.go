@@ -2,7 +2,7 @@ package mocks
 
 type MockLogger struct {
 	LogMessageCalls uint64
-	errorToReturn error
+	errorToReturn   error
 }
 
 func NewMockLogger(e error) MockLogger {

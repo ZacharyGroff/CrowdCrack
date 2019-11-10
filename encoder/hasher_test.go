@@ -1,13 +1,13 @@
 package encoder
 
 import (
+	"crypto/sha256"
 	"errors"
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"reflect"
 	"strings"
 	"testing"
-	"crypto/sha256"
-	"github.com/ZacharyGroff/CrowdCrack/mocks"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 var nilError = error(nil)
@@ -15,17 +15,17 @@ var verboseConfig = models.Config{Verbose: true}
 var nonVerboseConfig = models.Config{Verbose: false}
 
 type testObject struct {
-	logger *mocks.MockLogger
-	requestQueue *mocks.MockRequestQueue
+	logger          *mocks.MockLogger
+	requestQueue    *mocks.MockRequestQueue
 	submissionQueue *mocks.MockSubmissionQueue
-	waiter *mocks.MockWaiter
-	hasher *Hasher
+	waiter          *mocks.MockWaiter
+	hasher          *Hasher
 }
 
-var hashingRequest = models.HashingRequest {
-	Hash: sha256.New(),
+var hashingRequest = models.HashingRequest{
+	Hash:     sha256.New(),
 	HashName: "sha256",
-	Passwords: []string {
+	Passwords: []string{
 		"password123",
 	},
 }
@@ -36,7 +36,7 @@ func setupHasherForSuccess() testObject {
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher {
+	hasher := Hasher{
 		config:          &verboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
@@ -44,7 +44,7 @@ func setupHasherForSuccess() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject {
+	return testObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -59,7 +59,7 @@ func setupHasherForSuccessNonVerbose() testObject {
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher {
+	hasher := Hasher{
 		config:          &nonVerboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
@@ -67,7 +67,7 @@ func setupHasherForSuccessNonVerbose() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject {
+	return testObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -84,7 +84,7 @@ func setupHasherForSubmissionQueueError() testObject {
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher {
+	hasher := Hasher{
 		config:          &verboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
@@ -92,7 +92,7 @@ func setupHasherForSubmissionQueueError() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject {
+	return testObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -109,7 +109,7 @@ func setupHasherForRequestQueueError() testObject {
 	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
-	hasher := Hasher {
+	hasher := Hasher{
 		config:          &verboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
@@ -117,7 +117,7 @@ func setupHasherForRequestQueueError() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject {
+	return testObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -235,7 +235,7 @@ func TestHasher_HandleHashingRequest_SubmissionQueueError_PutCalled(t *testing.T
 	testObject := setupHasherForSubmissionQueueError()
 
 	testObject.hasher.handleHashingRequest(hashingRequest)
-	
+
 	expected := uint64(1)
 	actual := testObject.submissionQueue.PutCalls
 	if expected != actual {
@@ -244,9 +244,9 @@ func TestHasher_HandleHashingRequest_SubmissionQueueError_PutCalled(t *testing.T
 }
 
 func TestHasher_GetHashSubmission_CorrectResults(t *testing.T) {
-	expected := models.HashSubmission {
+	expected := models.HashSubmission{
 		HashType: "sha256",
-		Results: []string {
+		Results: []string{
 			"password123:ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
 			"hunter2:f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7",
 		},
@@ -255,9 +255,9 @@ func TestHasher_GetHashSubmission_CorrectResults(t *testing.T) {
 		"password123",
 		"hunter2",
 	}
-	hashingRequest := models.HashingRequest {
-		Hash: sha256.New(),
-		HashName: "sha256",
+	hashingRequest := models.HashingRequest{
+		Hash:      sha256.New(),
+		HashName:  "sha256",
 		Passwords: passwords,
 	}
 	testObject := setupHasherForSuccess()
@@ -269,11 +269,11 @@ func TestHasher_GetHashSubmission_CorrectResults(t *testing.T) {
 }
 
 func TestHasher_GetPasswordHashes_CorrectResults(t *testing.T) {
-	hashResults := []string {
+	hashResults := []string{
 		"f52fbd32b2b3b86ff88ef6c490628285f482af15ddcb29541f94bcf526a3f6c7",
 		"ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
 	}
-	passwords := []string {
+	passwords := []string{
 		"hunter2",
 		"password123",
 	}

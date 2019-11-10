@@ -1,4 +1,4 @@
-package queue
+package interfaces
 
 type FlushingQueue interface {
 	Size() int

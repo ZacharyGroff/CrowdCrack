@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/ZacharyGroff/CrowdCrack/api"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/observer"
 	"github.com/ZacharyGroff/CrowdCrack/reader"
@@ -9,11 +10,11 @@ import (
 )
 
 type Server struct {
-	Api api.Api
-	Logger logger.Logger
-	Reader reader.PasswordReader
-	Observer observer.Observer
-	Verifier verifier.Verifier
+	Api      interfaces.Api
+	Logger   interfaces.Logger
+	Reader   interfaces.PasswordReader
+	Observer interfaces.Observer
+	Verifier interfaces.Verifier
 }
 
 func NewServer(a *api.HashApi, l *logger.ConcurrentLogger, r *reader.WordlistReader, o *observer.StatsObserver, v *verifier.HashVerifier) Server {

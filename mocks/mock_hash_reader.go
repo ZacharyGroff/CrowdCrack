@@ -2,8 +2,8 @@ package mocks
 
 type MockHashReader struct {
 	GetHashesCalls uint64
-	mapToReturn map[string]bool
-	errorToReturn error
+	mapToReturn    map[string]bool
+	errorToReturn  error
 }
 
 func NewMockHashReader(m map[string]bool, e error) MockHashReader {

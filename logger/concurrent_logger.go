@@ -3,17 +3,17 @@ package logger
 import (
 	"bufio"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/models"
+	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"log"
 	"os"
 	"sync"
 	"time"
-	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type ConcurrentLogger struct {
 	config *models.Config
-	mux sync.Mutex
+	mux    sync.Mutex
 }
 
 func NewConcurrentLogger(p userinput.CmdLineConfigProvider) *ConcurrentLogger {
@@ -37,7 +37,7 @@ func (s *ConcurrentLogger) LogMessage(logMessage string) error {
 
 func (s *ConcurrentLogger) logToFile(logMessage string) error {
 	timeFormattedMessage := getTimeFormattedMessage(time.Now(), logMessage)
-	file, err := os.OpenFile(s.config.LogPath, os.O_WRONLY | os.O_CREATE | os.O_APPEND, os.ModePerm)
+	file, err := os.OpenFile(s.config.LogPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		return err
 	}

@@ -1,9 +1,9 @@
 package reader
 
 import (
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
 	"testing"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 func TestHashlistReader_GetHashes_Success(t *testing.T) {
@@ -51,7 +51,7 @@ func TestHashlistReader_GetHashes_CorrectResults(t *testing.T) {
 	reader := HashlistReader{&config}
 
 	actual, _ := reader.GetHashes()
-	for _, hash := range expected { 
+	for _, hash := range expected {
 		if !actual[hash] {
 			t.Errorf("Expected: %s to be in map: %+v\n", hash, actual)
 		}

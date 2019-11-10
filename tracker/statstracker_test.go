@@ -28,7 +28,6 @@ func TestStatsTracker_TrackHashesComputed_CorrectValue(t *testing.T) {
 	}
 }
 
-
 func TestStatsTracker_TrackHashesCracked_CorrectValue(t *testing.T) {
 	expected := uint64(42)
 

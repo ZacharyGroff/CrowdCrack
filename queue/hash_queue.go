@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"os"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/userinput"
+	"os"
 )
 
 type HashQueue struct {
@@ -27,7 +27,7 @@ func (q HashQueue) Size() int {
 func (q HashQueue) Get() (string, error) {
 	for {
 		select {
-		case hash := <- q.hashes:
+		case hash := <-q.hashes:
 			return hash, nil
 		default:
 			err := errors.New("No hashes in queue.")
@@ -51,12 +51,12 @@ func (q HashQueue) Flush() error {
 		return q.flushToFile()
 	}
 	_, err := q.emptyChannel()
-	
+
 	return err
 }
 
 func (q HashQueue) flushToFile() error {
-	file, err := os.OpenFile(q.config.ComputedHashOverflowPath, os.O_WRONLY | os.O_CREATE | os.O_APPEND, os.ModePerm)
+	file, err := os.OpenFile(q.config.ComputedHashOverflowPath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func (q HashQueue) flushToFile() error {
 	}
 
 	for _, hash := range hashes {
-		fmt.Fprintln(writer, hash) 
+		fmt.Fprintln(writer, hash)
 	}
 
 	return writer.Flush()

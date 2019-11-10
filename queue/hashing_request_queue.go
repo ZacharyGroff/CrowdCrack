@@ -22,7 +22,7 @@ func (q HashingRequestQueue) Size() int {
 func (q HashingRequestQueue) Get() (models.HashingRequest, error) {
 	for {
 		select {
-		case request := <- q.requests:
+		case request := <-q.requests:
 			return request, nil
 		default:
 			err := errors.New("No requests in queue.")

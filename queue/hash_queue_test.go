@@ -1,10 +1,10 @@
 package queue
 
 import (
+	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
 	"strings"
 	"testing"
-	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
 func TestHashQueue_PutHash_Success(t *testing.T) {
@@ -53,7 +53,7 @@ func TestHashQueue_Flush_Size(t *testing.T) {
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
 	q.Flush()
-	
+
 	expected := 0
 	actual := len(q.hashes)
 	if expected != actual {
@@ -85,7 +85,7 @@ func TestHashQueue_FlushToFile_Success(t *testing.T) {
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
 	err := q.flushToFile()
-	
+
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
@@ -102,7 +102,7 @@ func TestHashQueue_FlushToFile_OpenFileError(t *testing.T) {
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"
 	q.Put(hash)
 	err := q.flushToFile()
-	
+
 	if err == nil {
 		t.Error("Expected error but nil returned.")
 	}

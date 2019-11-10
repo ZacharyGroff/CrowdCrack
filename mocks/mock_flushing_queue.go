@@ -1,12 +1,12 @@
 package mocks
 
 type MockFlushingQueue struct {
-	SizeCalls uint64
-	GetCalls uint64
-	PutCalls uint64
-	FlushCalls uint64
+	SizeCalls      uint64
+	GetCalls       uint64
+	PutCalls       uint64
+	FlushCalls     uint64
 	stringToReturn string
-	errorToReturn error
+	errorToReturn  error
 }
 
 func NewMockFlushingQueue(s string, e error) MockFlushingQueue {
