@@ -28,11 +28,5 @@ func NewHasherFactory(p userinput.CmdLineConfigProvider, l *logger.ConcurrentLog
 }
 
 func (h *HasherFactory) GetNewEncoder() interfaces.Encoder {
-	return &Hasher{
-		config:          h.config,
-		logger:          h.logger,
-		requestQueue:    h.requestQueue,
-		submissionQueue: h.submissionQueue,
-		waiter:          h.waiter,
-	}
+	return NewHasher(h.config, h.logger, h.requestQueue, h.submissionQueue, h.waiter)
 }

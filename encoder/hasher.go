@@ -3,11 +3,7 @@ package encoder
 import (
 	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/queue"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
-	"github.com/ZacharyGroff/CrowdCrack/waiter"
 	"hash"
 	"io"
 )
@@ -20,9 +16,9 @@ type Hasher struct {
 	waiter          interfaces.Waiter
 }
 
-func NewHasher(p userinput.CmdLineConfigProvider, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *Hasher {
+func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, w interfaces.Waiter) *Hasher {
 	return &Hasher{
-		config:          p.GetConfig(),
+		config:          c,
 		logger:          l,
 		requestQueue:    r,
 		submissionQueue: s,
