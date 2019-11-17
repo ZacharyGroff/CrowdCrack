@@ -12,15 +12,17 @@ type Hasher struct {
 	config          *models.Config
 	logger          interfaces.Logger
 	requestQueue    interfaces.RequestQueue
+	stopQueue       interfaces.ClientStopQueue
 	submissionQueue interfaces.SubmissionQueue
 	waiter          interfaces.Waiter
 }
 
-func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, w interfaces.Waiter) *Hasher {
+func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, cl interfaces.ClientStopQueue, w interfaces.Waiter) *Hasher {
 	return &Hasher{
 		config:          c,
 		logger:          l,
 		requestQueue:    r,
+		stopQueue:       cl,
 		submissionQueue: s,
 		waiter:          w,
 	}

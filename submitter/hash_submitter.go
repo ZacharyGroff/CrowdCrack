@@ -16,14 +16,16 @@ type HashSubmitter struct {
 	client          interfaces.ApiClient
 	logger          interfaces.Logger
 	submissionQueue interfaces.SubmissionQueue
+	stopQueue       interfaces.ClientStopQueue
 	waiter          interfaces.Waiter
 }
 
-func NewHashSubmitter(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, s *queue.HashingSubmissionQueue, w waiter.Sleeper) *HashSubmitter {
+func NewHashSubmitter(p userinput.CmdLineConfigProvider, c *apiclient.HashApiClient, l *logger.ConcurrentLogger, s *queue.HashingSubmissionQueue, cl *queue.ClientStopReasonQueue, w waiter.Sleeper) *HashSubmitter {
 	return &HashSubmitter{
 		config:          p.GetConfig(),
-		client:          cl,
+		client:          c,
 		logger:          l,
+		stopQueue:       cl,
 		submissionQueue: s,
 		waiter:          w,
 	}

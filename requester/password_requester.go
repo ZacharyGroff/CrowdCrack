@@ -17,16 +17,18 @@ type PasswordRequester struct {
 	client          interfaces.ApiClient
 	logger          interfaces.Logger
 	requestQueue    interfaces.RequestQueue
+	stopQueue       interfaces.ClientStopQueue
 	supportedHashes map[string]hash.Hash
 	waiter          interfaces.Waiter
 }
 
-func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, w waiter.Sleeper) *PasswordRequester {
+func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, c *queue.ClientStopReasonQueue, w waiter.Sleeper) *PasswordRequester {
 	return &PasswordRequester{
 		config:          p.GetConfig(),
 		client:          cl,
 		logger:          l,
 		requestQueue:    r,
+		stopQueue:       c,
 		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          w,
 	}
