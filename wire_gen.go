@@ -30,11 +30,12 @@ func InitializeClient() client.Client {
 	concurrentLogger := logger.NewConcurrentLogger(cmdLineConfigProvider)
 	hashingRequestQueue := queue.NewHashingRequestQueue()
 	hashingSubmissionQueue := queue.NewHashingSubmissionQueue()
+	clientStopReasonQueue := queue.NewClientStopReasonQueue(cmdLineConfigProvider)
 	sleeper := waiter.NewSleeper(cmdLineConfigProvider, concurrentLogger)
-	hasherFactory := encoder.NewHasherFactory(cmdLineConfigProvider, concurrentLogger, hashingRequestQueue, hashingSubmissionQueue, sleeper)
+	hasherFactory := encoder.NewHasherFactory(cmdLineConfigProvider, concurrentLogger, hashingRequestQueue, hashingSubmissionQueue, clientStopReasonQueue, sleeper)
 	hashApiClient := apiclient.NewHashApiClient(cmdLineConfigProvider)
-	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, concurrentLogger, hashingRequestQueue, sleeper)
-	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, concurrentLogger, hashingSubmissionQueue, sleeper)
+	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, concurrentLogger, hashingRequestQueue, clientStopReasonQueue, sleeper)
+	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, concurrentLogger, hashingSubmissionQueue, clientStopReasonQueue, sleeper)
 	clientClient := client.NewClient(cmdLineConfigProvider, hasherFactory, concurrentLogger, passwordRequester, hashSubmitter)
 	return clientClient
 }
