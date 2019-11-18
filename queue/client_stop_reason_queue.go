@@ -3,15 +3,15 @@ package queue
 import (
 	"errors"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type ClientStopReasonQueue struct {
 	stopReasons chan models.ClientStopReason
 }
 
-func NewClientStopReasonQueue(p userinput.CmdLineConfigProvider) *ClientStopReasonQueue {
+func NewClientStopReasonQueue(p interfaces.ConfigProvider) *ClientStopReasonQueue {
 	config := p.GetConfig()
 	stopReasons := getStopReasonsChannel(config)
 	return &ClientStopReasonQueue{

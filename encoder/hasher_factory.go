@@ -5,7 +5,6 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
 )
 
@@ -18,7 +17,7 @@ type HasherFactory struct {
 	waiter          interfaces.Waiter
 }
 
-func NewHasherFactory(p userinput.CmdLineConfigProvider, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue, c *queue.ClientStopReasonQueue, w waiter.Sleeper) *HasherFactory {
+func NewHasherFactory(p interfaces.ConfigProvider, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue, c *queue.ClientStopReasonQueue, w waiter.Sleeper) *HasherFactory {
 	return &HasherFactory{
 		config:          p.GetConfig(),
 		logger:          l,

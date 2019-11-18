@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"runtime"
 	"strings"
 	"time"
@@ -16,7 +15,7 @@ type Sleeper struct {
 	isLogging     bool
 }
 
-func NewSleeper(u userinput.CmdLineConfigProvider, l *logger.ConcurrentLogger) Sleeper {
+func NewSleeper(u interfaces.ConfigProvider, l *logger.ConcurrentLogger) Sleeper {
 	config := u.GetConfig()
 	sleepDuration := time.Duration(5) * time.Second
 	return Sleeper{

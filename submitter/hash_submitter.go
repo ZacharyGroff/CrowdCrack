@@ -7,7 +7,6 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
 )
 
@@ -20,7 +19,7 @@ type HashSubmitter struct {
 	waiter          interfaces.Waiter
 }
 
-func NewHashSubmitter(p userinput.CmdLineConfigProvider, c *apiclient.HashApiClient, l *logger.ConcurrentLogger, s *queue.HashingSubmissionQueue, cl *queue.ClientStopReasonQueue, w waiter.Sleeper) *HashSubmitter {
+func NewHashSubmitter(p interfaces.ConfigProvider, c *apiclient.HashApiClient, l *logger.ConcurrentLogger, s *queue.HashingSubmissionQueue, cl *queue.ClientStopReasonQueue, w waiter.Sleeper) *HashSubmitter {
 	return &HashSubmitter{
 		config:          p.GetConfig(),
 		client:          c,

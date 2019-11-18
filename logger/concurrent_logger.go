@@ -3,8 +3,8 @@ package logger
 import (
 	"bufio"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"log"
 	"os"
 	"sync"
@@ -16,7 +16,7 @@ type ConcurrentLogger struct {
 	mux    sync.Mutex
 }
 
-func NewConcurrentLogger(p userinput.CmdLineConfigProvider) *ConcurrentLogger {
+func NewConcurrentLogger(p interfaces.ConfigProvider) *ConcurrentLogger {
 	c := p.GetConfig()
 	return &ConcurrentLogger{
 		config: c,

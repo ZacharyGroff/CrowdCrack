@@ -8,7 +8,6 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/requester"
 	"github.com/ZacharyGroff/CrowdCrack/submitter"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"sync"
 )
 
@@ -20,7 +19,7 @@ type Client struct {
 	submitter      interfaces.Submitter
 }
 
-func NewClient(p userinput.CmdLineConfigProvider, e *encoder.HasherFactory, l *logger.ConcurrentLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
+func NewClient(p interfaces.ConfigProvider, e *encoder.HasherFactory, l *logger.ConcurrentLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
 	c := p.GetConfig()
 	return Client{
 		config:         c,

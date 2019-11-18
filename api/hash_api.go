@@ -8,7 +8,6 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/tracker"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"net/http"
 )
 
@@ -20,7 +19,7 @@ type HashApi struct {
 	Tracker   interfaces.Tracker
 }
 
-func NewHashApi(p userinput.CmdLineConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.ConcurrentLogger, t *tracker.StatsTracker) *HashApi {
+func NewHashApi(p interfaces.ConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.ConcurrentLogger, t *tracker.StatsTracker) *HashApi {
 	c := p.GetConfig()
 	return &HashApi{
 		Config:    c,

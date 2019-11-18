@@ -7,7 +7,6 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
 	"hash"
 )
@@ -22,7 +21,7 @@ type PasswordRequester struct {
 	waiter          interfaces.Waiter
 }
 
-func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, c *queue.ClientStopReasonQueue, w waiter.Sleeper) *PasswordRequester {
+func NewPasswordRequester(p interfaces.ConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, c *queue.ClientStopReasonQueue, w waiter.Sleeper) *PasswordRequester {
 	return &PasswordRequester{
 		config:          p.GetConfig(),
 		client:          cl,

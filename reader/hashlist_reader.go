@@ -2,8 +2,8 @@ package reader
 
 import (
 	"bufio"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"os"
 )
 
@@ -11,7 +11,7 @@ type HashlistReader struct {
 	config *models.Config
 }
 
-func NewHashlistReader(p userinput.CmdLineConfigProvider) *HashlistReader {
+func NewHashlistReader(p interfaces.ConfigProvider) *HashlistReader {
 	c := p.GetConfig()
 	return &HashlistReader{c}
 }

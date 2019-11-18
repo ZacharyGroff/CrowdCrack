@@ -3,8 +3,8 @@ package apiclient
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,7 +14,7 @@ type HashApiClient struct {
 	config *models.Config
 }
 
-func NewHashApiClient(p userinput.CmdLineConfigProvider) *HashApiClient {
+func NewHashApiClient(p interfaces.ConfigProvider) *HashApiClient {
 	c := p.GetConfig()
 	return &HashApiClient{c}
 }
