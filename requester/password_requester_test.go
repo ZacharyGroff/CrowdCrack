@@ -15,6 +15,7 @@ type testObject struct {
 	apiClient         *mocks.MockApiClient
 	logger            *mocks.MockLogger
 	requestQueue      *mocks.MockRequestQueue
+	stopQueue         *mocks.MockClientStopQueue
 	waiter            *mocks.MockWaiter
 }
 
@@ -59,6 +60,15 @@ func setupRequestQueueFull() mocks.MockRequestQueue {
 	return mocks.NewMockRequestQueue(nilError, hashingRequest, 10)
 }
 
+func setupStopQueueForSuccess() mocks.MockClientStopQueue {
+	stopReason := models.ClientStopReason{
+		Requester: "",
+		Encoder:   "",
+		Submitter: "",
+	}
+	return mocks.NewMockClientStopQueue(stopReason, nilError, nilError)
+}
+
 func setupSupportedHashes() map[string]hash.Hash {
 	return models.GetSupportedHashFunctions()
 }
@@ -90,6 +100,7 @@ func setupPasswordRequestForSuccess() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
+	stopQueue := setupStopQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -97,6 +108,7 @@ func setupPasswordRequestForSuccess() testObject {
 		client:          &apiClient,
 		logger:          &logger,
 		requestQueue:    &requestQueue,
+		stopQueue:       &stopQueue,
 		supportedHashes: supportedHashes,
 		waiter:          &waiter,
 	}
@@ -106,6 +118,7 @@ func setupPasswordRequestForSuccess() testObject {
 		apiClient:         &apiClient,
 		logger:            &logger,
 		requestQueue:      &requestQueue,
+		stopQueue:         &stopQueue,
 		waiter:            &waiter,
 	}
 }
@@ -115,6 +128,7 @@ func setupPasswordRequestForSuccessNonVerbose() testObject {
 	config := setupNonVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
+	stopQueue := setupStopQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -122,6 +136,7 @@ func setupPasswordRequestForSuccessNonVerbose() testObject {
 		client:          &apiClient,
 		logger:          &logger,
 		requestQueue:    &requestQueue,
+		stopQueue:       &stopQueue,
 		supportedHashes: supportedHashes,
 		waiter:          &waiter,
 	}
@@ -131,6 +146,7 @@ func setupPasswordRequestForSuccessNonVerbose() testObject {
 		apiClient:         &apiClient,
 		logger:            &logger,
 		requestQueue:      &requestQueue,
+		stopQueue:         &stopQueue,
 		waiter:            &waiter,
 	}
 }
@@ -140,6 +156,7 @@ func setupPasswordRequestForApiClientError() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
+	stopQueue := setupStopQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -147,6 +164,7 @@ func setupPasswordRequestForApiClientError() testObject {
 		client:          &apiClient,
 		logger:          &logger,
 		requestQueue:    &requestQueue,
+		stopQueue:       &stopQueue,
 		supportedHashes: supportedHashes,
 		waiter:          &waiter,
 	}
@@ -156,6 +174,7 @@ func setupPasswordRequestForApiClientError() testObject {
 		apiClient:         &apiClient,
 		logger:            &logger,
 		requestQueue:      &requestQueue,
+		stopQueue:         &stopQueue,
 		waiter:            &waiter,
 	}
 }
@@ -165,6 +184,7 @@ func setupPasswordRequestForGetHashNameError() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
+	stopQueue := setupStopQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -172,6 +192,7 @@ func setupPasswordRequestForGetHashNameError() testObject {
 		client:          &apiClient,
 		logger:          &logger,
 		requestQueue:    &requestQueue,
+		stopQueue:       &stopQueue,
 		supportedHashes: supportedHashes,
 		waiter:          &waiter,
 	}
@@ -181,6 +202,7 @@ func setupPasswordRequestForGetHashNameError() testObject {
 		apiClient:         &apiClient,
 		logger:            &logger,
 		requestQueue:      &requestQueue,
+		stopQueue:         &stopQueue,
 		waiter:            &waiter,
 	}
 }
@@ -190,6 +212,7 @@ func setupPasswordRequestForGetPasswordsError() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
+	stopQueue := setupStopQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -197,6 +220,7 @@ func setupPasswordRequestForGetPasswordsError() testObject {
 		client:          &apiClient,
 		logger:          &logger,
 		requestQueue:    &requestQueue,
+		stopQueue:       &stopQueue,
 		supportedHashes: supportedHashes,
 		waiter:          &waiter,
 	}
@@ -206,6 +230,7 @@ func setupPasswordRequestForGetPasswordsError() testObject {
 		apiClient:         &apiClient,
 		logger:            &logger,
 		requestQueue:      &requestQueue,
+		stopQueue:         &stopQueue,
 		waiter:            &waiter,
 	}
 }
@@ -215,6 +240,7 @@ func setupPasswordRequestForFullRequestQueue() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueFull()
+	stopQueue := setupStopQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -222,6 +248,7 @@ func setupPasswordRequestForFullRequestQueue() testObject {
 		client:          &apiClient,
 		logger:          &logger,
 		requestQueue:    &requestQueue,
+		stopQueue:       &stopQueue,
 		supportedHashes: supportedHashes,
 		waiter:          &waiter,
 	}
@@ -231,6 +258,7 @@ func setupPasswordRequestForFullRequestQueue() testObject {
 		apiClient:         &apiClient,
 		logger:            &logger,
 		requestQueue:      &requestQueue,
+		stopQueue:         &stopQueue,
 		waiter:            &waiter,
 	}
 }
@@ -240,6 +268,7 @@ func setupPasswordRequestFoNoSupportedHashes() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
+	stopQueue := setupStopQueueForSuccess()
 	supportedHashes := setupNoSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -247,6 +276,7 @@ func setupPasswordRequestFoNoSupportedHashes() testObject {
 		client:          &apiClient,
 		logger:          &logger,
 		requestQueue:    &requestQueue,
+		stopQueue:       &stopQueue,
 		supportedHashes: supportedHashes,
 		waiter:          &waiter,
 	}
@@ -256,6 +286,7 @@ func setupPasswordRequestFoNoSupportedHashes() testObject {
 		apiClient:         &apiClient,
 		logger:            &logger,
 		requestQueue:      &requestQueue,
+		stopQueue:         &stopQueue,
 		waiter:            &waiter,
 	}
 }
@@ -265,6 +296,7 @@ func setupPasswordRequestFoNoPasswordsReturned() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
+	stopQueue := setupStopQueueForSuccess()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -272,6 +304,7 @@ func setupPasswordRequestFoNoPasswordsReturned() testObject {
 		client:          &apiClient,
 		logger:          &logger,
 		requestQueue:    &requestQueue,
+		stopQueue:       &stopQueue,
 		supportedHashes: supportedHashes,
 		waiter:          &waiter,
 	}
@@ -281,6 +314,7 @@ func setupPasswordRequestFoNoPasswordsReturned() testObject {
 		apiClient:         &apiClient,
 		logger:            &logger,
 		requestQueue:      &requestQueue,
+		stopQueue:         &stopQueue,
 		waiter:            &waiter,
 	}
 }
