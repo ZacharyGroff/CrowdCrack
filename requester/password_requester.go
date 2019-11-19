@@ -9,7 +9,6 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
 	"hash"
-	"os"
 )
 
 type PasswordRequester struct {
@@ -39,7 +38,6 @@ func (p PasswordRequester) Start() error {
 	for {
 		err := p.processOrStop()
 		if err != nil {
-			p.stopWithError(err)
 			return err
 		}
 	}
@@ -47,11 +45,18 @@ func (p PasswordRequester) Start() error {
 
 func (p PasswordRequester) processOrStop() error {
 	stopReason, err := p.stopQueue.Get()
-	if err != nil {
-		p.stop(stopReason)
-		return nil
+	if err == nil {
+		err = fmt.Errorf("Requester observed updateStopQueue reason:\n\t%s", stopReason)
+		return err
 	}
-	return p.processOrWait()
+
+	err = p.processOrWait()
+	if err != nil {
+		p.updateStopQueue(err)
+		return err
+	}
+
+	return nil
 }
 
 func (p PasswordRequester) processOrWait() error {
@@ -165,7 +170,7 @@ func (p PasswordRequester) getPasswords() ([]string, error) {
 	return passwords, nil
 }
 
-func (p PasswordRequester) stopWithError(err error) {
+func (p PasswordRequester) updateStopQueue(err error) {
 	stopReason := models.ClientStopReason{
 		Requester: err.Error(),
 		Encoder:   "",
@@ -176,21 +181,4 @@ func (p PasswordRequester) stopWithError(err error) {
 	for i = 0; i < p.config.Threads - 1; i++ {
 		p.stopQueue.Put(stopReason)
 	}
-
-	p.stop(stopReason)
-}
-
-func (p PasswordRequester) stop(reason models.ClientStopReason) {
-	if reason.Encoder != "" {
-		logMessage := fmt.Sprintf("Stopping requester because encoder hit exception: %s", reason.Encoder)
-		p.logger.LogMessage(logMessage)
-	} else if reason.Requester != "" {
-		logMessage := fmt.Sprintf("Stopping requester because requester hit exception: %s", reason.Requester)
-		p.logger.LogMessage(logMessage)
-	} else if reason.Submitter != "" {
-		logMessage := fmt.Sprintf("Stopping requester because submitter hit exception: %s", reason.Submitter)
-		p.logger.LogMessage(logMessage)
-	}
-
-	os.Exit(0)
 }
