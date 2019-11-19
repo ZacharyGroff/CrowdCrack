@@ -26,29 +26,30 @@ import (
 // Injectors from wire.go:
 
 func InitializeClient() client.Client {
-	cmdLineConfigProvider := userinput.NewCmdLineConfigProvider()
-	concurrentLogger := logger.NewConcurrentLogger(cmdLineConfigProvider)
+	configProvider := userinput.NewCmdLineConfigProvider()
+	concurrentLogger := logger.NewConcurrentLogger(configProvider)
 	hashingRequestQueue := queue.NewHashingRequestQueue()
 	hashingSubmissionQueue := queue.NewHashingSubmissionQueue()
-	sleeper := waiter.NewSleeper(cmdLineConfigProvider, concurrentLogger)
-	hasherFactory := encoder.NewHasherFactory(cmdLineConfigProvider, concurrentLogger, hashingRequestQueue, hashingSubmissionQueue, sleeper)
-	hashApiClient := apiclient.NewHashApiClient(cmdLineConfigProvider)
-	passwordRequester := requester.NewPasswordRequester(cmdLineConfigProvider, hashApiClient, concurrentLogger, hashingRequestQueue, sleeper)
-	hashSubmitter := submitter.NewHashSubmitter(cmdLineConfigProvider, hashApiClient, concurrentLogger, hashingSubmissionQueue, sleeper)
-	clientClient := client.NewClient(cmdLineConfigProvider, hasherFactory, concurrentLogger, passwordRequester, hashSubmitter)
+	clientStopReasonQueue := queue.NewClientStopReasonQueue(configProvider)
+	sleeper := waiter.NewSleeper(configProvider, concurrentLogger)
+	hasherFactory := encoder.NewHasherFactory(configProvider, concurrentLogger, hashingRequestQueue, hashingSubmissionQueue, clientStopReasonQueue, sleeper)
+	hashApiClient := apiclient.NewHashApiClient(configProvider)
+	passwordRequester := requester.NewPasswordRequester(configProvider, hashApiClient, concurrentLogger, hashingRequestQueue, clientStopReasonQueue, sleeper)
+	hashSubmitter := submitter.NewHashSubmitter(configProvider, hashApiClient, concurrentLogger, hashingSubmissionQueue, clientStopReasonQueue, sleeper)
+	clientClient := client.NewClient(configProvider, hasherFactory, concurrentLogger, passwordRequester, hashSubmitter)
 	return clientClient
 }
 
 func InitializeServer() server.Server {
-	cmdLineConfigProvider := userinput.NewCmdLineConfigProvider()
-	hashQueue := queue.NewHashQueue(cmdLineConfigProvider)
-	passwordQueue := queue.NewPasswordQueue(cmdLineConfigProvider)
-	concurrentLogger := logger.NewConcurrentLogger(cmdLineConfigProvider)
+	configProvider := userinput.NewCmdLineConfigProvider()
+	hashQueue := queue.NewHashQueue(configProvider)
+	passwordQueue := queue.NewPasswordQueue(configProvider)
+	concurrentLogger := logger.NewConcurrentLogger(configProvider)
 	statsTracker := tracker.NewStatsTracker()
-	hashApi := api.NewHashApi(cmdLineConfigProvider, hashQueue, passwordQueue, concurrentLogger, statsTracker)
-	wordlistReader := reader.NewWordlistReader(cmdLineConfigProvider, passwordQueue)
-	statsObserver := observer.NewStatsObserver(concurrentLogger, statsTracker, cmdLineConfigProvider)
-	hashlistReader := reader.NewHashlistReader(cmdLineConfigProvider)
+	hashApi := api.NewHashApi(configProvider, hashQueue, passwordQueue, concurrentLogger, statsTracker)
+	wordlistReader := reader.NewWordlistReader(configProvider, passwordQueue)
+	statsObserver := observer.NewStatsObserver(concurrentLogger, statsTracker, configProvider)
+	hashlistReader := reader.NewHashlistReader(configProvider)
 	hashVerifier := verifier.NewHashVerifier(hashQueue, hashlistReader, concurrentLogger, statsTracker)
 	serverServer := server.NewServer(hashApi, concurrentLogger, wordlistReader, statsObserver, hashVerifier)
 	return serverServer

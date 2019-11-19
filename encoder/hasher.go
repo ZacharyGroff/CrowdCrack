@@ -12,15 +12,17 @@ type Hasher struct {
 	config          *models.Config
 	logger          interfaces.Logger
 	requestQueue    interfaces.RequestQueue
+	stopQueue       interfaces.ClientStopQueue
 	submissionQueue interfaces.SubmissionQueue
 	waiter          interfaces.Waiter
 }
 
-func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, w interfaces.Waiter) *Hasher {
+func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, cl interfaces.ClientStopQueue, w interfaces.Waiter) *Hasher {
 	return &Hasher{
 		config:          c,
 		logger:          l,
 		requestQueue:    r,
+		stopQueue:       cl,
 		submissionQueue: s,
 		waiter:          w,
 	}
@@ -31,6 +33,14 @@ func (e Hasher) Start() error {
 	for {
 		err := e.processOrSleep()
 		if err != nil {
+			e.updateStopQueue(err)
+			return err
+		}
+
+		stopReason, err := e.stopQueue.Get()
+		if err == nil {
+			e.stop()
+			err = fmt.Errorf("Hasher observed updateStopQueue reason:\n\t%+v", stopReason)
 			return err
 		}
 	}
@@ -69,6 +79,23 @@ func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error
 func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) models.HashSubmission {
 	passwordHashes := getPasswordHashes(hashingRequest.Hash, hashingRequest.Passwords)
 	return models.HashSubmission{hashingRequest.HashName, passwordHashes}
+}
+
+func (e Hasher) updateStopQueue(err error) {
+	stopReason := models.ClientStopReason{
+		Requester: "",
+		Encoder:   err.Error(),
+		Submitter: "",
+	}
+
+	var i uint16
+	for i = 0; i < e.config.Threads - 1; i++ {
+		e.stopQueue.Put(stopReason)
+	}
+}
+
+func (e Hasher) stop() {
+	return
 }
 
 func getPasswordHashes(hash hash.Hash, passwords []string) []string {

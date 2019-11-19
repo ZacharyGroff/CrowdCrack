@@ -16,19 +16,31 @@ type testObject struct {
 	hashSubmitter       *HashSubmitter
 	mockApiClient       *mocks.MockApiClient
 	mockLogger          *mocks.MockLogger
+	mockStopQueue       *mocks.MockClientStopQueue
 	mockSubmissionQueue *mocks.MockSubmissionQueue
 	mockWaiter          *mocks.MockWaiter
+}
+
+func setupStopQueueForSuccess() mocks.MockClientStopQueue {
+	stopReason := models.ClientStopReason{
+		Requester: "",
+		Encoder:   "",
+		Submitter: "",
+	}
+	return mocks.NewMockClientStopQueue(stopReason, nilError, nilError)
 }
 
 func setupHashSubmitterForNoError() testObject {
 	mockApiClient := mocks.NewMockApiClient(200, 200, 200, "fakeHash", []string{})
 	mockLogger := mocks.NewMockLogger(nilError)
+	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter{
 		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 	}
@@ -37,6 +49,7 @@ func setupHashSubmitterForNoError() testObject {
 		hashSubmitter:       &hashSubmitter,
 		mockApiClient:       &mockApiClient,
 		mockLogger:          &mockLogger,
+		mockStopQueue:       &mockStopQueue,
 		mockSubmissionQueue: &mockSubmissionQueue,
 		mockWaiter:          &mockWaiter,
 	}
@@ -45,12 +58,14 @@ func setupHashSubmitterForNoError() testObject {
 func setupHashSubmitterForNoErrorEmptySubmissionQueue() testObject {
 	mockApiClient := mocks.NewMockApiClient(200, 200, 200, "fakeHash", []string{})
 	mockLogger := mocks.NewMockLogger(nilError)
+	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 0)
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter{
 		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 	}
@@ -59,6 +74,7 @@ func setupHashSubmitterForNoErrorEmptySubmissionQueue() testObject {
 		hashSubmitter:       &hashSubmitter,
 		mockApiClient:       &mockApiClient,
 		mockLogger:          &mockLogger,
+		mockStopQueue:       &mockStopQueue,
 		mockSubmissionQueue: &mockSubmissionQueue,
 		mockWaiter:          &mockWaiter,
 	}
@@ -67,12 +83,14 @@ func setupHashSubmitterForNoErrorEmptySubmissionQueue() testObject {
 func setupHashSubmitterForClientError() testObject {
 	mockApiClient := mocks.NewMockApiClient(500, 500, 500, "fakeHash", []string{})
 	mockLogger := mocks.NewMockLogger(nilError)
+	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter{
 		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 	}
@@ -81,6 +99,7 @@ func setupHashSubmitterForClientError() testObject {
 		hashSubmitter:       &hashSubmitter,
 		mockApiClient:       &mockApiClient,
 		mockLogger:          &mockLogger,
+		mockStopQueue:       &mockStopQueue,
 		mockSubmissionQueue: &mockSubmissionQueue,
 		mockWaiter:          &mockWaiter,
 	}
@@ -89,12 +108,14 @@ func setupHashSubmitterForClientError() testObject {
 func setupHashSubmitterForSubmissionQueueError() testObject {
 	mockApiClient := mocks.NewMockApiClient(200, 0, 0, "fakeHash", []string{})
 	mockLogger := mocks.NewMockLogger(nilError)
+	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(testError, models.HashSubmission{}, 1)
 	mockWaiter := mocks.NewMockWaiter()
 	hashSubmitter := HashSubmitter{
 		config:          &verboseConfig,
 		client:          &mockApiClient,
 		logger:          &mockLogger,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 	}
@@ -103,6 +124,7 @@ func setupHashSubmitterForSubmissionQueueError() testObject {
 		hashSubmitter:       &hashSubmitter,
 		mockApiClient:       &mockApiClient,
 		mockLogger:          &mockLogger,
+		mockStopQueue:       &mockStopQueue,
 		mockSubmissionQueue: &mockSubmissionQueue,
 		mockWaiter:          &mockWaiter,
 	}

@@ -3,6 +3,7 @@ package userinput
 import (
 	"flag"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
@@ -10,9 +11,9 @@ type CmdLineConfigProvider struct {
 	config *models.Config
 }
 
-func NewCmdLineConfigProvider() CmdLineConfigProvider {
+func NewCmdLineConfigProvider() interfaces.ConfigProvider {
 	config := parseCmdLine()
-	return CmdLineConfigProvider{
+	return &CmdLineConfigProvider{
 		config: config,
 	}
 }

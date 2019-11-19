@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"os"
 )
 
@@ -14,7 +14,7 @@ type HashQueue struct {
 	config models.Config
 }
 
-func NewHashQueue(p userinput.CmdLineConfigProvider) *HashQueue {
+func NewHashQueue(p interfaces.ConfigProvider) *HashQueue {
 	config := p.GetConfig()
 	hashes := make(chan string, config.HashQueueBuffer)
 	return &HashQueue{hashes, *config}

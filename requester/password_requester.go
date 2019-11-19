@@ -7,7 +7,6 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"github.com/ZacharyGroff/CrowdCrack/waiter"
 	"hash"
 )
@@ -17,16 +16,18 @@ type PasswordRequester struct {
 	client          interfaces.ApiClient
 	logger          interfaces.Logger
 	requestQueue    interfaces.RequestQueue
+	stopQueue       interfaces.ClientStopQueue
 	supportedHashes map[string]hash.Hash
 	waiter          interfaces.Waiter
 }
 
-func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, w waiter.Sleeper) *PasswordRequester {
+func NewPasswordRequester(p interfaces.ConfigProvider, cl *apiclient.HashApiClient, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, c *queue.ClientStopReasonQueue, w waiter.Sleeper) *PasswordRequester {
 	return &PasswordRequester{
 		config:          p.GetConfig(),
 		client:          cl,
 		logger:          l,
 		requestQueue:    r,
+		stopQueue:       c,
 		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          w,
 	}
@@ -35,11 +36,27 @@ func NewPasswordRequester(p userinput.CmdLineConfigProvider, cl *apiclient.HashA
 func (p PasswordRequester) Start() error {
 	p.logger.LogMessage("Starting password requester")
 	for {
-		err := p.processOrWait()
+		err := p.processOrStop()
 		if err != nil {
 			return err
 		}
 	}
+}
+
+func (p PasswordRequester) processOrStop() error {
+	stopReason, err := p.stopQueue.Get()
+	if err == nil {
+		err = fmt.Errorf("Requester observed updateStopQueue reason:\n\t%+v", stopReason)
+		return err
+	}
+
+	err = p.processOrWait()
+	if err != nil {
+		p.updateStopQueue(err)
+		return err
+	}
+
+	return nil
 }
 
 func (p PasswordRequester) processOrWait() error {
@@ -151,4 +168,17 @@ func (p PasswordRequester) getPasswords() ([]string, error) {
 	}
 
 	return passwords, nil
+}
+
+func (p PasswordRequester) updateStopQueue(err error) {
+	stopReason := models.ClientStopReason{
+		Requester: err.Error(),
+		Encoder:   "",
+		Submitter: "",
+	}
+
+	var i uint16
+	for i = 0; i < p.config.Threads - 1; i++ {
+		p.stopQueue.Put(stopReason)
+	}
 }

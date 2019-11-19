@@ -6,7 +6,6 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"github.com/ZacharyGroff/CrowdCrack/tracker"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 	"time"
 )
 
@@ -18,7 +17,7 @@ type StatsObserver struct {
 	stop      chan bool
 }
 
-func NewStatsObserver(l *logger.ConcurrentLogger, t *tracker.StatsTracker, p userinput.CmdLineConfigProvider) *StatsObserver {
+func NewStatsObserver(l *logger.ConcurrentLogger, t *tracker.StatsTracker, p interfaces.ConfigProvider) *StatsObserver {
 	c := p.GetConfig()
 	start := time.Now()
 	stop := make(chan bool)

@@ -3,8 +3,8 @@ package queue
 import (
 	"errors"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/userinput"
 )
 
 type PasswordQueue struct {
@@ -12,7 +12,7 @@ type PasswordQueue struct {
 	config    *models.Config
 }
 
-func NewPasswordQueue(p userinput.CmdLineConfigProvider) *PasswordQueue {
+func NewPasswordQueue(p interfaces.ConfigProvider) *PasswordQueue {
 	config := p.GetConfig()
 	passwords := make(chan string, config.PasswordQueueBuffer)
 	return &PasswordQueue{passwords, config}
