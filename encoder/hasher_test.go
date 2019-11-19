@@ -17,6 +17,7 @@ var nonVerboseConfig = models.Config{Verbose: false}
 type testObject struct {
 	logger          *mocks.MockLogger
 	requestQueue    *mocks.MockRequestQueue
+	stopQueue       *mocks.MockClientStopQueue
 	submissionQueue *mocks.MockSubmissionQueue
 	waiter          *mocks.MockWaiter
 	hasher          *Hasher
@@ -30,16 +31,27 @@ var hashingRequest = models.HashingRequest{
 	},
 }
 
+func setupStopQueueForSuccess() mocks.MockClientStopQueue {
+	stopReason := models.ClientStopReason{
+		Requester: "",
+		Encoder:   "",
+		Submitter: "",
+	}
+	return mocks.NewMockClientStopQueue(stopReason, nilError, nilError)
+}
+
 func setupHasherForSuccess() testObject {
 	hashSubmission := models.HashSubmission{}
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
+	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{
 		config:          &verboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 	}
@@ -47,6 +59,7 @@ func setupHasherForSuccess() testObject {
 	return testObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 		hasher:          &hasher,
@@ -57,12 +70,14 @@ func setupHasherForSuccessNonVerbose() testObject {
 	hashSubmission := models.HashSubmission{}
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
+	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{
 		config:          &nonVerboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 	}
@@ -70,6 +85,7 @@ func setupHasherForSuccessNonVerbose() testObject {
 	return testObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 		hasher:          &hasher,
@@ -82,12 +98,14 @@ func setupHasherForSubmissionQueueError() testObject {
 
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
+	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{
 		config:          &verboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 	}
@@ -95,6 +113,7 @@ func setupHasherForSubmissionQueueError() testObject {
 	return testObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 		hasher:          &hasher,
@@ -107,12 +126,14 @@ func setupHasherForRequestQueueError() testObject {
 
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
+	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	hasher := Hasher{
 		config:          &verboseConfig,
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 	}
@@ -120,6 +141,7 @@ func setupHasherForRequestQueueError() testObject {
 	return testObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
 		waiter:          &mockWaiter,
 		hasher:          &hasher,
