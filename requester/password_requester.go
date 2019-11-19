@@ -46,7 +46,7 @@ func (p PasswordRequester) Start() error {
 func (p PasswordRequester) processOrStop() error {
 	stopReason, err := p.stopQueue.Get()
 	if err == nil {
-		err = fmt.Errorf("Requester observed updateStopQueue reason:\n\t%s", stopReason)
+		err = fmt.Errorf("Requester observed updateStopQueue reason:\n\t%+v", stopReason)
 		return err
 	}
 

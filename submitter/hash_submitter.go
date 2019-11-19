@@ -33,8 +33,16 @@ func NewHashSubmitter(p interfaces.ConfigProvider, c *apiclient.HashApiClient, l
 func (h HashSubmitter) Start() error {
 	h.logger.LogMessage("Starting HashSubmitter...")
 	for {
-		err := h.processOrSleep()
+		stopReason, err := h.stopQueue.Get()
+		if err == nil {
+			h.stop()
+			err = fmt.Errorf("Submitter observed updateStopQueue reason:\n\t%+v", stopReason)
+			return err
+		}
+
+		err = h.processOrSleep()
 		if err != nil {
+			h.updateStopQueue(err)
 			return err
 		}
 	}
@@ -75,4 +83,21 @@ func (h HashSubmitter) processSubmission() error {
 	}
 
 	return nil
+}
+
+func (h HashSubmitter) updateStopQueue(err error) {
+	stopReason := models.ClientStopReason{
+		Requester: "",
+		Encoder:   "",
+		Submitter: err.Error(),
+	}
+
+	var i uint16
+	for i = 0; i < h.config.Threads - 1; i++ {
+		h.stopQueue.Put(stopReason)
+	}
+}
+
+func (h HashSubmitter) stop() {
+	return
 }
