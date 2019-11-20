@@ -54,7 +54,7 @@ func (c Client) startRequester(wg *sync.WaitGroup) {
 
 func (c Client) startEncoders(wg *sync.WaitGroup) {
 	var encoderNum uint16
-	for encoderNum = 0; encoderNum < c.config.Threads; encoderNum++ {
+	for encoderNum = 0; encoderNum < c.config.Threads - 2; encoderNum++ {
 		wg.Add(1)
 		go c.startEncoder(encoderNum, wg)
 	}
