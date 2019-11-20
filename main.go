@@ -10,8 +10,8 @@ func main() {
 	if userinput.IsClient(args) {
 		client := InitializeClient()
 		client.Start()
+	} else {
+		server := InitializeServer()
+		server.Start()
 	}
-
-	server := InitializeServer()
-	server.Start()
 }
