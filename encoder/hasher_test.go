@@ -7,6 +7,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -47,9 +48,11 @@ func setupHasherForSuccess() testObject {
 	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
+	mux := new(sync.Mutex)
 	hasher := Hasher{
 		config:          &verboseConfig,
 		logger:          &mockLogger,
+		mux:             mux,
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -73,9 +76,11 @@ func setupHasherForSuccessNonVerbose() testObject {
 	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
+	mux := new(sync.Mutex)
 	hasher := Hasher{
 		config:          &nonVerboseConfig,
 		logger:          &mockLogger,
+		mux:             mux,
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -101,9 +106,11 @@ func setupHasherForSubmissionQueueError() testObject {
 	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
+	mux := new(sync.Mutex)
 	hasher := Hasher{
 		config:          &verboseConfig,
 		logger:          &mockLogger,
+		mux:             mux,
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -129,9 +136,11 @@ func setupHasherForRequestQueueError() testObject {
 	mockStopQueue := setupStopQueueForSuccess()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
+	mux := new(sync.Mutex)
 	hasher := Hasher{
 		config:          &verboseConfig,
 		logger:          &mockLogger,
+		mux:             mux,
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
@@ -307,7 +316,9 @@ func TestHasher_GetPasswordHashes_CorrectResults(t *testing.T) {
 		expected = append(expected, expectedResult)
 	}
 
-	actual := getPasswordHashes(hashFunction, passwords)
+	testObject := setupHasherForSuccess()
+
+	actual := testObject.hasher.getPasswordHashes(hashFunction, passwords)
 	for i, _ := range expected {
 		if strings.Compare(expected[i], actual[i]) != 0 {
 			t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
@@ -320,8 +331,10 @@ func TestHasher_GetPasswordHash_CorrectResult(t *testing.T) {
 	password := "hunter2"
 	hashFunction := sha256.New()
 
+	testObject := setupHasherForSuccess()
+
 	expected := password + ":" + hashResult
-	actual := getPasswordHash(hashFunction, password)
+	actual := testObject.hasher.getPasswordHash(hashFunction, password)
 	if strings.Compare(expected, actual) != 0 {
 		t.Errorf("Expected: %s\nActual: %s\n", expected, actual)
 	}

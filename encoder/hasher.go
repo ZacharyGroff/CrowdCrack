@@ -6,21 +6,24 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"hash"
 	"io"
+	"sync"
 )
 
 type Hasher struct {
 	config          *models.Config
 	logger          interfaces.Logger
+	mux             *sync.Mutex
 	requestQueue    interfaces.RequestQueue
 	stopQueue       interfaces.ClientStopQueue
 	submissionQueue interfaces.SubmissionQueue
 	waiter          interfaces.Waiter
 }
 
-func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, cl interfaces.ClientStopQueue, w interfaces.Waiter) *Hasher {
+func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, cl interfaces.ClientStopQueue, w interfaces.Waiter, m *sync.Mutex) *Hasher {
 	return &Hasher{
 		config:          c,
 		logger:          l,
+		mux:             m,
 		requestQueue:    r,
 		stopQueue:       cl,
 		submissionQueue: s,
@@ -28,7 +31,7 @@ func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue,
 	}
 }
 
-func (e Hasher) Start() error {
+func (e *Hasher) Start() error {
 	e.logger.LogMessage("Starting hasher...")
 	for {
 		err := e.processOrSleep()
@@ -46,7 +49,7 @@ func (e Hasher) Start() error {
 	}
 }
 
-func (e Hasher) processOrSleep() error {
+func (e *Hasher) processOrSleep() error {
 	hashingRequest, err := e.requestQueue.Get()
 	if err != nil {
 		e.waiter.Wait()
@@ -60,7 +63,7 @@ func (e Hasher) processOrSleep() error {
 	return nil
 }
 
-func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error {
+func (e *Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error {
 	hashSubmission := e.getHashSubmission(hashingRequest)
 	if e.config.Verbose {
 		numResults := len(hashSubmission.Results)
@@ -76,12 +79,12 @@ func (e Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error
 	return nil
 }
 
-func (e Hasher) getHashSubmission(hashingRequest models.HashingRequest) models.HashSubmission {
-	passwordHashes := getPasswordHashes(hashingRequest.Hash, hashingRequest.Passwords)
+func (e *Hasher) getHashSubmission(hashingRequest models.HashingRequest) models.HashSubmission {
+	passwordHashes := e.getPasswordHashes(hashingRequest.Hash, hashingRequest.Passwords)
 	return models.HashSubmission{hashingRequest.HashName, passwordHashes}
 }
 
-func (e Hasher) updateStopQueue(err error) {
+func (e *Hasher) updateStopQueue(err error) {
 	stopReason := models.ClientStopReason{
 		Requester: "",
 		Encoder:   err.Error(),
@@ -94,23 +97,26 @@ func (e Hasher) updateStopQueue(err error) {
 	}
 }
 
-func (e Hasher) stop() {
+func (e *Hasher) stop() {
 	return
 }
 
-func getPasswordHashes(hash hash.Hash, passwords []string) []string {
+func (e *Hasher) getPasswordHashes(hash hash.Hash, passwords []string) []string {
 	var passwordHashes []string
 	for _, password := range passwords {
-		passwordHash := getPasswordHash(hash, password)
+		e.mux.Lock()
+		passwordHash := e.getPasswordHash(hash, password)
+		e.mux.Unlock()
 		passwordHashes = append(passwordHashes, passwordHash)
 	}
 
 	return passwordHashes
 }
 
-func getPasswordHash(hash hash.Hash, password string) string {
+func (e *Hasher) getPasswordHash(hash hash.Hash, password string) string {
 	io.WriteString(hash, password)
 	humanReadableHash := fmt.Sprintf("%x", hash.Sum(nil))
 	hash.Reset()
+
 	return password + ":" + humanReadableHash
 }

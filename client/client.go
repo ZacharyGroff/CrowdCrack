@@ -33,18 +33,17 @@ func NewClient(p interfaces.ConfigProvider, e *encoder.HasherFactory, l *logger.
 func (c Client) Start() {
 	c.logger.LogMessage("Starting Client...")
 
-	availableThreads := int(c.config.Threads)
 	var wg sync.WaitGroup
-	wg.Add(availableThreads)
 
 	go c.startRequester(&wg)
-	go c.startEncoders(&wg)
+	c.startEncoders(&wg)
 	go c.startSubmitter(&wg)
 
 	wg.Wait()
 }
 
 func (c Client) startRequester(wg *sync.WaitGroup) {
+	wg.Add(1)
 	err := c.requester.Start()
 	if err != nil {
 		c.logger.LogMessage(err.Error())
@@ -55,8 +54,9 @@ func (c Client) startRequester(wg *sync.WaitGroup) {
 
 func (c Client) startEncoders(wg *sync.WaitGroup) {
 	var encoderNum uint16
-	for encoderNum = 0; encoderNum < c.config.Threads; encoderNum++ {
-		c.startEncoder(encoderNum, wg)
+	for encoderNum = 0; encoderNum < c.config.Threads - 2; encoderNum++ {
+		wg.Add(1)
+		go c.startEncoder(encoderNum, wg)
 	}
 }
 
@@ -72,6 +72,7 @@ func (c Client) startEncoder(encoderNum uint16, wg *sync.WaitGroup) {
 }
 
 func (c Client) startSubmitter(wg *sync.WaitGroup) {
+	wg.Add(1)
 	err := c.submitter.Start()
 	if err != nil {
 		c.logger.LogMessage(err.Error())
