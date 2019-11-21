@@ -43,7 +43,7 @@ func (p PasswordRequester) Start() error {
 
 		err = p.processOrWait()
 		if err != nil {
-			p.updateStopQueue(err)
+			p.notifyClientErrorEncountered(err)
 			return err
 		}
 	}
@@ -52,7 +52,7 @@ func (p PasswordRequester) Start() error {
 func (p PasswordRequester) checkStopQueue() error {
 	stopReason, err := p.stopQueue.Get()
 	if err == nil {
-		err = fmt.Errorf("Requester observed updateStopQueue reason:\n\t%+v", stopReason)
+		err = fmt.Errorf("Requester observed stop reason:\n\t%+v", stopReason)
 		return err
 	}
 
@@ -170,7 +170,7 @@ func (p PasswordRequester) getPasswords() ([]string, error) {
 	return passwords, nil
 }
 
-func (p PasswordRequester) updateStopQueue(err error) {
+func (p PasswordRequester) notifyClientErrorEncountered(err error) {
 	stopReason := models.ClientStopReason{
 		Requester: err.Error(),
 		Encoder:   "",
