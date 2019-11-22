@@ -36,23 +36,23 @@ func NewPasswordRequester(p interfaces.ConfigProvider, cl *apiclient.HashApiClie
 func (p PasswordRequester) Start() error {
 	p.logger.LogMessage("Starting password requester")
 	for {
-		err := p.processOrStop()
+		err := p.checkStopQueue()
 		if err != nil {
+			return err
+		}
+
+		err = p.processOrWait()
+		if err != nil {
+			p.notifyClientErrorEncountered(err)
 			return err
 		}
 	}
 }
 
-func (p PasswordRequester) processOrStop() error {
+func (p PasswordRequester) checkStopQueue() error {
 	stopReason, err := p.stopQueue.Get()
 	if err == nil {
-		err = fmt.Errorf("Requester observed updateStopQueue reason:\n\t%+v", stopReason)
-		return err
-	}
-
-	err = p.processOrWait()
-	if err != nil {
-		p.updateStopQueue(err)
+		err = fmt.Errorf("Requester observed stop reason:\n\t%+v", stopReason)
 		return err
 	}
 
@@ -170,7 +170,7 @@ func (p PasswordRequester) getPasswords() ([]string, error) {
 	return passwords, nil
 }
 
-func (p PasswordRequester) updateStopQueue(err error) {
+func (p PasswordRequester) notifyClientErrorEncountered(err error) {
 	stopReason := models.ClientStopReason{
 		Requester: err.Error(),
 		Encoder:   "",
