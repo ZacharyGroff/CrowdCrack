@@ -24,13 +24,14 @@ var expectedPasswords = []string{
 	"hunter2",
 	"password123",
 }
+var threads = 42
 var emptyPasswords []string
 var expectedHashName = "sha256"
 var expectedHash = sha256.New()
 var successCode = 200
 var errorCode = 500
 var nilError error
-var stopQueueError = errors.New("testError")
+var testError = errors.New("testError")
 
 func setupApiClientForSuccess() mocks.MockApiClient {
 	return mocks.NewMockApiClient(successCode, successCode, successCode, expectedHashName, expectedPasswords)
@@ -59,7 +60,7 @@ func setupRequestQueueForSuccess() mocks.MockRequestQueue {
 
 func setupRequestQueueFull() mocks.MockRequestQueue {
 	hashingRequest := models.HashingRequest{}
-	return mocks.NewMockRequestQueue(nilError, hashingRequest, 10)
+	return mocks.NewMockRequestQueue(testError, hashingRequest, 10)
 }
 
 func setupStopQueueForStopReasonReturn() mocks.MockClientStopQueue {
@@ -77,7 +78,7 @@ func setupStopQueueForEmptyReturn() mocks.MockClientStopQueue {
 		Encoder:   "",
 		Submitter: "",
 	}
-	return mocks.NewMockClientStopQueue(stopReason, stopQueueError, stopQueueError)
+	return mocks.NewMockClientStopQueue(stopReason, testError, testError)
 }
 
 func setupSupportedHashes() map[string]hash.Hash {
@@ -92,6 +93,7 @@ func setupVerboseConfig() models.Config {
 	return models.Config{
 		PasswordRequestSize: 1,
 		Verbose:             true,
+		Threads:             uint16(threads),
 	}
 }
 
@@ -112,6 +114,34 @@ func setupPasswordRequestForSuccess() testObject {
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
 	stopQueue := setupStopQueueForEmptyReturn()
+	supportedHashes := setupSupportedHashes()
+	waiter := mocks.NewMockWaiter()
+	passwordRequester := PasswordRequester{
+		config:          &config,
+		client:          &apiClient,
+		logger:          &logger,
+		requestQueue:    &requestQueue,
+		stopQueue:       &stopQueue,
+		supportedHashes: supportedHashes,
+		waiter:          &waiter,
+	}
+
+	return testObject{
+		passwordRequester: &passwordRequester,
+		apiClient:         &apiClient,
+		logger:            &logger,
+		requestQueue:      &requestQueue,
+		stopQueue:         &stopQueue,
+		waiter:            &waiter,
+	}
+}
+
+func setupPasswordRequestForStopQueueMessage() testObject {
+	apiClient := setupApiClientForSuccess()
+	config := setupVerboseConfig()
+	logger := setupLogger()
+	requestQueue := setupRequestQueueForSuccess()
+	stopQueue := setupStopQueueForStopReasonReturn()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -402,7 +432,31 @@ func assertLoggerNotCalled(t *testing.T, testObject testObject) {
 	}
 }
 
-func TestPasswordRequester_Start_Error(t *testing.T) {
+func assertStopQueueGetCalled(t *testing.T, testObject testObject) {
+	expected := uint64(1)
+	actual := testObject.stopQueue.GetCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertStopQueueGetNotCalled(t *testing.T, testObject testObject) {
+	expected := uint64(0)
+	actual := testObject.stopQueue.GetCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertStopQueuePutCalledNTimes(t *testing.T, testObject testObject, n uint64) {
+	expected := n
+	actual := testObject.stopQueue.PutCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestPasswordRequester_Start_ProcessOrWait_Error(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	err := testObject.passwordRequester.Start()
 	if err == nil {
@@ -410,8 +464,40 @@ func TestPasswordRequester_Start_Error(t *testing.T) {
 	}
 }
 
-func TestPasswordRequester_Start_Error_LoggerCalled(t *testing.T) {
+func TestPasswordRequester_Start_ProcessOrWait_Error_LoggerCalled(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
+	testObject.passwordRequester.Start()
+	assertLoggerCalledOnce(t, testObject)
+}
+
+func TestPasswordRequester_Start_ProcessOrWait_Error_StopQueueGetCalled(t *testing.T) {
+	testObject := setupPasswordRequestForApiClientError()
+	testObject.passwordRequester.Start()
+	assertStopQueueGetCalled(t, testObject)
+}
+
+func TestPasswordRequester_Start_ProcessOrWait_Error_StopQueuePutCalled(t *testing.T) {
+	testObject := setupPasswordRequestForApiClientError()
+	testObject.passwordRequester.Start()
+	assertStopQueuePutCalledNTimes(t, testObject, uint64(threads - 1))
+}
+
+func TestPasswordRequester_Start_StopQueue_Error(t *testing.T) {
+	testObject := setupPasswordRequestForStopQueueMessage()
+	err := testObject.passwordRequester.Start()
+	if err == nil {
+		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestPasswordRequester_Start_StopQueue_Error_StopQueueCalled(t *testing.T) {
+	testObject := setupPasswordRequestForStopQueueMessage()
+	testObject.passwordRequester.Start()
+	assertStopQueueGetCalled(t, testObject)
+}
+
+func TestPasswordRequester_Start_StopQueue_Error_LoggerCalled(t *testing.T) {
+	testObject := setupPasswordRequestForStopQueueMessage()
 	testObject.passwordRequester.Start()
 	assertLoggerCalledOnce(t, testObject)
 }
@@ -578,6 +664,14 @@ func TestPasswordRequester_Process_GetPasswords_NoPasswordsReturned_PutNotCalled
 	testObject := setupPasswordRequestFoNoPasswordsReturned()
 	testObject.passwordRequester.process()
 	assertRequestQueuePutNotCalled(t, testObject)
+}
+
+func TestPasswordRequester_Process_RequestQueuePut_Error(t *testing.T) {
+	testObject := setupPasswordRequestForFullRequestQueue()
+	err := testObject.passwordRequester.process()
+	if err == nil {
+		t.Error("Expected error but nil returned")
+	}
 }
 
 func TestPasswordRequester_GetHash_Success(t *testing.T) {
