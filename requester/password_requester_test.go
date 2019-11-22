@@ -2,6 +2,7 @@ package requester
 
 import (
 	"crypto/sha256"
+	"errors"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"hash"
@@ -29,6 +30,7 @@ var expectedHash = sha256.New()
 var successCode = 200
 var errorCode = 500
 var nilError error
+var stopQueueError = errors.New("testError")
 
 func setupApiClientForSuccess() mocks.MockApiClient {
 	return mocks.NewMockApiClient(successCode, successCode, successCode, expectedHashName, expectedPasswords)
@@ -60,13 +62,22 @@ func setupRequestQueueFull() mocks.MockRequestQueue {
 	return mocks.NewMockRequestQueue(nilError, hashingRequest, 10)
 }
 
-func setupStopQueueForSuccess() mocks.MockClientStopQueue {
+func setupStopQueueForStopReasonReturn() mocks.MockClientStopQueue {
 	stopReason := models.ClientStopReason{
 		Requester: "",
 		Encoder:   "",
 		Submitter: "",
 	}
 	return mocks.NewMockClientStopQueue(stopReason, nilError, nilError)
+}
+
+func setupStopQueueForEmptyReturn() mocks.MockClientStopQueue {
+	stopReason := models.ClientStopReason{
+		Requester: "",
+		Encoder:   "",
+		Submitter: "",
+	}
+	return mocks.NewMockClientStopQueue(stopReason, stopQueueError, stopQueueError)
 }
 
 func setupSupportedHashes() map[string]hash.Hash {
@@ -100,7 +111,7 @@ func setupPasswordRequestForSuccess() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
-	stopQueue := setupStopQueueForSuccess()
+	stopQueue := setupStopQueueForEmptyReturn()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -128,7 +139,7 @@ func setupPasswordRequestForSuccessNonVerbose() testObject {
 	config := setupNonVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
-	stopQueue := setupStopQueueForSuccess()
+	stopQueue := setupStopQueueForEmptyReturn()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -156,7 +167,7 @@ func setupPasswordRequestForApiClientError() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
-	stopQueue := setupStopQueueForSuccess()
+	stopQueue := setupStopQueueForEmptyReturn()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -184,7 +195,7 @@ func setupPasswordRequestForGetHashNameError() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
-	stopQueue := setupStopQueueForSuccess()
+	stopQueue := setupStopQueueForEmptyReturn()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -212,7 +223,7 @@ func setupPasswordRequestForGetPasswordsError() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
-	stopQueue := setupStopQueueForSuccess()
+	stopQueue := setupStopQueueForEmptyReturn()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -240,7 +251,7 @@ func setupPasswordRequestForFullRequestQueue() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueFull()
-	stopQueue := setupStopQueueForSuccess()
+	stopQueue := setupStopQueueForEmptyReturn()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -268,7 +279,7 @@ func setupPasswordRequestFoNoSupportedHashes() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
-	stopQueue := setupStopQueueForSuccess()
+	stopQueue := setupStopQueueForEmptyReturn()
 	supportedHashes := setupNoSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
@@ -296,7 +307,7 @@ func setupPasswordRequestFoNoPasswordsReturned() testObject {
 	config := setupVerboseConfig()
 	logger := setupLogger()
 	requestQueue := setupRequestQueueForSuccess()
-	stopQueue := setupStopQueueForSuccess()
+	stopQueue := setupStopQueueForEmptyReturn()
 	supportedHashes := setupSupportedHashes()
 	waiter := mocks.NewMockWaiter()
 	passwordRequester := PasswordRequester{
