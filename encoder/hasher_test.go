@@ -12,6 +12,7 @@ import (
 )
 
 var nilError = error(nil)
+var testError = errors.New("testError")
 var verboseConfig = models.Config{Verbose: true}
 var nonVerboseConfig = models.Config{Verbose: false}
 
@@ -32,7 +33,16 @@ var hashingRequest = models.HashingRequest{
 	},
 }
 
-func setupStopQueueForSuccess() mocks.MockClientStopQueue {
+func setupStopQueueForStopReasonReturn() mocks.MockClientStopQueue {
+	stopReason := models.ClientStopReason{
+		Requester: "",
+		Encoder:   "",
+		Submitter: "",
+	}
+	return mocks.NewMockClientStopQueue(stopReason, nilError, nilError)
+}
+
+func setupStopQueueForEmptyReturn() mocks.MockClientStopQueue {
 	stopReason := models.ClientStopReason{
 		Requester: "",
 		Encoder:   "",
@@ -45,7 +55,35 @@ func setupHasherForSuccess() testObject {
 	hashSubmission := models.HashSubmission{}
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
-	mockStopQueue := setupStopQueueForSuccess()
+	mockStopQueue := setupStopQueueForEmptyReturn()
+	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
+	mockWaiter := mocks.MockWaiter{0}
+	mux := new(sync.Mutex)
+	hasher := Hasher{
+		config:          &verboseConfig,
+		logger:          &mockLogger,
+		mux:             mux,
+		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+	}
+
+	return testObject{
+		logger:          &mockLogger,
+		requestQueue:    &mockRequestQueue,
+		stopQueue:       &mockStopQueue,
+		submissionQueue: &mockSubmissionQueue,
+		waiter:          &mockWaiter,
+		hasher:          &hasher,
+	}
+}
+
+func setupHasherForStopReason() testObject {
+	hashSubmission := models.HashSubmission{}
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
+	mockStopQueue := setupStopQueueForStopReasonReturn()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	mux := new(sync.Mutex)
@@ -73,7 +111,7 @@ func setupHasherForSuccessNonVerbose() testObject {
 	hashSubmission := models.HashSubmission{}
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
-	mockStopQueue := setupStopQueueForSuccess()
+	mockStopQueue := setupStopQueueForEmptyReturn()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	mux := new(sync.Mutex)
@@ -103,7 +141,7 @@ func setupHasherForSubmissionQueueError() testObject {
 
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
-	mockStopQueue := setupStopQueueForSuccess()
+	mockStopQueue := setupStopQueueForEmptyReturn()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(submissionQueueError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	mux := new(sync.Mutex)
@@ -133,7 +171,7 @@ func setupHasherForRequestQueueError() testObject {
 
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(requestQueueError, hashingRequest, 0)
-	mockStopQueue := setupStopQueueForSuccess()
+	mockStopQueue := setupStopQueueForEmptyReturn()
 	mockSubmissionQueue := mocks.NewMockSubmissionQueue(nilError, hashSubmission, 0)
 	mockWaiter := mocks.MockWaiter{0}
 	mux := new(sync.Mutex)
@@ -175,7 +213,25 @@ func assertLoggerNotCalled(t *testing.T, testObject testObject) {
 	}
 }
 
-func TestHasher_Start_Error(t *testing.T) {
+func assertStopQueueGetCalled(t *testing.T, testObject testObject) {
+	expected := uint64(1)
+
+	actual := testObject.stopQueue.GetCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func assertStopQueueGetNotCalled(t *testing.T, testObject testObject) {
+	expected := uint64(0)
+
+	actual := testObject.stopQueue.GetCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestHasher_Start_ProcessOrSleep_Error(t *testing.T) {
 	testObject := setupHasherForSubmissionQueueError()
 
 	err := testObject.hasher.Start()
@@ -183,6 +239,26 @@ func TestHasher_Start_Error(t *testing.T) {
 	if err == nil {
 		t.Error("Expected error but nil returned")
 	}
+}
+
+func TestHasher_Start_ProcessOrSleep_Error_StopQueueNotCalled(t *testing.T) {
+	testObject := setupHasherForSubmissionQueueError()
+	testObject.hasher.Start()
+	assertStopQueueGetNotCalled(t, testObject)
+}
+
+func TestHasher_Start_StopQueue_Error(t *testing.T) {
+	testObject := setupHasherForStopReason()
+	err := testObject.hasher.Start()
+	if err == nil {
+		t.Error("Expected error but nil returned")
+	}
+}
+
+func TestHasher_Start_StopQueue_Error_StopQueueCalled(t *testing.T) {
+	testObject := setupHasherForStopReason()
+	testObject.hasher.Start()
+	assertStopQueueGetCalled(t, testObject)
 }
 
 func TestHasher_ProcessOrSleep_Process_Success(t *testing.T) {
