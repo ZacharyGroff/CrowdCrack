@@ -11,10 +11,11 @@ import (
 	"testing"
 )
 
+var threads = uint16(43)
 var nilError = error(nil)
 var testError = errors.New("testError")
-var verboseConfig = models.Config{Verbose: true}
-var nonVerboseConfig = models.Config{Verbose: false}
+var verboseConfig = models.Config{Verbose: true, Threads: threads}
+var nonVerboseConfig = models.Config{Verbose: false, Threads: threads}
 
 type testObject struct {
 	logger          *mocks.MockLogger
@@ -231,6 +232,15 @@ func assertStopQueueGetNotCalled(t *testing.T, testObject testObject) {
 	}
 }
 
+func assertStopQueuePutCalledNTimes(t *testing.T, testObject testObject, n uint64) {
+	expected := n
+
+	actual := testObject.stopQueue.PutCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
 func TestHasher_Start_ProcessOrSleep_Error(t *testing.T) {
 	testObject := setupHasherForSubmissionQueueError()
 
@@ -373,6 +383,12 @@ func TestHasher_GetHashSubmission_CorrectResults(t *testing.T) {
 	if !reflect.DeepEqual(expected, actual) {
 		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
 	}
+}
+
+func TestHasher_UpdateStopQueue_StopQueuePutCalls(t *testing.T) {
+	testObject := setupHasherForSuccess()
+	testObject.hasher.updateStopQueue(testError)
+	assertStopQueuePutCalledNTimes(t, testObject, uint64(threads) - 1)
 }
 
 func TestHasher_GetPasswordHashes_CorrectResults(t *testing.T) {
