@@ -3,6 +3,7 @@ package queue
 import (
 	"errors"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
@@ -10,7 +11,7 @@ type HashingSubmissionQueue struct {
 	submissions chan models.HashSubmission
 }
 
-func NewHashingSubmissionQueue() *HashingSubmissionQueue {
+func NewHashingSubmissionQueue() interfaces.SubmissionQueue {
 	s := make(chan models.HashSubmission, 100)
 	return &HashingSubmissionQueue{s}
 }

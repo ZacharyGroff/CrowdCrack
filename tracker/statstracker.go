@@ -1,5 +1,7 @@
 package tracker
 
+import "github.com/ZacharyGroff/CrowdCrack/interfaces"
+
 type StatsTracker struct {
 	passwordsSent     uint64
 	hashesComputed    uint64
@@ -7,7 +9,7 @@ type StatsTracker struct {
 	hashMatchAttempts uint64
 }
 
-func NewStatsTracker() *StatsTracker {
+func NewStatsTracker() interfaces.Tracker {
 	return &StatsTracker{
 		passwordsSent:     0,
 		hashesComputed:    0,

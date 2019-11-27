@@ -16,10 +16,9 @@ type ConcurrentLogger struct {
 	mux    sync.Mutex
 }
 
-func NewConcurrentLogger(p interfaces.ConfigProvider) *ConcurrentLogger {
-	c := p.GetConfig()
+func NewConcurrentLogger(p interfaces.ConfigProvider) interfaces.Logger {
 	return &ConcurrentLogger{
-		config: c,
+		config: p.GetConfig(),
 	}
 }
 

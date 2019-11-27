@@ -17,7 +17,7 @@ type PasswordRequester struct {
 	waiter          interfaces.Waiter
 }
 
-func NewPasswordRequester(p interfaces.ConfigProvider, cl interfaces.ApiClient, l interfaces.Logger, r interfaces.RequestQueue, c interfaces.ClientStopQueue, w interfaces.Waiter) *PasswordRequester {
+func NewPasswordRequester(p interfaces.ConfigProvider, cl interfaces.ApiClient, l interfaces.Logger, r interfaces.RequestQueue, c interfaces.ClientStopQueue, w interfaces.Waiter) interfaces.Requester {
 	return &PasswordRequester{
 		config:          p.GetConfig(),
 		client:          cl,

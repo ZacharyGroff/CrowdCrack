@@ -12,7 +12,7 @@ type WordlistReader struct {
 	passwords interfaces.Queue
 }
 
-func NewWordlistReader(p interfaces.ConfigProvider, q interfaces.Queue) *WordlistReader {
+func NewWordlistReader(p interfaces.ConfigProvider, q interfaces.Queue) interfaces.PasswordReader {
 	return &WordlistReader{
 		config:    p.GetConfig(),
 		passwords: q,

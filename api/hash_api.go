@@ -16,7 +16,7 @@ type HashApi struct {
 	Tracker   interfaces.Tracker
 }
 
-func NewHashApi(p interfaces.ConfigProvider, h interfaces.FlushingQueue, q interfaces.Queue, l interfaces.Logger, t interfaces.Tracker) *HashApi {
+func NewHashApi(p interfaces.ConfigProvider, h interfaces.FlushingQueue, q interfaces.Queue, l interfaces.Logger, t interfaces.Tracker) interfaces.Api {
 	return &HashApi{
 		Config:    p.GetConfig(),
 		Hashes:    h,

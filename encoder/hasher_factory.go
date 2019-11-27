@@ -16,7 +16,7 @@ type HasherFactory struct {
 	waiter          interfaces.Waiter
 }
 
-func NewHasherFactory(p interfaces.ConfigProvider, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, c interfaces.ClientStopQueue, w interfaces.Waiter) *HasherFactory {
+func NewHasherFactory(p interfaces.ConfigProvider, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, c interfaces.ClientStopQueue, w interfaces.Waiter) interfaces.EncoderFactory {
 	m := new(sync.Mutex)
 	return &HasherFactory{
 		config:          p.GetConfig(),

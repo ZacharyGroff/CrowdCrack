@@ -15,7 +15,7 @@ type StatsObserver struct {
 	stop      chan bool
 }
 
-func NewStatsObserver(l interfaces.Logger, t interfaces.Tracker, p interfaces.ConfigProvider) *StatsObserver {
+func NewStatsObserver(l interfaces.Logger, t interfaces.Tracker, p interfaces.ConfigProvider) interfaces.Observer {
 	return &StatsObserver{
 		logger:    l,
 		tracker:   t,
