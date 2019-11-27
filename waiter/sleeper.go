@@ -3,7 +3,6 @@ package waiter
 import (
 	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"runtime"
 	"strings"
 	"time"
@@ -15,7 +14,7 @@ type Sleeper struct {
 	isLogging     bool
 }
 
-func NewSleeper(u interfaces.ConfigProvider, l *logger.ConcurrentLogger) Sleeper {
+func NewSleeper(u interfaces.ConfigProvider, l interfaces.Logger) Sleeper {
 	config := u.GetConfig()
 	sleepDuration := time.Duration(5) * time.Second
 	return Sleeper{

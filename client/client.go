@@ -2,12 +2,8 @@ package client
 
 import (
 	"fmt"
-	"github.com/ZacharyGroff/CrowdCrack/encoder"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/requester"
-	"github.com/ZacharyGroff/CrowdCrack/submitter"
 	"sync"
 )
 
@@ -19,7 +15,7 @@ type Client struct {
 	submitter      interfaces.Submitter
 }
 
-func NewClient(p interfaces.ConfigProvider, e *encoder.HasherFactory, l *logger.ConcurrentLogger, r *requester.PasswordRequester, s *submitter.HashSubmitter) Client {
+func NewClient(p interfaces.ConfigProvider, e interfaces.EncoderFactory, l interfaces.Logger, r interfaces.Requester, s interfaces.Submitter) Client {
 	c := p.GetConfig()
 	return Client{
 		config:         c,
