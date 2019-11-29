@@ -1,7 +1,6 @@
 package queue
 
 import (
-	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"testing"
 )
@@ -21,8 +20,8 @@ func setupConfig() models.Config {
 
 func setupClientStopReasonQueue() *ClientStopReasonQueue {
 	config := setupConfig()
-	configProvider := mocks.NewMockConfigProvider(&config)
-	return NewClientStopReasonQueue(&configProvider)
+	stopReasons := make(chan models.ClientStopReason, config.Threads - 1)
+	return &ClientStopReasonQueue{stopReasons: stopReasons}
 }
 
 func fillQueueToCapacity(c *ClientStopReasonQueue) {
