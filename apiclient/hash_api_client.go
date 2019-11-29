@@ -14,7 +14,7 @@ type HashApiClient struct {
 	config *models.Config
 }
 
-func NewHashApiClient(p interfaces.ConfigProvider) *HashApiClient {
+func NewHashApiClient(p interfaces.ConfigProvider) interfaces.ApiClient {
 	c := p.GetConfig()
 	return &HashApiClient{c}
 }

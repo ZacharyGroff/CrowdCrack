@@ -3,10 +3,6 @@ package verifier
 import (
 	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
-	"github.com/ZacharyGroff/CrowdCrack/queue"
-	"github.com/ZacharyGroff/CrowdCrack/reader"
-	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"strings"
 )
 
@@ -18,7 +14,7 @@ type HashVerifier struct {
 	userProvidedHashes map[string]bool
 }
 
-func NewHashVerifier(q *queue.HashQueue, r *reader.HashlistReader, l *logger.ConcurrentLogger, t *tracker.StatsTracker) *HashVerifier {
+func NewHashVerifier(q interfaces.FlushingQueue, r interfaces.HashReader, l interfaces.Logger, t interfaces.Tracker) interfaces.Verifier {
 	return &HashVerifier{
 		computedHashes: q,
 		hashReader:     r,

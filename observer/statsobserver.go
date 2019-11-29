@@ -3,9 +3,7 @@ package observer
 import (
 	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"time"
 )
 
@@ -17,16 +15,13 @@ type StatsObserver struct {
 	stop      chan bool
 }
 
-func NewStatsObserver(l *logger.ConcurrentLogger, t *tracker.StatsTracker, p interfaces.ConfigProvider) *StatsObserver {
-	c := p.GetConfig()
-	start := time.Now()
-	stop := make(chan bool)
+func NewStatsObserver(l interfaces.Logger, t interfaces.Tracker, p interfaces.ConfigProvider) interfaces.Observer {
 	return &StatsObserver{
 		logger:    l,
 		tracker:   t,
-		config:    c,
-		startTime: start,
-		stop:      stop,
+		config:    p.GetConfig(),
+		startTime: time.Now(),
+		stop:      make(chan bool),
 	}
 }
 

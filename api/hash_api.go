@@ -4,10 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/queue"
-	"github.com/ZacharyGroff/CrowdCrack/tracker"
 	"net/http"
 )
 
@@ -19,10 +16,9 @@ type HashApi struct {
 	Tracker   interfaces.Tracker
 }
 
-func NewHashApi(p interfaces.ConfigProvider, h *queue.HashQueue, q *queue.PasswordQueue, l *logger.ConcurrentLogger, t *tracker.StatsTracker) *HashApi {
-	c := p.GetConfig()
+func NewHashApi(p interfaces.ConfigProvider, h interfaces.FlushingQueue, q interfaces.Queue, l interfaces.Logger, t interfaces.Tracker) interfaces.Api {
 	return &HashApi{
-		Config:    c,
+		Config:    p.GetConfig(),
 		Hashes:    h,
 		Logger:    l,
 		Passwords: q,

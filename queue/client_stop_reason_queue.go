@@ -11,7 +11,7 @@ type ClientStopReasonQueue struct {
 	stopReasons chan models.ClientStopReason
 }
 
-func NewClientStopReasonQueue(p interfaces.ConfigProvider) *ClientStopReasonQueue {
+func NewClientStopReasonQueue(p interfaces.ConfigProvider) interfaces.ClientStopQueue {
 	config := p.GetConfig()
 	stopReasons := getStopReasonsChannel(config)
 	return &ClientStopReasonQueue{

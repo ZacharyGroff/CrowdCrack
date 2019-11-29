@@ -19,7 +19,7 @@ type Hasher struct {
 	waiter          interfaces.Waiter
 }
 
-func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, cl interfaces.ClientStopQueue, w interfaces.Waiter, m *sync.Mutex) *Hasher {
+func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, cl interfaces.ClientStopQueue, w interfaces.Waiter, m *sync.Mutex) interfaces.Encoder {
 	return &Hasher{
 		config:          c,
 		logger:          l,

@@ -12,7 +12,7 @@ type PasswordQueue struct {
 	config    *models.Config
 }
 
-func NewPasswordQueue(p interfaces.ConfigProvider) *PasswordQueue {
+func NewPasswordQueue(p interfaces.ConfigProvider) interfaces.Queue {
 	config := p.GetConfig()
 	passwords := make(chan string, config.PasswordQueueBuffer)
 	return &PasswordQueue{passwords, config}

@@ -1,12 +1,7 @@
 package server
 
 import (
-	"github.com/ZacharyGroff/CrowdCrack/api"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
-	"github.com/ZacharyGroff/CrowdCrack/observer"
-	"github.com/ZacharyGroff/CrowdCrack/reader"
-	"github.com/ZacharyGroff/CrowdCrack/verifier"
 )
 
 type Server struct {
@@ -17,7 +12,7 @@ type Server struct {
 	Verifier interfaces.Verifier
 }
 
-func NewServer(a *api.HashApi, l *logger.ConcurrentLogger, r *reader.WordlistReader, o *observer.StatsObserver, v *verifier.HashVerifier) Server {
+func NewServer(a interfaces.Api, l interfaces.Logger, r interfaces.PasswordReader, o interfaces.Observer, v interfaces.Verifier) Server {
 	return Server{
 		Api:      a,
 		Logger:   l,

@@ -14,7 +14,7 @@ type HashQueue struct {
 	config models.Config
 }
 
-func NewHashQueue(p interfaces.ConfigProvider) *HashQueue {
+func NewHashQueue(p interfaces.ConfigProvider) interfaces.FlushingQueue {
 	config := p.GetConfig()
 	hashes := make(chan string, config.HashQueueBuffer)
 	return &HashQueue{hashes, *config}

@@ -11,7 +11,7 @@ type HashlistReader struct {
 	config *models.Config
 }
 
-func NewHashlistReader(p interfaces.ConfigProvider) *HashlistReader {
+func NewHashlistReader(p interfaces.ConfigProvider) interfaces.HashReader {
 	c := p.GetConfig()
 	return &HashlistReader{c}
 }

@@ -2,10 +2,7 @@ package encoder
 
 import (
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
-	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/queue"
-	"github.com/ZacharyGroff/CrowdCrack/waiter"
 	"sync"
 )
 
@@ -19,7 +16,7 @@ type HasherFactory struct {
 	waiter          interfaces.Waiter
 }
 
-func NewHasherFactory(p interfaces.ConfigProvider, l *logger.ConcurrentLogger, r *queue.HashingRequestQueue, s *queue.HashingSubmissionQueue, c *queue.ClientStopReasonQueue, w waiter.Sleeper) *HasherFactory {
+func NewHasherFactory(p interfaces.ConfigProvider, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue, c interfaces.ClientStopQueue, w interfaces.Waiter) interfaces.EncoderFactory {
 	m := new(sync.Mutex)
 	return &HasherFactory{
 		config:          p.GetConfig(),

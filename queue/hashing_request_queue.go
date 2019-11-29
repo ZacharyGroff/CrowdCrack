@@ -3,6 +3,7 @@ package queue
 import (
 	"errors"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 )
 
@@ -10,7 +11,7 @@ type HashingRequestQueue struct {
 	requests chan models.HashingRequest
 }
 
-func NewHashingRequestQueue() *HashingRequestQueue {
+func NewHashingRequestQueue() interfaces.RequestQueue {
 	r := make(chan models.HashingRequest, 10)
 	return &HashingRequestQueue{r}
 }

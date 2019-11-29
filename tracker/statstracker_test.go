@@ -4,10 +4,19 @@ import (
 	"testing"
 )
 
+func setupStatsTracker() StatsTracker {
+	return StatsTracker{
+		passwordsSent:     0,
+		hashesComputed:    0,
+		hashesCracked:     0,
+		hashMatchAttempts: 0,
+	}
+}
+
 func TestStatsTracker_TrackPasswordsSent_CorrectValue(t *testing.T) {
 	expected := uint64(42)
 
-	statsTracker := NewStatsTracker()
+	statsTracker := setupStatsTracker()
 	statsTracker.TrackPasswordsSent(expected)
 
 	actual := statsTracker.passwordsSent
@@ -19,7 +28,7 @@ func TestStatsTracker_TrackPasswordsSent_CorrectValue(t *testing.T) {
 func TestStatsTracker_TrackHashesComputed_CorrectValue(t *testing.T) {
 	expected := uint64(42)
 
-	statsTracker := NewStatsTracker()
+	statsTracker := setupStatsTracker()
 	statsTracker.TrackHashesComputed(expected)
 
 	actual := statsTracker.hashesComputed
@@ -31,7 +40,7 @@ func TestStatsTracker_TrackHashesComputed_CorrectValue(t *testing.T) {
 func TestStatsTracker_TrackHashesCracked_CorrectValue(t *testing.T) {
 	expected := uint64(42)
 
-	statsTracker := NewStatsTracker()
+	statsTracker := setupStatsTracker()
 	statsTracker.TrackHashesCracked(expected)
 
 	actual := statsTracker.hashesCracked
@@ -43,7 +52,7 @@ func TestStatsTracker_TrackHashesCracked_CorrectValue(t *testing.T) {
 func TestStatsTracker_TrackHashMatchAttempt_CorrectValue(t *testing.T) {
 	expected := uint64(1)
 
-	statsTracker := NewStatsTracker()
+	statsTracker := setupStatsTracker()
 	statsTracker.TrackHashMatchAttempt()
 
 	actual := statsTracker.hashMatchAttempts

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"github.com/ZacharyGroff/CrowdCrack/queue"
 	"os"
 )
 
@@ -13,9 +12,11 @@ type WordlistReader struct {
 	passwords interfaces.Queue
 }
 
-func NewWordlistReader(p interfaces.ConfigProvider, q *queue.PasswordQueue) *WordlistReader {
-	c := p.GetConfig()
-	return &WordlistReader{c, q}
+func NewWordlistReader(p interfaces.ConfigProvider, q interfaces.Queue) interfaces.PasswordReader {
+	return &WordlistReader{
+		config:    p.GetConfig(),
+		passwords: q,
+	}
 }
 
 func (w WordlistReader) LoadPasswords() error {
