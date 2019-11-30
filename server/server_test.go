@@ -2,12 +2,13 @@ package server
 
 import (
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
+	"reflect"
 	"testing"
 	"time"
 )
 
 type testObject struct {
-	server             *Server
+	server             Server
 	mockApi            *mocks.MockApi
 	mockLogger         *mocks.MockLogger
 	mockPasswordReader *mocks.MockPasswordReader
@@ -24,7 +25,7 @@ func setupServerForNoError() testObject {
 
 	server := Server{&mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
 
-	return testObject{&server, &mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
+	return testObject{server, &mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
 }
 
 func setupServerForPasswordReaderError() testObject {
@@ -35,7 +36,7 @@ func setupServerForPasswordReaderError() testObject {
 	mockVerifier := mocks.MockVerifier{0}
 	server := Server{&mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
 
-	return testObject{&server, &mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
+	return testObject{server, &mockApi, &mockLogger, &mockPasswordReader, &mockObserver, &mockVerifier}
 }
 
 func assertLoadPasswordsCalled(t *testing.T, p *mocks.MockPasswordReader) {
@@ -125,6 +126,16 @@ func assertError(t *testing.T, testObject testObject) {
 func recoverAndAssertError(t *testing.T, testObject testObject) {
 	recover()
 	assertError(t, testObject)
+}
+
+func TestNewServer(t *testing.T) {
+	testObject := setupServerForNoError()
+	expected := testObject.server
+
+	actual := NewServer(expected.Api, expected.Logger, expected.Reader, expected.Observer, expected.Verifier)
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
+	}
 }
 
 func TestServer_Start_Success(t *testing.T) {

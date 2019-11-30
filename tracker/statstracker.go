@@ -1,6 +1,8 @@
 package tracker
 
-import "github.com/ZacharyGroff/CrowdCrack/interfaces"
+import (
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
+)
 
 type StatsTracker struct {
 	passwordsSent     uint64

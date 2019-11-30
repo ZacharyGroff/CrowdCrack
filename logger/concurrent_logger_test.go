@@ -3,12 +3,41 @@ package logger
 import (
 	"bufio"
 	"fmt"
+	"github.com/ZacharyGroff/CrowdCrack/interfaces"
+	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
 	"strings"
 	"testing"
 	"time"
 )
+
+type testObject struct{
+	configProvider *mocks.MockConfigProvider
+	logger interfaces.Logger
+}
+
+func assertConfigProviderCalled(t *testing.T, testObject testObject) {
+	expected := uint64(1)
+
+	actual := testObject.configProvider.GetConfigCalls
+	if expected != actual {
+		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestNewConcurrentLogger(t *testing.T) {
+	config := models.Config{LogPath: "testPath"}
+	configProvider := mocks.NewMockConfigProvider(&config)
+	logger := NewConcurrentLogger(&configProvider)
+
+	testObject := testObject{
+		configProvider: &configProvider,
+		logger:         logger,
+	}
+
+	assertConfigProviderCalled(t, testObject)
+}
 
 func TestConcurrentLogger_LogMessage_Error(t *testing.T) {
 	config := models.Config{LogPath: ""}

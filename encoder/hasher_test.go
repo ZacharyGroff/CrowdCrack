@@ -241,6 +241,16 @@ func assertStopQueuePutCalledNTimes(t *testing.T, testObject testObject, n uint6
 	}
 }
 
+func TestNewHasher(t *testing.T) {
+	testObject := setupHasherForSuccess()
+	expected := testObject.hasher
+
+	actual := NewHasher(expected.config, expected.logger, expected.requestQueue, expected.submissionQueue, expected.stopQueue, expected.waiter, expected.mux)
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
+	}
+}
+
 func TestHasher_Start_ProcessOrSleep_Error(t *testing.T) {
 	testObject := setupHasherForSubmissionQueueError()
 

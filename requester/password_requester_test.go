@@ -456,6 +456,18 @@ func assertStopQueuePutCalledNTimes(t *testing.T, testObject testObject, n uint6
 	}
 }
 
+func TestNewPasswordRequester(t *testing.T) {
+	testObject := setupPasswordRequestForSuccess()
+	expected := testObject.passwordRequester
+
+	configProvider := mocks.NewMockConfigProvider(expected.config)
+
+	actual := NewPasswordRequester(&configProvider, expected.client, expected.logger, expected.requestQueue, expected.stopQueue, expected.waiter)
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
+	}
+}
+
 func TestPasswordRequester_Start_ProcessOrWait_Error(t *testing.T) {
 	testObject := setupPasswordRequestForApiClientError()
 	err := testObject.passwordRequester.Start()
