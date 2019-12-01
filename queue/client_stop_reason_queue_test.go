@@ -5,17 +5,10 @@ import (
 	"testing"
 )
 
-var threads = uint16(3)
 var stopReason = models.ClientStopReason{
 	Requester:"",
 	Encoder:"testReason",
 	Submitter:"",
-}
-
-func setupConfig() models.Config {
-	return models.Config{
-		Threads: threads,
-	}
 }
 
 func setupClientStopReasonQueue() *ClientStopReasonQueue {
@@ -29,6 +22,12 @@ func fillQueueToCapacity(c *ClientStopReasonQueue) {
 	for i = 0; i < threads - 1; i++ {
 		c.Put(stopReason)
 	}
+}
+
+func TestNewClientStopReasonQueue(t *testing.T) {
+	configProvider := setupConfigProvider()
+	NewClientStopReasonQueue(&configProvider)
+	assertConfigProviderCalled(t, configProvider)
 }
 
 func TestNewClientStopReasonQueue_CorrectChannelBufferSize(t *testing.T) {

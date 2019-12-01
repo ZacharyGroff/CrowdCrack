@@ -4,6 +4,12 @@ import (
 	"testing"
 )
 
+func TestNewPasswordQueue(t *testing.T) {
+	configProvider := setupConfigProvider()
+	NewPasswordQueue(&configProvider)
+	assertConfigProviderCalled(t, configProvider)
+}
+
 func TestPasswordQueue_Put_Success(t *testing.T) {
 	q := PasswordQueue{passwords: make(chan string, 1)}
 	password := "hunter2"
