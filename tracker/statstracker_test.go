@@ -1,15 +1,24 @@
 package tracker
 
 import (
+	"reflect"
 	"testing"
 )
 
-func setupStatsTracker() StatsTracker {
-	return StatsTracker{
+func setupStatsTracker() *StatsTracker {
+	return &StatsTracker{
 		passwordsSent:     0,
 		hashesComputed:    0,
 		hashesCracked:     0,
 		hashMatchAttempts: 0,
+	}
+}
+
+func TestNewStatsTracker(t *testing.T) {
+	expected := setupStatsTracker()
+	actual := NewStatsTracker()
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
 	}
 }
 

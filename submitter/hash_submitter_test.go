@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"reflect"
 	"testing"
 )
 
@@ -246,6 +247,18 @@ func assertStopQueuePutCalledNTimes(t *testing.T, testObject testObject, n uint6
 	actual := testObject.mockStopQueue.PutCalls
 	if expected != actual {
 		t.Errorf("Expected %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestNewHashSubmitter(t *testing.T) {
+	testObject := setupHashSubmitterForNoError()
+	expected := testObject.hashSubmitter
+
+	configProvider := mocks.NewMockConfigProvider(expected.config)
+
+	actual := NewHashSubmitter(&configProvider, expected.client, expected.logger, expected.submissionQueue, expected.stopQueue, expected.waiter)
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
 	}
 }
 

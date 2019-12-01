@@ -1,10 +1,8 @@
-package reader
+package queue
 
 import (
-	"bufio"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"os"
 	"testing"
 )
 
@@ -28,15 +26,4 @@ func assertConfigProviderCalled(t *testing.T, m mocks.MockConfigProvider) {
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
-}
-
-func setupFile(testPath string, lines []string) {
-	file, _ := os.Create(testPath)
-	defer file.Close()
-	writer := bufio.NewWriter(file)
-	for _, line := range lines {
-		writer.WriteString(line)
-		writer.WriteString("\n")
-	}
-	writer.Flush()
 }

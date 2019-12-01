@@ -7,6 +7,12 @@ import (
 	"testing"
 )
 
+func TestNewHashQueue(t *testing.T) {
+	configProvider := setupConfigProvider()
+	NewHashQueue(&configProvider)
+	assertConfigProviderCalled(t, configProvider)
+}
+
 func TestHashQueue_PutHash_Success(t *testing.T) {
 	q := HashQueue{hashes: make(chan string, 1)}
 	hash := "2AAE6C35C94FCFB415DBE95F408B9CE91EE846ED"

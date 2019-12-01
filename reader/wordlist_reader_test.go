@@ -7,6 +7,13 @@ import (
 	"testing"
 )
 
+func TestNewWordlistReader(t *testing.T) {
+	configProvider := setupConfigProvider()
+	mockQueue := mocks.MockQueue{}
+	NewWordlistReader(&configProvider, &mockQueue)
+	assertConfigProviderCalled(t, configProvider)
+}
+
 func TestWordlistReader_LoadPasswords_Success(t *testing.T) {
 	testPath := "wordlist_test.txt"
 	passwords := []string{"password1"}

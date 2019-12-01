@@ -47,6 +47,28 @@ func setupHashVerifierForSuccess() testObject {
 	}
 }
 
+func setupHashVerifierForNilHashMap() testObject {
+	mockFlushingQueue := mocks.NewMockFlushingQueue(fakePasswordHash, nilError)
+	mockHashReader := mocks.NewMockHashReader(hashMap, nilError)
+	mockLogger := mocks.NewMockLogger(nilError)
+	mockTracker := mocks.NewMockTracker(42)
+	hashVerifier := HashVerifier{
+		computedHashes:     &mockFlushingQueue,
+		hashReader:         &mockHashReader,
+		logger:             &mockLogger,
+		tracker:            &mockTracker,
+		userProvidedHashes: nil,
+	}
+
+	return testObject{
+		hashVerifier:      &hashVerifier,
+		mockFlushingQueue: &mockFlushingQueue,
+		mockHashReader:    &mockHashReader,
+		mockLogger:        &mockLogger,
+		mockTracker:       &mockTracker,
+	}
+}
+
 func setupHashVerifierForNoMatch() testObject {
 	mockFlushingQueue := mocks.NewMockFlushingQueue(fakePasswordHash, nilError)
 	mockHashReader := mocks.NewMockHashReader(nil, nilError)
@@ -126,6 +148,16 @@ func assertTrackerTrackHashMatchAttemptCalled(t *testing.T, m *mocks.MockTracker
 func recoverAndAssertError(t *testing.T) {
 	if r := recover(); r == nil {
 		t.Error("Expected error but nil returned.")
+	}
+}
+
+func TestNewHashVerifier(t *testing.T) {
+	testObject := setupHashVerifierForNilHashMap()
+	expected := testObject.hashVerifier
+
+	actual := NewHashVerifier(testObject.mockFlushingQueue, testObject.mockHashReader, testObject.mockLogger, testObject.mockTracker)
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
 	}
 }
 
