@@ -6,6 +6,12 @@ import (
 	"testing"
 )
 
+func TestNewHashlistReader(t *testing.T) {
+	configProvider := setupConfigProvider()
+	NewHashlistReader(&configProvider)
+	assertConfigProviderCalled(t, configProvider)
+}
+
 func TestHashlistReader_GetHashes_Success(t *testing.T) {
 	testPath := "hashlist_test.txt"
 	hashes := []string{
