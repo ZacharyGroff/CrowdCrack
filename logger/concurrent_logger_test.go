@@ -19,7 +19,7 @@ type testObject struct{
 }
 
 func setupConcurrentLoggerForSuccess() testObject {
-	config := models.Config{LogPath: "testPath"}
+	config := models.Config{LogPath: "test_log.txt"}
 	configProvider := mocks.NewMockConfigProvider(&config)
 	logger := ConcurrentLogger{
 		config: &config,
@@ -27,6 +27,7 @@ func setupConcurrentLoggerForSuccess() testObject {
 	}
 
 	return testObject{
+		config:         &config,
 		configProvider: &configProvider,
 		logger:         logger,
 	}
