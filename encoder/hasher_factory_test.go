@@ -3,6 +3,7 @@ package encoder
 import (
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"reflect"
 	"sync"
 	"testing"
 )
@@ -23,12 +24,12 @@ func setupConfigProvider() mocks.MockConfigProvider {
 	return mocks.NewMockConfigProvider(&config)
 }
 
-func setupHashFactory() factoryTestObject {
+func setupHasherFactory() factoryTestObject {
 	config := setupConfig()
 	HasherFactory := HasherFactory{
 		config:          &config,
 		logger:          &mocks.MockLogger{},
-		mux:             &sync.Mutex{},
+		mux:             new(sync.Mutex),
 		requestQueue:    &mocks.MockRequestQueue{},
 		stopQueue:       &mocks.MockClientStopQueue{},
 		submissionQueue: &mocks.MockSubmissionQueue{},
@@ -55,3 +56,21 @@ func TestNewHasherFactory(t *testing.T) {
 	assertConfigProviderCalled(t, &configProvider)
 }
 
+func TestHasherFactory_GetNewEncoder(t *testing.T) {
+	testObject := setupHasherFactory()
+	hasherFactory := testObject.hasherFactory
+	expected := &Hasher{
+		config:          hasherFactory.config,
+		logger:          hasherFactory.logger,
+		mux:             hasherFactory.mux,
+		requestQueue:    hasherFactory.requestQueue,
+		stopQueue:       hasherFactory.stopQueue,
+		submissionQueue: hasherFactory.submissionQueue,
+		waiter:          hasherFactory.waiter,
+	}
+
+	actual := testObject.hasherFactory.GetNewEncoder()
+	if !reflect.DeepEqual(expected, actual) {
+		t.Errorf("Expected: %+v\nActual: %+v\n", expected, actual)
+	}
+}
