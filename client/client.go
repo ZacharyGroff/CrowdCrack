@@ -36,6 +36,7 @@ func (c Client) Start() {
 	go c.startSubmitter(&wg)
 
 	wg.Wait()
+	c.Stop()
 }
 
 func (c Client) startRequester(wg *sync.WaitGroup) {
