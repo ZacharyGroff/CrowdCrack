@@ -10,6 +10,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
+	"github.com/ZacharyGroff/CrowdCrack/flusher"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/observer"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
@@ -36,7 +37,8 @@ func InitializeClient() client.Client {
 	apiClient := apiclient.NewHashApiClient(configProvider)
 	interfacesRequester := requester.NewPasswordRequester(configProvider, apiClient, interfacesLogger, requestQueue, clientStopQueue, interfacesWaiter)
 	interfacesSubmitter := submitter.NewHashSubmitter(configProvider, apiClient, interfacesLogger, submissionQueue, clientStopQueue, interfacesWaiter)
-	clientClient := client.NewClient(configProvider, encoderFactory, interfacesLogger, interfacesRequester, interfacesSubmitter)
+	interfacesFlusher := flusher.NewClientQueueFlusher(configProvider, requestQueue, submissionQueue)
+	clientClient := client.NewClient(configProvider, encoderFactory, interfacesLogger, interfacesRequester, interfacesSubmitter, interfacesFlusher)
 	return clientClient
 }
 

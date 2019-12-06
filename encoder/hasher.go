@@ -42,7 +42,6 @@ func (e *Hasher) Start() error {
 
 		stopReason, err := e.stopQueue.Get()
 		if err == nil {
-			e.stop()
 			err = fmt.Errorf("Hasher observed updateStopQueue reason:\n\t%+v", stopReason)
 			return err
 		}
@@ -95,10 +94,6 @@ func (e *Hasher) updateStopQueue(err error) {
 	for i = 0; i < e.config.Threads - 1; i++ {
 		e.stopQueue.Put(stopReason)
 	}
-}
-
-func (e *Hasher) stop() {
-	return
 }
 
 func (e *Hasher) getPasswordHashes(hash hash.Hash, passwords []string) []string {
