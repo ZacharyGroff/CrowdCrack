@@ -84,6 +84,9 @@ func (c Client) Stop() {
 	c.logger.LogMessage("Stopping Client...")
 	if c.flusher.NeedsFlushed() {
 		c.logger.LogMessage("Flushing queues...")
-		c.flusher.Flush()
+		err := c.flusher.Flush()
+		if err != nil {
+			panic(err)
+		}
 	}
 }
