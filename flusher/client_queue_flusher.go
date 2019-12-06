@@ -54,13 +54,13 @@ func (c *ClientQueueFlusher) flushRequestQueue() error {
 	defer file.Close()
 
 	writer := bufio.NewWriter(file)
-	hashes, err := c.emptyRequestQueue()
+	requests, err := c.emptyRequestQueue()
 	if err != nil {
 		return err
 	}
 
-	for _, hash := range hashes {
-		fmt.Fprintln(writer, hash)
+	for _, request := range requests {
+		fmt.Fprintln(writer, request)
 	}
 
 	return writer.Flush()
@@ -89,13 +89,13 @@ func (c *ClientQueueFlusher) flushSubmissionQueue() error {
 	defer file.Close()
 
 	writer := bufio.NewWriter(file)
-	hashes, err := c.emptySubmissionQueue()
+	submissions, err := c.emptySubmissionQueue()
 	if err != nil {
 		return err
 	}
 
-	for _, hash := range hashes {
-		fmt.Fprintln(writer, hash)
+	for _, submission := range submissions {
+		fmt.Fprintln(writer, submission)
 	}
 
 	return writer.Flush()
