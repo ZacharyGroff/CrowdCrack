@@ -1,8 +1,11 @@
 package flusher
 
 import (
+	"bufio"
+	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"os"
 )
 
 type ClientQueueFlusher struct {
@@ -26,6 +29,88 @@ func (c *ClientQueueFlusher) NeedsFlushed() bool {
 }
 
 func (c *ClientQueueFlusher) Flush() error {
-	panic("implement me")
+	if c.requestQueue.Size() > 0 {
+		err := c.flushRequestQueue()
+		if err != nil {
+			return err
+		}
+	}
+
+	if c.submissionQueue.Size() > 0 {
+		err := c.flushSubmissionQueue()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
+func (c *ClientQueueFlusher) flushRequestQueue() error {
+	file, err := os.OpenFile("request_queue_overflow.txt", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+	hashes, err := c.emptyRequestQueue()
+	if err != nil {
+		return err
+	}
+
+	for _, hash := range hashes {
+		fmt.Fprintln(writer, hash)
+	}
+
+	return writer.Flush()
+}
+
+func (c *ClientQueueFlusher) emptyRequestQueue() ([]models.HashingRequest, error) {
+	initialSize := c.requestQueue.Size()
+	var hashingRequests []models.HashingRequest
+	for i := 0; i < initialSize; i++ {
+		hashingRequest, err := c.requestQueue.Get()
+		if err != nil {
+			return nil, err
+		}
+
+		hashingRequests = append(hashingRequests, hashingRequest)
+	}
+
+	return hashingRequests, nil
+}
+
+func (c *ClientQueueFlusher) flushSubmissionQueue() error {
+	file, err := os.OpenFile("submission_queue_overflow.txt", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+	hashes, err := c.emptySubmissionQueue()
+	if err != nil {
+		return err
+	}
+
+	for _, hash := range hashes {
+		fmt.Fprintln(writer, hash)
+	}
+
+	return writer.Flush()
+}
+
+func (c *ClientQueueFlusher) emptySubmissionQueue() ([]models.HashSubmission, error) {
+	var hashSubmissions []models.HashSubmission
+	for i := 0; i < c.submissionQueue.Size(); i++ {
+		hashSubmission, err := c.submissionQueue.Get()
+		if err != nil {
+			return nil, err
+		}
+
+		hashSubmissions = append(hashSubmissions, hashSubmission)
+	}
+
+	return hashSubmissions, nil
+}
