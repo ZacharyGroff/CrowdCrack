@@ -10,15 +10,13 @@ import (
 
 type ClientQueueFlusher struct {
 	config          *models.Config
-	logger          interfaces.Logger
 	requestQueue    interfaces.RequestQueue
 	submissionQueue interfaces.SubmissionQueue
 }
 
-func NewClientQueueFlusher(p interfaces.ConfigProvider, l interfaces.Logger, r interfaces.RequestQueue, s interfaces.SubmissionQueue) interfaces.Flusher {
+func NewClientQueueFlusher(p interfaces.ConfigProvider, r interfaces.RequestQueue, s interfaces.SubmissionQueue) interfaces.Flusher {
 	return &ClientQueueFlusher{
 		config:          p.GetConfig(),
-		logger:          l,
 		requestQueue:    r,
 		submissionQueue: s,
 	}

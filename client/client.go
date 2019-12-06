@@ -10,16 +10,18 @@ import (
 type Client struct {
 	config         *models.Config
 	encoderFactory interfaces.EncoderFactory
+	flusher        interfaces.Flusher
 	logger         interfaces.Logger
 	requester      interfaces.Requester
 	submitter      interfaces.Submitter
 }
 
-func NewClient(p interfaces.ConfigProvider, e interfaces.EncoderFactory, l interfaces.Logger, r interfaces.Requester, s interfaces.Submitter) Client {
+func NewClient(p interfaces.ConfigProvider, e interfaces.EncoderFactory, l interfaces.Logger, r interfaces.Requester, s interfaces.Submitter, f interfaces.Flusher) Client {
 	c := p.GetConfig()
 	return Client{
 		config:         c,
 		encoderFactory: e,
+		flusher:        f,
 		logger:         l,
 		requester:      r,
 		submitter:      s,
@@ -80,4 +82,8 @@ func (c Client) startSubmitter(wg *sync.WaitGroup) {
 
 func (c Client) Stop() {
 	c.logger.LogMessage("Stopping Client...")
+	if c.flusher.NeedsFlushed() {
+		c.logger.LogMessage("Flushing queues...")
+		c.flusher.Flush()
+	}
 }

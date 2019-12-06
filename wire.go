@@ -7,6 +7,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/apiclient"
 	"github.com/ZacharyGroff/CrowdCrack/client"
 	"github.com/ZacharyGroff/CrowdCrack/encoder"
+	"github.com/ZacharyGroff/CrowdCrack/flusher"
 	"github.com/ZacharyGroff/CrowdCrack/logger"
 	"github.com/ZacharyGroff/CrowdCrack/observer"
 	"github.com/ZacharyGroff/CrowdCrack/queue"
@@ -22,7 +23,7 @@ import (
 )
 
 func InitializeClient() client.Client {
-	wire.Build(client.NewClient, encoder.NewHasherFactory, requester.NewPasswordRequester, submitter.NewHashSubmitter, apiclient.NewHashApiClient, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, waiter.NewSleeper, logger.NewConcurrentLogger, queue.NewClientStopReasonQueue, userinput.NewCmdLineConfigProvider)
+	wire.Build(client.NewClient, encoder.NewHasherFactory, requester.NewPasswordRequester, submitter.NewHashSubmitter, apiclient.NewHashApiClient, flusher.NewClientQueueFlusher, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, waiter.NewSleeper, logger.NewConcurrentLogger, queue.NewClientStopReasonQueue, userinput.NewCmdLineConfigProvider)
 	return client.Client{}
 }
 
