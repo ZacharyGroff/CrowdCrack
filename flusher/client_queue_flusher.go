@@ -1,10 +1,10 @@
 package flusher
 
 import (
-	"bufio"
-	"fmt"
+	"encoding/json"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"io/ioutil"
 	"os"
 )
 
@@ -45,23 +45,35 @@ func (c *ClientQueueFlusher) Flush() error {
 }
 
 func (c *ClientQueueFlusher) flushRequestQueue() error {
-	file, err := os.OpenFile("request_queue_overflow.txt", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	writer := bufio.NewWriter(file)
 	requests, err := c.emptyRequestQueue()
 	if err != nil {
 		return err
 	}
 
-	for _, request := range requests {
-		fmt.Fprintln(writer, request)
+	requestsJson, err := json.Marshal(&requests)
+	if err != nil {
+		return err
 	}
 
-	return writer.Flush()
+	err = ioutil.WriteFile("request_queue_backup.json", requestsJson, os.ModePerm)
+
+	return err
+}
+
+func (c *ClientQueueFlusher) flushSubmissionQueue() error {
+	submissions, err := c.emptySubmissionQueue()
+	if err != nil {
+		return err
+	}
+
+	submissionsJson, err := json.Marshal(&submissions)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile("submission_queue_backup.json", submissionsJson, os.ModePerm)
+
+	return err
 }
 
 func (c *ClientQueueFlusher) emptyRequestQueue() ([]models.HashingRequest, error) {
@@ -77,26 +89,6 @@ func (c *ClientQueueFlusher) emptyRequestQueue() ([]models.HashingRequest, error
 	}
 
 	return hashingRequests, nil
-}
-
-func (c *ClientQueueFlusher) flushSubmissionQueue() error {
-	file, err := os.OpenFile("submission_queue_overflow.txt", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	writer := bufio.NewWriter(file)
-	submissions, err := c.emptySubmissionQueue()
-	if err != nil {
-		return err
-	}
-
-	for _, submission := range submissions {
-		fmt.Fprintln(writer, submission)
-	}
-
-	return writer.Flush()
 }
 
 func (c *ClientQueueFlusher) emptySubmissionQueue() ([]models.HashSubmission, error) {
