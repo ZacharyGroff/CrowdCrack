@@ -31,7 +31,9 @@ func parseCmdLine() *models.Config {
 	logPathPtr := flag.String("log-path", "crowdcrack_log.txt", "path to log file")
 	passwordQueueBufferPtr := flag.Uint64("password-buffer", 1000000, "buffer size for password queue")
 	passwordRequestSizePtr := flag.Uint64("request-size", 100000, "number of passwords to request per request")
+	requestBackupPath := flag.String("request-backup", "request-backup.json", "file to flush request queue to upon unexpected client shutdown")
 	serverAddressPtr := flag.String("saddress", "http://localhost:2725", "address of server to connect to")
+	submissionBackupPath := flag.String("submission-backup", "submission-backup.json", "file to flush submission queue to upon unexpected client shutdown")
 	threadsPtr := flag.Uint("threads", 3, "number of threads to be made available")
 	verbosePtr := flag.Bool("verbose", true, "print log messages to console")
 	wordListPathPtr := flag.String("wordlist-path", "wordlist.txt", "path to wordlist file")
@@ -50,7 +52,9 @@ func parseCmdLine() *models.Config {
 		LogPath:                  *logPathPtr,
 		PasswordQueueBuffer:      *passwordQueueBufferPtr,
 		PasswordRequestSize:      *passwordRequestSizePtr,
+		RequestBackupPath:        *requestBackupPath,
 		ServerAddress:            *serverAddressPtr,
+		SubmissionBackupPath:     *submissionBackupPath,
 		Threads:                  uint16(*threadsPtr),
 		Verbose:                  *verbosePtr,
 		WordlistPath:             *wordListPathPtr,
