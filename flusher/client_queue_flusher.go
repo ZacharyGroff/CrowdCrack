@@ -55,7 +55,7 @@ func (c *ClientQueueFlusher) flushRequestQueue() error {
 		return err
 	}
 
-	err = ioutil.WriteFile("request_queue_backup.json", requestsJson, os.ModePerm)
+	err = ioutil.WriteFile(c.config.RequestBackupPath, requestsJson, os.ModePerm)
 
 	return err
 }
@@ -71,7 +71,7 @@ func (c *ClientQueueFlusher) flushSubmissionQueue() error {
 		return err
 	}
 
-	err = ioutil.WriteFile("submission_queue_backup.json", submissionsJson, os.ModePerm)
+	err = ioutil.WriteFile(c.config.SubmissionBackupPath, submissionsJson, os.ModePerm)
 
 	return err
 }

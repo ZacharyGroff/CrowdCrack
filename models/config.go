@@ -11,7 +11,9 @@ type Config struct {
 	LogFrequencyInSeconds    uint64
 	PasswordQueueBuffer      uint64
 	PasswordRequestSize      uint64
+	RequestBackupPath        string
 	ServerAddress            string
+	SubmissionBackupPath     string
 	Threads                  uint16
 	Verbose                  bool
 	WordlistPath             string
