@@ -17,7 +17,7 @@ var testError = errors.New("testError")
 var verboseConfig = models.Config{Verbose: true, Threads: threads}
 var nonVerboseConfig = models.Config{Verbose: false, Threads: threads}
 
-type testObject struct {
+type hasherTestObject struct {
 	logger          *mocks.MockLogger
 	requestQueue    *mocks.MockRequestQueue
 	stopQueue       *mocks.MockClientStopQueue
@@ -52,7 +52,7 @@ func setupStopQueueForEmptyReturn() mocks.MockClientStopQueue {
 	return mocks.NewMockClientStopQueue(stopReason, nilError, nilError)
 }
 
-func setupHasherForSuccess() testObject {
+func setupHasherForSuccess() hasherTestObject {
 	hashSubmission := models.HashSubmission{}
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
@@ -70,7 +70,7 @@ func setupHasherForSuccess() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject{
+	return hasherTestObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
@@ -80,7 +80,7 @@ func setupHasherForSuccess() testObject {
 	}
 }
 
-func setupHasherForStopReason() testObject {
+func setupHasherForStopReason() hasherTestObject {
 	hashSubmission := models.HashSubmission{}
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
@@ -98,7 +98,7 @@ func setupHasherForStopReason() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject{
+	return hasherTestObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
@@ -108,7 +108,7 @@ func setupHasherForStopReason() testObject {
 	}
 }
 
-func setupHasherForSuccessNonVerbose() testObject {
+func setupHasherForSuccessNonVerbose() hasherTestObject {
 	hashSubmission := models.HashSubmission{}
 	mockLogger := mocks.NewMockLogger(nilError)
 	mockRequestQueue := mocks.NewMockRequestQueue(nilError, hashingRequest, 0)
@@ -126,7 +126,7 @@ func setupHasherForSuccessNonVerbose() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject{
+	return hasherTestObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
@@ -136,7 +136,7 @@ func setupHasherForSuccessNonVerbose() testObject {
 	}
 }
 
-func setupHasherForSubmissionQueueError() testObject {
+func setupHasherForSubmissionQueueError() hasherTestObject {
 	submissionQueueError := errors.New("test error")
 	hashSubmission := models.HashSubmission{}
 
@@ -156,7 +156,7 @@ func setupHasherForSubmissionQueueError() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject{
+	return hasherTestObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
@@ -166,7 +166,7 @@ func setupHasherForSubmissionQueueError() testObject {
 	}
 }
 
-func setupHasherForRequestQueueError() testObject {
+func setupHasherForRequestQueueError() hasherTestObject {
 	requestQueueError := errors.New("test error")
 	hashSubmission := models.HashSubmission{}
 
@@ -186,7 +186,7 @@ func setupHasherForRequestQueueError() testObject {
 		waiter:          &mockWaiter,
 	}
 
-	return testObject{
+	return hasherTestObject{
 		logger:          &mockLogger,
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
@@ -196,7 +196,7 @@ func setupHasherForRequestQueueError() testObject {
 	}
 }
 
-func assertLoggerCalled(t *testing.T, testObject testObject) {
+func assertLoggerCalled(t *testing.T, testObject hasherTestObject) {
 	expected := uint64(1)
 
 	actual := testObject.logger.LogMessageCalls
@@ -205,7 +205,7 @@ func assertLoggerCalled(t *testing.T, testObject testObject) {
 	}
 }
 
-func assertLoggerNotCalled(t *testing.T, testObject testObject) {
+func assertLoggerNotCalled(t *testing.T, testObject hasherTestObject) {
 	expected := uint64(0)
 
 	actual := testObject.logger.LogMessageCalls
@@ -214,7 +214,7 @@ func assertLoggerNotCalled(t *testing.T, testObject testObject) {
 	}
 }
 
-func assertStopQueueGetCalled(t *testing.T, testObject testObject) {
+func assertStopQueueGetCalled(t *testing.T, testObject hasherTestObject) {
 	expected := uint64(1)
 
 	actual := testObject.stopQueue.GetCalls
@@ -223,7 +223,7 @@ func assertStopQueueGetCalled(t *testing.T, testObject testObject) {
 	}
 }
 
-func assertStopQueueGetNotCalled(t *testing.T, testObject testObject) {
+func assertStopQueueGetNotCalled(t *testing.T, testObject hasherTestObject) {
 	expected := uint64(0)
 
 	actual := testObject.stopQueue.GetCalls
@@ -232,7 +232,7 @@ func assertStopQueueGetNotCalled(t *testing.T, testObject testObject) {
 	}
 }
 
-func assertStopQueuePutCalledNTimes(t *testing.T, testObject testObject, n uint64) {
+func assertStopQueuePutCalledNTimes(t *testing.T, testObject hasherTestObject, n uint64) {
 	expected := n
 
 	actual := testObject.stopQueue.PutCalls

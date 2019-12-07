@@ -31,7 +31,6 @@ func (h HashSubmitter) Start() error {
 	for {
 		stopReason, err := h.stopQueue.Get()
 		if err == nil {
-			h.stop()
 			err = fmt.Errorf("Submitter observed updateStopQueue reason:\n\t%+v", stopReason)
 			return err
 		}
@@ -92,8 +91,4 @@ func (h HashSubmitter) updateStopQueue(err error) {
 	for i = 0; i < h.config.Threads - 1; i++ {
 		h.stopQueue.Put(stopReason)
 	}
-}
-
-func (h HashSubmitter) stop() {
-	return
 }
