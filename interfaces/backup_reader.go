@@ -1,6 +1,6 @@
 package interfaces
 
-type BackupReaderInterface interface {
+type BackupReader interface {
 	BackupsExist() bool
 	LoadBackups() error
 }
