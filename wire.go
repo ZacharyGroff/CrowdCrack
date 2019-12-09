@@ -23,7 +23,7 @@ import (
 )
 
 func InitializeClient() client.Client {
-	wire.Build(client.NewClient, encoder.NewHasherFactory, requester.NewPasswordRequester, submitter.NewHashSubmitter, apiclient.NewHashApiClient, flusher.NewClientQueueFlusher, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, waiter.NewSleeper, logger.NewConcurrentLogger, queue.NewClientStopReasonQueue, userinput.NewCmdLineConfigProvider)
+	wire.Build(client.NewClient, encoder.NewHasherFactory, requester.NewPasswordRequester, submitter.NewHashSubmitter, apiclient.NewHashApiClient, flusher.NewClientQueueFlusher, reader.NewClientBackupReader, queue.NewHashingRequestQueue, queue.NewHashingSubmissionQueue, waiter.NewSleeper, logger.NewConcurrentLogger, queue.NewClientStopReasonQueue, userinput.NewCmdLineConfigProvider)
 	return client.Client{}
 }
 
