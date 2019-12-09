@@ -47,10 +47,14 @@ func (c Client) Start() {
 
 func (c Client) loadBackupsIfExisting() {
 	if c.backupReader.BackupsExist() {
+		c.logger.LogMessage("Attempting to load backup files...")
+
 		err := c.backupReader.LoadBackups()
 		if err != nil {
 			panic(err)
 		}
+
+		c.logger.LogMessage("Backup files loaded")
 	}
 }
 
