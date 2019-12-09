@@ -5,7 +5,7 @@ import (
 )
 
 type HashingRequest struct {
-	Hash      hash.Hash
-	HashName  string
-	Passwords []string
+	Hash      hash.Hash `json:"hash"`
+	HashName  string    `json:"hashName"`
+	Passwords []string  `json:"passwords"`
 }
