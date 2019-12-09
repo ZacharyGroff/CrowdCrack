@@ -28,9 +28,10 @@ import (
 
 func InitializeClient() client.Client {
 	configProvider := userinput.NewCmdLineConfigProvider()
-	interfacesLogger := logger.NewConcurrentLogger(configProvider)
 	requestQueue := queue.NewHashingRequestQueue()
 	submissionQueue := queue.NewHashingSubmissionQueue()
+	backupReader := reader.NewClientBackupReader(configProvider, requestQueue, submissionQueue)
+	interfacesLogger := logger.NewConcurrentLogger(configProvider)
 	clientStopQueue := queue.NewClientStopReasonQueue(configProvider)
 	interfacesWaiter := waiter.NewSleeper(configProvider, interfacesLogger)
 	encoderFactory := encoder.NewHasherFactory(configProvider, interfacesLogger, requestQueue, submissionQueue, clientStopQueue, interfacesWaiter)
@@ -38,7 +39,7 @@ func InitializeClient() client.Client {
 	interfacesRequester := requester.NewPasswordRequester(configProvider, apiClient, interfacesLogger, requestQueue, clientStopQueue, interfacesWaiter)
 	interfacesSubmitter := submitter.NewHashSubmitter(configProvider, apiClient, interfacesLogger, submissionQueue, clientStopQueue, interfacesWaiter)
 	interfacesFlusher := flusher.NewClientQueueFlusher(configProvider, requestQueue, submissionQueue)
-	clientClient := client.NewClient(configProvider, encoderFactory, interfacesLogger, interfacesRequester, interfacesSubmitter, interfacesFlusher)
+	clientClient := client.NewClient(backupReader, configProvider, encoderFactory, interfacesLogger, interfacesRequester, interfacesSubmitter, interfacesFlusher)
 	return clientClient
 }
 

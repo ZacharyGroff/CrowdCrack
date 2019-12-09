@@ -8,6 +8,7 @@ import (
 )
 
 type Client struct {
+	backupReader   interfaces.BackupReader
 	config         *models.Config
 	encoderFactory interfaces.EncoderFactory
 	flusher        interfaces.Flusher
@@ -16,9 +17,10 @@ type Client struct {
 	submitter      interfaces.Submitter
 }
 
-func NewClient(p interfaces.ConfigProvider, e interfaces.EncoderFactory, l interfaces.Logger, r interfaces.Requester, s interfaces.Submitter, f interfaces.Flusher) Client {
+func NewClient(b interfaces.BackupReader, p interfaces.ConfigProvider, e interfaces.EncoderFactory, l interfaces.Logger, r interfaces.Requester, s interfaces.Submitter, f interfaces.Flusher) Client {
 	c := p.GetConfig()
 	return Client{
+		backupReader:   b,
 		config:         c,
 		encoderFactory: e,
 		flusher:        f,
@@ -31,6 +33,8 @@ func NewClient(p interfaces.ConfigProvider, e interfaces.EncoderFactory, l inter
 func (c Client) Start() {
 	c.logger.LogMessage("Starting Client...")
 
+	c.loadBackupsIfExisting()
+
 	var wg sync.WaitGroup
 
 	go c.startRequester(&wg)
@@ -39,6 +43,19 @@ func (c Client) Start() {
 
 	wg.Wait()
 	c.Stop()
+}
+
+func (c Client) loadBackupsIfExisting() {
+	if c.backupReader.BackupsExist() {
+		c.logger.LogMessage("Attempting to load backup files...")
+
+		err := c.backupReader.LoadBackups()
+		if err != nil {
+			panic(err)
+		}
+
+		c.logger.LogMessage("Backup files loaded")
+	}
 }
 
 func (c Client) startRequester(wg *sync.WaitGroup) {
