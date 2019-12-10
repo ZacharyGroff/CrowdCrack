@@ -2,16 +2,24 @@ package reader
 
 import (
 	"bufio"
+	"errors"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
 	"testing"
 )
 
+var nilError = error(nil)
+var testError = errors.New("test error")
+
+var requestBackupPath = "test_request_backup.json"
+var submissionBackupPath = "test_submission_backup.json"
 var threads = uint16(3)
 
 func setupConfig() models.Config {
 	return models.Config{
+		RequestBackupPath: requestBackupPath,
+		SubmissionBackupPath: submissionBackupPath,
 		Threads: threads,
 	}
 }
