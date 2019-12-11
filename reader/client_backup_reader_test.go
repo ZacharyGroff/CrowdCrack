@@ -5,6 +5,8 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
+	"os"
+	"testing"
 )
 
 var hash = sha256.New()
@@ -63,5 +65,48 @@ func setupClientBackupReader() clientBackupReaderTestObject {
 		clientBackupReader: clientBackupReader,
 		requestQueue:       &requestQueue,
 		submissionQueue:    &submissionQueue,
+	}
+}
+
+func TestClientBackupReader_BackupsExist_True_OneBackupExists(t *testing.T) {
+	expected := true
+
+	testObject := setupClientBackupReader()
+	lines := []string{"test"}
+	setupFile(testObject.clientBackupReader.config.RequestBackupPath, lines)
+
+	actual := testObject.clientBackupReader.BackupsExist()
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
+	}
+
+	os.Remove(testObject.clientBackupReader.config.RequestBackupPath)
+}
+
+func TestClientBackupReader_BackupsExist_True_AllBackupsExist(t *testing.T) {
+	expected := true
+
+	testObject := setupClientBackupReader()
+	lines := []string{"test"}
+	setupFile(testObject.clientBackupReader.config.RequestBackupPath, lines)
+	setupFile(testObject.clientBackupReader.config.SubmissionBackupPath, lines)
+
+	actual := testObject.clientBackupReader.BackupsExist()
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
+	}
+
+	os.Remove(testObject.clientBackupReader.config.RequestBackupPath)
+	os.Remove(testObject.clientBackupReader.config.SubmissionBackupPath)
+}
+
+func TestClientBackupReader_BackupsExist_False(t *testing.T) {
+	expected := false
+
+	testObject := setupClientBackupReader()
+
+	actual := testObject.clientBackupReader.BackupsExist()
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
 }
