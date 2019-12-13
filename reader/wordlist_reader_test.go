@@ -3,7 +3,6 @@ package reader
 import (
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"os"
 	"testing"
 )
 
@@ -17,7 +16,9 @@ func TestNewWordlistReader(t *testing.T) {
 func TestWordlistReader_LoadPasswords_Success(t *testing.T) {
 	testPath := "wordlist_test.txt"
 	passwords := []string{"password1"}
+
 	setupFile(testPath, passwords)
+	defer cleanupFile(testPath)
 
 	config := models.Config{WordlistPath: testPath}
 	queue := mocks.MockQueue{PutCalls: 0}
@@ -28,8 +29,6 @@ func TestWordlistReader_LoadPasswords_Success(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
-
-	os.Remove(testPath)
 }
 
 func TestWordlistReader_LoadPasswords_Error(t *testing.T) {
@@ -51,7 +50,9 @@ func TestLoadPasswordsPutNoCalls(t *testing.T) {
 
 	testPath := "wordlist_test.txt"
 	passwords := []string{}
+
 	setupFile(testPath, passwords)
+	defer cleanupFile(testPath)
 
 	config := models.Config{WordlistPath: testPath}
 	queue := mocks.MockQueue{PutCalls: 0}
@@ -63,8 +64,6 @@ func TestLoadPasswordsPutNoCalls(t *testing.T) {
 	if actual != expected {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
-
-	os.Remove(testPath)
 }
 
 func TestWordlistReader_LoadPasswords_MultiplePutCalls(t *testing.T) {
@@ -72,7 +71,9 @@ func TestWordlistReader_LoadPasswords_MultiplePutCalls(t *testing.T) {
 
 	testPath := "wordlist_test.txt"
 	passwords := []string{"password1", "password2"}
+
 	setupFile(testPath, passwords)
+	defer cleanupFile(testPath)
 
 	config := models.Config{WordlistPath: testPath}
 	queue := mocks.MockQueue{PutCalls: 0}
@@ -84,6 +85,4 @@ func TestWordlistReader_LoadPasswords_MultiplePutCalls(t *testing.T) {
 	if actual != expected {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
 	}
-
-	os.Remove(testPath)
 }

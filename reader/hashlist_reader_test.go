@@ -2,7 +2,6 @@ package reader
 
 import (
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"os"
 	"testing"
 )
 
@@ -19,7 +18,9 @@ func TestHashlistReader_GetHashes_Success(t *testing.T) {
 		"ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
 		"4339b2e3c470e9822e1c4f1caa6b6f3ef044d3701e35df7ff9735470e9aa014c",
 	}
+
 	setupFile(testPath, hashes)
+	defer cleanupFile(testPath)
 
 	config := models.Config{HashlistPath: testPath}
 	reader := HashlistReader{&config}
@@ -28,8 +29,6 @@ func TestHashlistReader_GetHashes_Success(t *testing.T) {
 	if err != nil {
 		t.Errorf("Unexpected error returned: %s\n", err.Error())
 	}
-
-	os.Remove(testPath)
 }
 
 func TestHashlistReader_GetHashes_Error(t *testing.T) {
@@ -51,7 +50,9 @@ func TestHashlistReader_GetHashes_CorrectResults(t *testing.T) {
 		"ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
 		"4339b2e3c470e9822e1c4f1caa6b6f3ef044d3701e35df7ff9735470e9aa014c",
 	}
+
 	setupFile(testPath, expected)
+	defer cleanupFile(testPath)
 
 	config := models.Config{HashlistPath: testPath}
 	reader := HashlistReader{&config}
@@ -62,6 +63,4 @@ func TestHashlistReader_GetHashes_CorrectResults(t *testing.T) {
 			t.Errorf("Expected: %s to be in map: %+v\n", hash, actual)
 		}
 	}
-
-	os.Remove(testPath)
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/ZacharyGroff/CrowdCrack/mocks"
 	"github.com/ZacharyGroff/CrowdCrack/models"
-	"os"
 	"testing"
 )
 
@@ -99,31 +98,30 @@ func TestClientBackupReader_BackupsExist_True_OneBackupExists(t *testing.T) {
 
 	testObject := setupClientBackupReader()
 	lines := []string{"test"}
-	setupFile(testObject.clientBackupReader.config.RequestBackupPath, lines)
+
+	setupFile(requestBackupPath, lines)
+	defer cleanupFile(requestBackupPath)
 
 	actual := testObject.clientBackupReader.BackupsExist()
 	if expected != actual {
 		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
-
-	os.Remove(testObject.clientBackupReader.config.RequestBackupPath)
 }
 
 func TestClientBackupReader_BackupsExist_True_AllBackupsExist(t *testing.T) {
 	expected := true
 
 	testObject := setupClientBackupReader()
-	lines := []string{"test"}
-	setupFile(testObject.clientBackupReader.config.RequestBackupPath, lines)
-	setupFile(testObject.clientBackupReader.config.SubmissionBackupPath, lines)
+	paths := []string{requestBackupPath, submissionBackupPath}
+	lines := [][]string{{"test"}, {"test"}}
+
+	setupFiles(paths, lines)
+	defer cleanupFiles(paths)
 
 	actual := testObject.clientBackupReader.BackupsExist()
 	if expected != actual {
 		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
 	}
-
-	os.Remove(testObject.clientBackupReader.config.RequestBackupPath)
-	os.Remove(testObject.clientBackupReader.config.SubmissionBackupPath)
 }
 
 func TestClientBackupReader_BackupsExist_False(t *testing.T) {
@@ -140,9 +138,11 @@ func TestClientBackupReader_BackupsExist_False(t *testing.T) {
 func TestClientBackupReader_LoadBackups_BackupsLoadedReturnsNil(t *testing.T) {
 	testObject := setupClientBackupReader()
 
-	lines := []string{"test"}
-	setupFile(testObject.clientBackupReader.config.RequestBackupPath, lines)
-	setupFile(testObject.clientBackupReader.config.SubmissionBackupPath, lines)
+	paths := []string{requestBackupPath, submissionBackupPath}
+	lines := [][]string{{"test"}, {"test"}}
+
+	setupFiles(paths, lines)
+	defer cleanupFiles(paths)
 
 	err := testObject.clientBackupReader.LoadBackups()
 	if err != nil {
@@ -155,14 +155,13 @@ func TestClientBackupReader_LoadBackups_RequestQueuePutCalled(t *testing.T) {
 
 	hashingRequests := getHashingRequestsAsString()
 	lines := []string{hashingRequests}
-
 	expected := uint64(len(lines))
-	setupFile(testObject.clientBackupReader.config.RequestBackupPath, lines)
+
+	setupFile(requestBackupPath, lines)
+	defer cleanupFile(requestBackupPath)
 
 	testObject.clientBackupReader.LoadBackups()
 	assertRequestQueuePutCalledNTimes(t, testObject.requestQueue, expected)
-
-	os.Remove(testObject.clientBackupReader.config.RequestBackupPath)
 }
 
 func TestClientBackupReader_LoadBackups_SubmissionQueuePutCalled(t *testing.T) {
@@ -170,14 +169,13 @@ func TestClientBackupReader_LoadBackups_SubmissionQueuePutCalled(t *testing.T) {
 
 	hashSubmissions := getHashSubmissionsAsString()
 	lines := []string{hashSubmissions}
-
 	expected := uint64(len(lines))
-	setupFile(testObject.clientBackupReader.config.SubmissionBackupPath, lines)
+
+	setupFile(submissionBackupPath, lines)
+	defer cleanupFile(submissionBackupPath)
 
 	testObject.clientBackupReader.LoadBackups()
 	assertSubmissionQueuePutCalledNTimes(t, testObject.submissionQueue, expected)
-
-	os.Remove(testObject.clientBackupReader.config.SubmissionBackupPath)
 }
 
 func TestClientBackupReader_LoadBackups_NoBackupsReturnsNilError(t *testing.T) {

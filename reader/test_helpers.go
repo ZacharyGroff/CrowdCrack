@@ -38,13 +38,29 @@ func assertConfigProviderCalled(t *testing.T, m mocks.MockConfigProvider) {
 	}
 }
 
-func setupFile(testPath string, lines []string) {
+func setupFiles(testPaths []string, linesForFiles [][]string) {
+	for i, _ := range testPaths {
+		setupFile(testPaths[i], linesForFiles[i])
+	}
+}
+
+func setupFile(testPath string, linesForFile []string) {
 	file, _ := os.Create(testPath)
 	defer file.Close()
 	writer := bufio.NewWriter(file)
-	for _, line := range lines {
+	for _, line := range linesForFile {
 		writer.WriteString(line)
 		writer.WriteString("\n")
 	}
 	writer.Flush()
+}
+
+func cleanupFiles(paths []string) {
+	for _, path := range paths {
+		cleanupFile(path)
+	}
+}
+
+func cleanupFile(path string) {
+	os.Remove(path)
 }
