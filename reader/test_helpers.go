@@ -12,15 +12,19 @@ import (
 var nilError = error(nil)
 var testError = errors.New("test error")
 
+var hashlistPath = "hashlist_test.txt"
 var requestBackupPath = "test_request_backup.json"
 var submissionBackupPath = "test_submission_backup.json"
+var wordlistPath = "wordlist_test.txt"
 var threads = uint16(3)
 
 func setupConfig() models.Config {
 	return models.Config{
+		HashlistPath: hashlistPath,
 		RequestBackupPath: requestBackupPath,
 		SubmissionBackupPath: submissionBackupPath,
 		Threads: threads,
+		WordlistPath: wordlistPath,
 	}
 }
 
