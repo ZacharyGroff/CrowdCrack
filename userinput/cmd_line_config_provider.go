@@ -41,6 +41,9 @@ func parseCmdLine() *models.Config {
 
 	flag.Parse()
 
+	validateUint16(*apiPortPtr, "ApiPort")
+	validateUint16(*threadsPtr, "Threads")
+
 	return &models.Config{
 		ApiPort:                  uint16(*apiPortPtr),
 		ComputedHashOverflowPath: *computedHashOverFlowPathPtr,
@@ -58,6 +61,14 @@ func parseCmdLine() *models.Config {
 		Threads:                  uint16(*threadsPtr),
 		Verbose:                  *verbosePtr,
 		WordlistPath:             *wordListPathPtr,
+	}
+}
+
+func validateUint16(configValue uint, configValueName string) {
+	maxUint16 := uint(1<<16 - 1)
+	if configValue > maxUint16 {
+		err := fmt.Errorf("value: %d given for %s is outside the range of acceptable values (0, %d)", configValue, configValueName, maxUint16)
+		panic(err)
 	}
 }
 
