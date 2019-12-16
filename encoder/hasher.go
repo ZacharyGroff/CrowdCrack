@@ -16,6 +16,7 @@ type Hasher struct {
 	requestQueue    interfaces.RequestQueue
 	stopQueue       interfaces.ClientStopQueue
 	submissionQueue interfaces.SubmissionQueue
+	supportedHashes map[string]hash.Hash
 	waiter          interfaces.Waiter
 }
 
@@ -27,6 +28,7 @@ func NewHasher(c *models.Config, l interfaces.Logger, r interfaces.RequestQueue,
 		requestQueue:    r,
 		stopQueue:       cl,
 		submissionQueue: s,
+		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          w,
 	}
 }
@@ -63,6 +65,9 @@ func (e *Hasher) processOrSleep() error {
 }
 
 func (e *Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error {
+	if hashingRequest.Hash == nil {
+		e.inflateHashingRequest(&hashingRequest)
+	}
 	hashSubmission := e.getHashSubmission(hashingRequest)
 	if e.config.Verbose {
 		numResults := len(hashSubmission.Results)
@@ -76,6 +81,10 @@ func (e *Hasher) handleHashingRequest(hashingRequest models.HashingRequest) erro
 	}
 
 	return nil
+}
+
+func (e *Hasher) inflateHashingRequest(hashingRequest *models.HashingRequest) {
+	hashingRequest.Hash = e.supportedHashes[hashingRequest.HashName]
 }
 
 func (e *Hasher) getHashSubmission(hashingRequest models.HashingRequest) models.HashSubmission {
