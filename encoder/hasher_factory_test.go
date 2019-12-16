@@ -66,6 +66,7 @@ func TestHasherFactory_GetNewEncoder(t *testing.T) {
 		requestQueue:    hasherFactory.requestQueue,
 		stopQueue:       hasherFactory.stopQueue,
 		submissionQueue: hasherFactory.submissionQueue,
+		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          hasherFactory.waiter,
 	}
 
