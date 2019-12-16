@@ -65,7 +65,7 @@ func (e *Hasher) processOrSleep() error {
 }
 
 func (e *Hasher) handleHashingRequest(hashingRequest models.HashingRequest) error {
-	if hashingRequest.Hash == nil {
+	if e.requestRequiresInflation(hashingRequest) {
 		e.inflateHashingRequest(&hashingRequest)
 	}
 	hashSubmission := e.getHashSubmission(hashingRequest)
@@ -81,6 +81,10 @@ func (e *Hasher) handleHashingRequest(hashingRequest models.HashingRequest) erro
 	}
 
 	return nil
+}
+
+func (e *Hasher) requestRequiresInflation(hashingRequest models.HashingRequest) bool {
+	return hashingRequest.Hash == nil
 }
 
 func (e *Hasher) inflateHashingRequest(hashingRequest *models.HashingRequest) {

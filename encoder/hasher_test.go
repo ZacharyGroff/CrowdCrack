@@ -375,6 +375,38 @@ func TestHasher_HandleHashingRequest_SubmissionQueueError_PutCalled(t *testing.T
 	}
 }
 
+func TestHasher_RequestRequiresInflation_True(t *testing.T) {
+	expected := true
+	request := models.HashingRequest{
+		Hash:      nil,
+		HashName:  "sha256",
+		Passwords: nil,
+	}
+
+	testObject := setupHasherForSuccess()
+	actual := testObject.hasher.requestRequiresInflation(request)
+
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
+	}
+}
+
+func TestHasher_RequestRequiresInflation_False(t *testing.T) {
+	expected := false
+	request := models.HashingRequest{
+		Hash:      sha256.New(),
+		HashName:  "sha256",
+		Passwords: nil,
+	}
+
+	testObject := setupHasherForSuccess()
+	actual := testObject.hasher.requestRequiresInflation(request)
+
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
+	}
+}
+
 func TestHasher_InflateHashingRequest_CorrectResult(t *testing.T) {
 	request := models.HashingRequest{
 		Hash:      nil,
