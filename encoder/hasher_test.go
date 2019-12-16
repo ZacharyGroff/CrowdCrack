@@ -34,6 +34,12 @@ var hashingRequest = models.HashingRequest{
 	},
 }
 
+var requestRequiringInflation = models.HashingRequest{
+		Hash:      nil,
+		HashName:  "sha256",
+		Passwords: nil,
+}
+
 func setupStopQueueForStopReasonReturn() mocks.MockClientStopQueue {
 	stopReason := models.ClientStopReason{
 		Requester: "",
@@ -67,6 +73,7 @@ func setupHasherForSuccess() hasherTestObject {
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
+		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          &mockWaiter,
 	}
 
@@ -95,6 +102,7 @@ func setupHasherForStopReason() hasherTestObject {
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
+		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          &mockWaiter,
 	}
 
@@ -123,6 +131,7 @@ func setupHasherForSuccessNonVerbose() hasherTestObject {
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
+		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          &mockWaiter,
 	}
 
@@ -153,6 +162,7 @@ func setupHasherForSubmissionQueueError() hasherTestObject {
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
+		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          &mockWaiter,
 	}
 
@@ -183,6 +193,7 @@ func setupHasherForRequestQueueError() hasherTestObject {
 		requestQueue:    &mockRequestQueue,
 		stopQueue:       &mockStopQueue,
 		submissionQueue: &mockSubmissionQueue,
+		supportedHashes: models.GetSupportedHashFunctions(),
 		waiter:          &mockWaiter,
 	}
 
@@ -367,6 +378,37 @@ func TestHasher_HandleHashingRequest_SubmissionQueueError_PutCalled(t *testing.T
 	actual := testObject.submissionQueue.PutCalls
 	if expected != actual {
 		t.Errorf("Expected: %d\nActual: %d\n", expected, actual)
+	}
+}
+
+func TestHasher_RequestRequiresInflation_True(t *testing.T) {
+	expected := true
+
+	testObject := setupHasherForSuccess()
+	actual := testObject.hasher.requestRequiresInflation(requestRequiringInflation)
+
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
+	}
+}
+
+func TestHasher_RequestRequiresInflation_False(t *testing.T) {
+	expected := false
+
+	testObject := setupHasherForSuccess()
+	actual := testObject.hasher.requestRequiresInflation(hashingRequest)
+
+	if expected != actual {
+		t.Errorf("Expected: %t\nActual: %t\n", expected, actual)
+	}
+}
+
+func TestHasher_InflateHashingRequest_CorrectResult(t *testing.T) {
+	testObject := setupHasherForSuccess()
+	testObject.hasher.inflateHashingRequest(&requestRequiringInflation)
+
+	if requestRequiringInflation.Hash == nil {
+		t.Errorf("Expected hashing request to have been inflated")
 	}
 }
 
