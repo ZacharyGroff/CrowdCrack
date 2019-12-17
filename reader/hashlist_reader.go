@@ -25,17 +25,19 @@ func (h HashlistReader) GetHashes() (map[string]bool, error) {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		hash := scanner.Text()
-		hashes[hash] = true
-		if err != nil {
-			break
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		return hashes, err
+	err = h.populateHashMap(scanner, &hashes)
+	if err != nil {
+		return nil, err
 	}
 
 	return hashes, nil
+}
+
+func (h HashlistReader) populateHashMap(scanner *bufio.Scanner, hashes *map[string]bool) error {
+	for scanner.Scan() {
+		hash := scanner.Text()
+		(*hashes)[hash] = true
+	}
+
+	return scanner.Err()
 }
