@@ -27,6 +27,11 @@ func (w WordlistReader) LoadPasswords() error {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
+
+	return w.populateQueueFromScanner(scanner)
+}
+
+func (w *WordlistReader) populateQueueFromScanner(scanner *bufio.Scanner) error {
 	for scanner.Scan() {
 		password := scanner.Text()
 		err := w.passwords.Put(password)
@@ -35,9 +40,5 @@ func (w WordlistReader) LoadPasswords() error {
 		}
 	}
 
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-
-	return nil
+	return scanner.Err()
 }
