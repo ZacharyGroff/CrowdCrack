@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 )
 
@@ -24,13 +25,19 @@ func NewServer(a interfaces.Api, l interfaces.Logger, r interfaces.PasswordReade
 
 func (s Server) Start() {
 	s.Logger.LogMessage("Starting Server...")
-	err := s.Reader.LoadPasswords()
-	if err != nil {
-		panic(err)
-	}
 
+	go s.tryLoadPasswords()
 	go s.Verifier.Start()
 	go s.Observer.Start()
 
 	s.Api.HandleRequests()
+}
+
+func (s Server) tryLoadPasswords() {
+	err := s.Reader.LoadPasswords()
+	if err != nil {
+		logMessage := fmt.Sprintf("Error when loading passwords: %s", err.Error())
+		s.Logger.LogMessage(logMessage)
+		return
+	}
 }
