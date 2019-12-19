@@ -5,6 +5,7 @@ import (
 	"github.com/ZacharyGroff/CrowdCrack/interfaces"
 	"github.com/ZacharyGroff/CrowdCrack/models"
 	"os"
+	"time"
 )
 
 type WordlistReader struct {
@@ -34,11 +35,16 @@ func (w WordlistReader) LoadPasswords() error {
 func (w *WordlistReader) populateQueueFromScanner(scanner *bufio.Scanner) error {
 	for scanner.Scan() {
 		password := scanner.Text()
-		err := w.passwords.Put(password)
-		if err != nil {
-			break
-		}
+		w.putInQueueOrWait(password)
 	}
 
 	return scanner.Err()
+}
+
+func (w *WordlistReader) putInQueueOrWait(password string) {
+	err := w.passwords.Put(password)
+	if err != nil {
+		time.Sleep(15 * time.Second)
+		w.putInQueueOrWait(password)
+	}
 }
